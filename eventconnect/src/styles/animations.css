@@ -1,0 +1,16 @@
+@keyframes fadeInTravelAndFadeOut {
+  0% {
+    opacity: 0;
+    transform: translate(-40px);
+  }
+  40% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(40px);
+  }
+}

@@ -1,0 +1,27 @@
+.breakPointContainer {
+  width: 1488px;
+}
+
+@media (max-width: 1536px) {
+  .breakPointContainer {
+    width: 1152px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .breakPointContainer {
+    width: 852px;
+  }
+}
+
+@media (max-width: 900px) {
+  .breakPointContainer {
+    width: 580px;
+  }
+}
+
+@media (max-width: 620px) {
+  .breakPointContainer {
+    width: 100%;
+  }
+}
