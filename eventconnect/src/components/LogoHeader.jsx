@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import LogoLarge from "../../../components/LogoLarge";
+import LogoLarge from "./LogoLarge";
 import styled from "@emotion/styled";
 
 const StyledBox = styled(Box)(({ theme }) => ({

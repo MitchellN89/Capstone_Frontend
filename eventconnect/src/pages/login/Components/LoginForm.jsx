@@ -5,24 +5,32 @@ import {
   Header2,
   LinkStyled,
 } from "../../../components/TextComponents";
-import { Button, TextField } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import useInputData from "../../../hooks/useInputData";
-import { Icon } from "@iconify/react";
+
 import { useUser } from "../../../context/UserProvider";
 import NotificationPopup from "../../../components/NotifcationPopup";
 import useNotificationOptions from "../../../hooks/useNotificationOptions";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { TextValidationInput } from "../../../components/InputComponents";
+import {
+  capitaliseAllFirstLetters,
+  splitCamelCase,
+} from "../../../utilities/stringFormatter";
+import { ButtonLoading } from "../../../components/Buttons";
 
-export default function LoginForm({ userType, userTypeLabel }) {
-  const [email, handleEmail, resetEmail] = useInputData("");
-  const [password, handlePassword, resetPassword] = useInputData("");
+export default function LoginForm({ userType }) {
+  const [emailValue, emailProps, isValidEmail, resetEmail] = useInputData("");
+  const [passwordValue, passwordProps, isValidPassword, resetPassword] =
+    useInputData("");
   const [isLocked, setIsLocked] = useState(false);
   const { loginUserWithCredentials, isLoading } = useUser();
   const [notificationOptions, handleNotificationOptions] =
     useNotificationOptions();
   let timer;
   const navigate = useNavigate();
+  const userTypeLabel = capitaliseAllFirstLetters(splitCamelCase(userType));
 
   useEffect(() => {
     // remove user from context
@@ -36,7 +44,11 @@ export default function LoginForm({ userType, userTypeLabel }) {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     setIsLocked(true);
-    const result = await loginUserWithCredentials(email, password, userType);
+    const result = await loginUserWithCredentials(
+      emailValue,
+      passwordValue,
+      userType
+    );
 
     switch (result.status) {
       case 200:
@@ -65,57 +77,59 @@ export default function LoginForm({ userType, userTypeLabel }) {
     <>
       <Box textAlign={"centered"} sx={{ padding: "0 5%" }}>
         <Header2 centered style={{ marginTop: "0" }}>
-          <FeatureStylize italic bold featureStrength={3}>
+          <FeatureStylize bold featureStrength={3}>
             {userTypeLabel}
           </FeatureStylize>{" "}
-          Log In
+          Sign In
         </Header2>
         <form action="/test" onSubmit={handleSubmit}>
-          <TextField
-            value={email}
-            onChange={handleEmail}
-            sx={{ marginBottom: "14px" }}
-            fullWidth
-            type="email"
-            id="inputEmail"
-            label="Email Address"
-            variant="outlined"
-            required
-            disabled={isLoading || isLocked ? true : false}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextValidationInput
+                {...emailProps}
+                fullWidth
+                label="Email Address"
+                type="email"
+                id="inputEmail"
+                required
+                isLoading={isLoading ? true : false}
+                isLocked={isLoading ? true : false}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextValidationInput
+                {...passwordProps}
+                fullWidth
+                label="Password"
+                type="password"
+                id="inputPassword"
+                required
+                isLoading={isLoading ? true : false}
+                isLocked={isLoading ? true : false}
+              />
+            </Grid>
+          </Grid>
 
-          <TextField
-            fullWidth
-            id="inputPassword"
-            label="Password"
-            variant="outlined"
-            type="password"
-            sx={{ marginBottom: "14px" }}
-            value={password}
-            onChange={handlePassword}
-            required
-            disabled={isLoading || isLocked ? true : false}
-          />
           <Box display="flex" alignItems="center" flexDirection="column">
-            <Button
+            <ButtonLoading
               style={{ marginLeft: "auto" }}
               variant="contained"
               type="submit"
-              disabled={isLoading || isLocked ? true : false}
-            >
-              {isLoading ? "Signing In" : "Sign In"}
-              {isLoading ? (
-                <Icon
-                  style={{ marginLeft: "10px" }}
-                  width="2em"
-                  icon="eos-icons:loading"
-                />
-              ) : null}
-            </Button>
+              isLoading={isLoading}
+              isLocked={isLocked}
+              label="Sign In"
+              labelWhenLoading="Signing In"
+            />
             <NotificationPopup {...notificationOptions}></NotificationPopup>
             <p>
               Don't Have an account?{" "}
-              <LinkStyled href="#">Sign up here</LinkStyled>
+              <LinkStyled to={`/auth/signup/${userType}`}>
+                Sign up for{" "}
+                {userTypeLabel === "Event Planner"
+                  ? "an Event Planner"
+                  : "a Vendor"}{" "}
+                account!
+              </LinkStyled>
             </p>
           </Box>
         </form>

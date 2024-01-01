@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import { Link } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export function Header2({ children, centered, style }) {
   const StyledH2 = styled("h2")(({ theme }) => ({
@@ -23,13 +24,28 @@ export function FeatureStylize({ children, bold, italic, featureStrength }) {
   return <StyledSpan>{children}</StyledSpan>;
 }
 
-export function LinkStyled({ children, href }) {
-  const StyledLink = styled(Link)({
+export function LinkStyled({ children, to }) {
+  const StyledLink = styled(Link)(({ theme }) => ({
     fontWeight: "bold",
-  });
+    textDecoration: "none",
+    "&:hover": {
+      textDecoration: "underline",
+    },
+    "&:visited": {
+      color: theme.palette.primary.main,
+    },
+  }));
   return (
-    <StyledLink underline="hover" href={href}>
+    <StyledLink underline="hover" to={to}>
       {children}
     </StyledLink>
   );
+}
+
+export function TextValidationError({ children }) {
+  const StyledTypography = styled(Typography)(({ theme }) => ({
+    color: theme.palette.error.main,
+  }));
+
+  return <StyledTypography variant="subtitle2">{children}</StyledTypography>;
 }

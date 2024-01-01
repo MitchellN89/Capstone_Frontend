@@ -2,15 +2,18 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import EPDashboard from "../pages/eventPlanner/dashboard/EPDashboard";
 import Login from "../pages/login/Login";
 import SignUp from "../pages/signup/SignUp";
-
-const user = "eventplanner"; // FIX: this is for testing purposes only
+import Auth from "../pages/auth/Auth";
+import { useUser } from "../context/UserProvider";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="*" element={<RedirectRoute />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/auth" element={<Auth />}>
+        <Route index element={<Login />} />
+        <Route path="signup/:type" element={<SignUp />} />
+      </Route>
+
       <Route
         path="/eventplanner/*"
         element={
@@ -32,14 +35,15 @@ export default function AppRoutes() {
 }
 
 function RedirectRoute() {
+  const { user } = useUser();
   let redirectPath;
 
-  if (user === "eventplanner") {
+  if (user.accountType === "eventPlanner") {
     redirectPath = "/eventplanner";
-  } else if (user === "vendor") {
+  } else if (user.accountType === "vendor") {
     redirectPath = "/vendor";
   } else {
-    redirectPath = "/login";
+    redirectPath = "/auth";
   }
 
   return <Navigate to={redirectPath} />;
@@ -62,7 +66,8 @@ function VendorRoutes() {
 }
 
 function ProtectedRoute({ children, userType }) {
-  const isAuthorised = userType === user;
+  const { user } = useUser();
+  const isAuthorised = userType === user.accountType;
 
   return isAuthorised ? children : <RedirectRoute />;
 }
