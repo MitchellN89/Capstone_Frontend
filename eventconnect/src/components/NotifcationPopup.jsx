@@ -18,7 +18,6 @@ export default function NotificationPopup({
   open,
 }) {
   useEffect(() => {
-    console.log("USE EFFECT RUN");
     let timer;
     if (open) {
       timer = setTimeout(() => {

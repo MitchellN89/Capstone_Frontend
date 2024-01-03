@@ -1,21 +1,11 @@
 import styled from "@emotion/styled";
 import BackgroundImage from "./BackgroundImage";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef } from "react";
+import Overlay from "../../../components/Overlay";
 
 export default function BackgroundImageCarousel({ cycleTime, imageUrls }) {
   const [currentImage, setCurrentImage] = useState(0);
   const animatingImage = useRef();
-
-  const Overlay = useMemo(() =>
-    styled("div")(({ theme }) => ({
-      position: "fixed",
-      top: "0",
-      left: "0",
-      // backgroundColor: theme.palette.mode === "light" ? "black" : "white",
-      height: "100vh",
-      width: "100vw",
-    }))
-  );
 
   const Container = styled("div")({
     height: "100vh",
@@ -39,7 +29,7 @@ export default function BackgroundImageCarousel({ cycleTime, imageUrls }) {
 
   return (
     <Container>
-      {/* <Overlay></Overlay> */}
+      <Overlay></Overlay>
 
       <BackgroundImage
         onAnimationEnd={handleImageChange}

@@ -57,7 +57,7 @@ export default function LoginForm({ userType }) {
         });
 
         timer = setTimeout(() => {
-          navigate(`/${userType}`);
+          navigate(`/${userType}`, { replace: true });
         }, 2000);
         break;
       case 404:
@@ -66,6 +66,7 @@ export default function LoginForm({ userType }) {
           severity: "warning",
         });
         setIsLocked(false);
+        break;
       default:
         setIsLocked(false);
     }
@@ -92,8 +93,7 @@ export default function LoginForm({ userType }) {
                 type="email"
                 id="inputEmail"
                 required
-                isLoading={isLoading ? true : false}
-                isLocked={isLoading ? true : false}
+                disabled={isLocked || isLoading}
               />
             </Grid>
             <Grid item xs={12}>
@@ -104,8 +104,7 @@ export default function LoginForm({ userType }) {
                 type="password"
                 id="inputPassword"
                 required
-                isLoading={isLoading ? true : false}
-                isLocked={isLoading ? true : false}
+                disabled={isLocked || isLoading}
               />
             </Grid>
           </Grid>
@@ -115,11 +114,11 @@ export default function LoginForm({ userType }) {
               style={{ marginLeft: "auto" }}
               variant="contained"
               type="submit"
-              isLoading={isLoading}
-              isLocked={isLocked}
-              label="Sign In"
+              disabled={isLocked || isLoading}
               labelWhenLoading="Signing In"
-            />
+            >
+              Sign In
+            </ButtonLoading>
             <NotificationPopup {...notificationOptions}></NotificationPopup>
             <p>
               Don't Have an account?{" "}

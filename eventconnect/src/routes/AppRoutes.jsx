@@ -1,35 +1,43 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import EPDashboard from "../pages/eventPlanner/dashboard/EPDashboard";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+
 import Login from "../pages/login/Login";
 import SignUp from "../pages/signup/SignUp";
 import Auth from "../pages/auth/Auth";
 import { useUser } from "../context/UserProvider";
+import EventPlanner from "../pages/eventPlanner/EventPlanner";
+import EventsEP from "../pages/eventPlanner/eventsEP/EventsEP";
+import EventEP from "../pages/eventPlanner/eventEP/EventEP";
+import EventConnect from "../pages/eventConnet/EventConnect";
+import CreateEventEP from "../pages/eventPlanner/createEventEP/CreateEventEp";
+import EditEventEP from "../pages/eventPlanner/editEventEP/EditEventEp";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="*" element={<RedirectRoute />} />
-      <Route path="/auth" element={<Auth />}>
-        <Route index element={<Login />} />
-        <Route path="signup/:type" element={<SignUp />} />
-      </Route>
+      <Route path="/" element={<EventConnect />}>
+        <Route path="/auth" element={<Auth />}>
+          <Route index element={<Login />} />
+          <Route path="signup/:type" element={<SignUp />} />
+        </Route>
 
-      <Route
-        path="/eventplanner/*"
-        element={
-          <ProtectedRoute userType="eventplanner">
-            <EventPlannerRoutes />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/vendor"
-        element={
-          <ProtectedRoute userType="vendor">
-            <VendorRoutes />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/eventplanner/*"
+          element={
+            <ProtectedRoute userType="eventPlanner">
+              <EventPlannerRoutes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/vendor"
+          element={
+            <ProtectedRoute userType="vendor">
+              <VendorRoutes />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
     </Routes>
   );
 }
@@ -52,7 +60,28 @@ function RedirectRoute() {
 function EventPlannerRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<EPDashboard />}></Route>
+      <Route path="/" element={<EventPlanner />}>
+        <Route index element={<EventsEP />} />
+        <Route path="createEvent" element={<CreateEventEP />} />
+        <Route path=":eventId/editEvent" element={<EditEventEP />} />
+        <Route path=":eventId" element={<EventEP />}>
+          <Route index element={<h2>SERVICES EP</h2>} />
+          <Route path="createService" element={<h2>SERVICES EP</h2>} />
+          <Route path=":serviceId/editService" element={<h2>SERVICE EP</h2>} />
+          <Route
+            path=":serviceId"
+            element={
+              <>
+                <h2>SERVICE EP</h2>
+                <Outlet />
+              </>
+            }
+          >
+            <Route index element={<h3>CONNECTIONS EP</h3>} />
+            <Route path=":connectionId" element={<h3>CONNECTION EP</h3>} />
+          </Route>
+        </Route>
+      </Route>
     </Routes>
   );
 }
@@ -67,6 +96,7 @@ function VendorRoutes() {
 
 function ProtectedRoute({ children, userType }) {
   const { user } = useUser();
+
   const isAuthorised = userType === user.accountType;
 
   return isAuthorised ? children : <RedirectRoute />;

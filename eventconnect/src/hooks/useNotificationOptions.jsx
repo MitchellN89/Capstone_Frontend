@@ -19,7 +19,6 @@ export default function useNotificationOptions() {
   });
 
   const handleOptions = (newOptions) => {
-    console.log("newOptions: ", newOptions);
     const allowedOptions = {
       title: newOptions.title || "",
       message: newOptions.message || "",

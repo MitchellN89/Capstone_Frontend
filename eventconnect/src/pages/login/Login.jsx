@@ -8,7 +8,6 @@ import { useTheme } from "@mui/material";
 
 export default function Login() {
   const theme = useTheme();
-  console.log(theme);
   return (
     <>
       <FullScreenContainer justifyCenter alignCenter>

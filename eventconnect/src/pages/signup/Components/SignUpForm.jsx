@@ -5,8 +5,8 @@ import {
   Header2,
   LinkStyled,
 } from "../../../components/TextComponents";
-import { Button, Grid, TextField } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Divider, Grid } from "@mui/material";
+
 import NotificationPopup from "../../../components/NotifcationPopup";
 import useNotificationOptions from "../../../hooks/useNotificationOptions";
 import {
@@ -16,41 +16,133 @@ import {
 import { TextValidationInput } from "../../../components/InputComponents";
 import useInputData from "../../../hooks/useInputData";
 import { useState } from "react";
-import SignUpStepper from "./Stepper";
+import { ButtonLoading } from "../../../components/Buttons";
+import { useUser } from "../../../context/UserProvider";
+import { useNavigate } from "react-router-dom";
 
-export default function SignUpForm(userType, userTypeLabel) {
-  const [notificationOptions] = useNotificationOptions();
-  const [firstNameValue, firstNameProps, isValidFirstName, resetFirstName] =
+export default function SignUpForm(userType) {
+  userType = userType.userType;
+  const [notificationOptions, handleNotificationOptions] =
+    useNotificationOptions();
+  const [isLocked, setIsLocked] = useState(false);
+  const [firstNameValue, firstNameProps, notValidFirstName, resetFirstName] =
     useInputData("");
-  const [lastNameValue, lastNameProps, isValidLastName, resetLastName] =
+  const [lastNameValue, lastNameProps, notValidLastName, resetLastName] =
     useInputData("");
   const [
     companyNameValue,
     companyNameProps,
-    isValidCompanyName,
+    notValidCompanyName,
     resetCompanyName,
   ] = useInputData("");
   const [
     phoneNumberValue,
     phoneNumberProps,
-    isValidPhoneNumber,
+    notValidPhoneNumber,
     resetPhoneNumber,
   ] = useInputData("");
-  const [websiteUrlValue, websiteUrlProps, isValidWebsiteUrl, resetWebsiteUrl] =
+  const [
+    websiteUrlValue,
+    websiteUrlProps,
+    notValidwebsiteUrl,
+    resetwebsiteUrl,
+  ] = useInputData("");
+  const [
+    emailAddressValue,
+    emailAddressProps,
+    notValidEmailAddress,
+    resetEmailAddress,
+  ] = useInputData("");
+  const [passwordValue, passwordProps, notValidPassword, resetPassword] =
     useInputData("");
-  const [isLoading, setIsLoading] = useState("");
+  const [
+    reTypePasswordValue,
+    reTypePasswordProps,
+    notValidReTypePassword,
+    resetReTypePassword,
+  ] = useInputData("");
+  const { isLoading, signUpUser } = useUser();
+  const navigate = useNavigate();
+
+  const resetControls = () => {
+    resetFirstName();
+    resetLastName();
+    resetPassword();
+    resetEmailAddress();
+    resetPhoneNumber();
+    resetCompanyName();
+    resetwebsiteUrl();
+    resetReTypePassword();
+  };
+
+  const checkFormValid = () => {
+    return [
+      notValidFirstName,
+      notValidLastName,
+      notValidPassword,
+      notValidEmailAddress,
+      notValidPhoneNumber,
+      notValidCompanyName,
+      notValidwebsiteUrl,
+      notValidReTypePassword,
+    ].every((item) => !item);
+  };
+
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+    if (!checkFormValid) return;
+    setIsLocked(true);
+    const result = await signUpUser(
+      firstNameValue,
+      lastNameValue,
+      passwordValue,
+      emailAddressValue,
+      phoneNumberValue,
+      companyNameValue,
+      websiteUrlValue,
+      userType
+    );
+
+    switch (result.status) {
+      case 200:
+        handleNotificationOptions({
+          message: result.response,
+        });
+
+        timer = setTimeout(() => {
+          navigate(`/auth`);
+        }, 2000);
+        break;
+      case 409:
+        handleNotificationOptions({
+          message: result.response,
+          severity: "warning",
+        });
+        timer = setTimeout(() => {
+          navigate(`/auth`);
+        }, 2000);
+        break;
+      default:
+        handleNotificationOptions({
+          message: result.response,
+          severity: "error",
+        });
+        setIsLocked(false);
+    }
+    resetControls();
+  };
 
   return (
     <>
       <Box textAlign={"centered"} sx={{ padding: "0 5%" }}>
         <Header2 centered style={{ marginTop: "20px" }}>
           <FeatureStylize bold featureStrength={3}>
-            {capitaliseAllFirstLetters(splitCamelCase(userType.userType))}
+            {capitaliseAllFirstLetters(splitCamelCase(userType))}
           </FeatureStylize>{" "}
           Sign Up
         </Header2>
-        <SignUpStepper></SignUpStepper>
-        <form action="/test">
+
+        <form action="/test" onSubmit={handleSubmit}>
           <Box
             display="flex"
             alignItems="center"
@@ -67,7 +159,15 @@ export default function SignUpForm(userType, userTypeLabel) {
                   type="text"
                   id="inputFirstName"
                   required
-                  isLocked={isLoading ? true : false}
+                  disabled={isLocked || isLoading}
+                  patterns={[
+                    {
+                      type: "required",
+                      value: /^[a-zA-Z\s]+$/,
+                      message: "Please use only standard letters and spaces",
+                      label: "lettersOnly",
+                    },
+                  ]}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -79,7 +179,15 @@ export default function SignUpForm(userType, userTypeLabel) {
                   type="text"
                   id="inputLastName"
                   required
-                  isLocked={isLoading ? true : false}
+                  disabled={isLocked || isLoading}
+                  patterns={[
+                    {
+                      type: "required",
+                      value: /^[a-zA-Z\s]+$/,
+                      message: "Please use only standard letters and spaces",
+                      label: "lettersOnly",
+                    },
+                  ]}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -90,7 +198,15 @@ export default function SignUpForm(userType, userTypeLabel) {
                   label="Company Name"
                   type="text"
                   id="inputCompanyName"
-                  isLocked={isLoading ? true : false}
+                  disabled={isLocked || isLoading}
+                  patterns={[
+                    {
+                      type: "required",
+                      value: /^[a-zA-Z\s]+$/,
+                      message: "Please use only standard letters and spaces",
+                      label: "lettersOnly",
+                    },
+                  ]}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -102,7 +218,16 @@ export default function SignUpForm(userType, userTypeLabel) {
                   type="text"
                   id="inputPhoneNumber"
                   required
-                  isLocked={isLoading ? true : false}
+                  disabled={isLocked || isLoading}
+                  patterns={[
+                    {
+                      type: "required",
+                      value: /^(\d|\-|#|ext|\+| )+$/,
+                      message:
+                        "Please use only numbers, dashes, hashes, plus and 'ext'",
+                      label: "phoneNumberOnly",
+                    },
+                  ]}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -110,26 +235,93 @@ export default function SignUpForm(userType, userTypeLabel) {
                   {...websiteUrlProps}
                   fullWidth
                   label="Website Url"
-                  type="text"
+                  type="url"
                   id="inputWebsiteUrl"
-                  isLocked={isLoading ? true : false}
+                  disabled={isLocked || isLoading}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Divider />
+              </Grid>
+
+              <Grid item xs={12}>
+                <TextValidationInput
+                  {...emailAddressProps}
+                  fullWidth
+                  label="Email Address"
+                  type="email"
+                  id="inputEmailAddress"
+                  disabled={isLocked || isLoading}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextValidationInput
+                  {...passwordProps}
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  id="inputPassword"
+                  disabled={isLocked || isLoading}
+                  required
+                  patterns={[
+                    {
+                      type: "required",
+                      value: /[!@#$%^&*()_+={}[\]:;<>,.?~\\/-]/,
+                      message: "Must contain at least one special character",
+                      label: "specialCharacter",
+                    },
+                    {
+                      type: "required",
+                      value: /.*[a-z].*/,
+                      message: "Must contain at least one lowercase letter",
+                      label: "lowerCaseLetter",
+                    },
+                    {
+                      type: "required",
+                      value: /.*[A-Z].*/,
+                      message: "Must contain at least one uppercase letter",
+                      label: "upperCaseLetter",
+                    },
+                    {
+                      type: "required",
+                      value: /.*\d.*/,
+                      message: "Must contain at least one number",
+                      label: "number",
+                    },
+                  ]}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextValidationInput
+                  {...reTypePasswordProps}
+                  fullWidth
+                  label="Re-type Password"
+                  type="password"
+                  id="inputReTypePassword"
+                  disabled={isLocked || isLoading}
+                  required
+                  patterns={[
+                    {
+                      type: "match",
+                      value: passwordValue,
+                      message: "Passwords do not match",
+                      label: "matchPassword",
+                    },
+                  ]}
                 />
               </Grid>
             </Grid>
-            <Button
+            <ButtonLoading
               style={{ marginLeft: "auto" }}
               variant="contained"
               type="submit"
-            >
-              Sign Up
-              <Icon
-                style={{ marginLeft: "10px" }}
-                width="2em"
-                icon="eos-icons:loading"
-              />
-            </Button>
+              disabled={isLocked || isLoading}
+              label="Sign Up"
+              labelWhenLoading="Signing Up"
+            />
             <NotificationPopup {...notificationOptions}></NotificationPopup>
-            <p>
+            <p style={{ marginBottom: "42px" }}>
               Return back to <LinkStyled to={`/auth`}>Login</LinkStyled>
             </p>
           </Box>

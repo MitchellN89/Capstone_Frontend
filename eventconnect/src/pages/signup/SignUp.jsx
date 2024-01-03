@@ -9,11 +9,8 @@ import SignUpForm from "./Components/SignUpForm";
 
 export default function SignUp() {
   const theme = useTheme();
-  console.log(theme);
-
   const { type } = useParams();
 
-  console.log(type);
   return (
     <>
       <FullScreenContainer justifyCenter alignCenter>

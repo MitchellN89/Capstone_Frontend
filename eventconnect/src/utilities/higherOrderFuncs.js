@@ -1,14 +1,13 @@
+import { useRef } from "react";
+
 export function debouncer(func, timeout) {
-  let timer;
+  const timer = useRef(null);
   return function () {
     const args = arguments;
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(
-      (args) => {
-        func.apply(this, args);
-      },
-      timeout,
-      args
-    );
+    if (timer.current) clearTimeout(timer.current);
+
+    timer.current = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
   };
 }

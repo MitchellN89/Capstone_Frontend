@@ -28,6 +28,48 @@ export function UserProvider({ children }) {
     });
   };
 
+  const signUpUser = async (
+    firstName,
+    lastName,
+    password,
+    emailAddress,
+    phoneNumber,
+    companyName,
+    websiteUrl,
+    accountType
+  ) => {
+    try {
+      setIsLoading(true);
+      const dbResponse = await axios.post(
+        "http://localhost:8080/auth/createuser",
+        {
+          firstName,
+          lastName,
+          password,
+          emailAddress,
+          phoneNumber,
+          companyName,
+          websiteUrl,
+          accountType,
+        }
+      );
+      const { response } = dbResponse.data;
+      const { status } = dbResponse;
+      return { status, response };
+    } catch (err) {
+      console.error(err);
+      const { response } = err.response.data;
+      const { status } = err.response;
+
+      return {
+        status,
+        response,
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const loginUserWithCredentials = async (
     emailAddress,
     password,
@@ -46,7 +88,6 @@ export function UserProvider({ children }) {
       const { data, token, response } = dbResponse.data;
       const { status } = dbResponse;
 
-      console.log("DBRESPONSE: ", dbResponse);
       dispatch({ type: "LOGIN_USER", payload: data });
       localStorage.setItem("key", token);
 
@@ -69,6 +110,7 @@ export function UserProvider({ children }) {
     user,
     isLoading,
     loginUserWithCredentials,
+    signUpUser,
   };
 
   return (

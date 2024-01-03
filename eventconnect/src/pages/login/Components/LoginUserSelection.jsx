@@ -50,13 +50,6 @@ export default function LoginUserSelectionTabs() {
     setValue(newValue);
   };
 
-  React.useEffect(() => {
-    console.log("Tab Slider Mounted");
-    return () => {
-      console.log("Tab Slider Unmounted");
-    };
-  }, []);
-
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

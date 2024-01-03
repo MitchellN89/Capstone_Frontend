@@ -9,7 +9,11 @@ export default function useInputData(init, patterns) {
     setValue(val);
   };
 
-  const handleIsValid = (bool) => {
+  const handleManualChange = (val) => {
+    setValue(val);
+  };
+
+  const handleNotValid = (bool) => {
     setNotValid(bool);
   };
 
@@ -22,8 +26,8 @@ export default function useInputData(init, patterns) {
     onChange: handleChange,
     notValid,
     patterns,
-    handleIsValid,
+    handleNotValid,
   };
 
-  return [value, props, notValid, reset];
+  return [value, props, notValid, reset, handleManualChange];
 }

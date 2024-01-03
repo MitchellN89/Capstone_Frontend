@@ -3,18 +3,15 @@ import { Button } from "@mui/material";
 
 export function ButtonLoading({
   isLoading,
-  isLocked,
-  label,
   labelWhenLoading,
   style,
+  children,
   ...others
 }) {
   return (
     <Button
       style={{ marginTop: "10px", ...style }}
       variant="contained"
-      type="submit"
-      disabled={isLoading || isLocked ? true : false}
       {...others}
     >
       {isLoading ? (
@@ -22,7 +19,7 @@ export function ButtonLoading({
           {labelWhenLoading || "Loading"} <IconLoading />
         </>
       ) : (
-        label || "Button"
+        <>{children}</>
       )}
     </Button>
   );
