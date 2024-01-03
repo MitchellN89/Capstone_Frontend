@@ -6,11 +6,12 @@ import usePlacesAutocomplete, {
   getLatLng,
 } from "use-places-autocomplete";
 
+const API_KEY = import.meta.evn.VITE_MAP_API_KEY;
 const libraries = ["places"];
 
 export default function MapComponent() {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyAAD8d2DeGhhaORpWSCeBb9O1IVLp-ie4o",
+    googleMapsApiKey: API_KEY,
     libraries: libraries,
   });
 

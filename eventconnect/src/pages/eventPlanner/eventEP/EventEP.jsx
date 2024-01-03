@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../../context/UserProvider";
 import useData from "../../../hooks/useData";
 import { useState } from "react";
@@ -8,6 +8,8 @@ import { Header2 } from "../../../components/TextComponents";
 import { apiCall } from "../../../utilities/apiCall";
 
 import { Box, Paper } from "@mui/material";
+
+import ServicesEP from "../servicesEP/ServicesEp";
 
 export default function EventEP() {
   let { eventId } = useParams();
@@ -64,6 +66,7 @@ export default function EventEP() {
           <button onClick={handleDelete}>DELETE EVENT</button>
         </Box>
       </Paper>
+      <Outlet />
     </>
   );
 }

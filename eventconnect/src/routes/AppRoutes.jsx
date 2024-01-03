@@ -10,6 +10,8 @@ import EventEP from "../pages/eventPlanner/eventEP/EventEP";
 import EventConnect from "../pages/eventConnet/EventConnect";
 import CreateEventEP from "../pages/eventPlanner/createEventEP/CreateEventEp";
 import EditEventEP from "../pages/eventPlanner/editEventEP/EditEventEp";
+import ServicesEP from "../pages/eventPlanner/servicesEP/ServicesEp";
+import CreateServiceEP from "../pages/eventPlanner/createServiceEP/CreateServiceEP";
 
 export default function AppRoutes() {
   return (
@@ -65,8 +67,8 @@ function EventPlannerRoutes() {
         <Route path="createEvent" element={<CreateEventEP />} />
         <Route path=":eventId/editEvent" element={<EditEventEP />} />
         <Route path=":eventId" element={<EventEP />}>
-          <Route index element={<h2>SERVICES EP</h2>} />
-          <Route path="createService" element={<h2>SERVICES EP</h2>} />
+          <Route index element={<ServicesEP />} />
+          <Route path="createService" element={<CreateServiceEP />} />
           <Route path=":serviceId/editService" element={<h2>SERVICE EP</h2>} />
           <Route
             path=":serviceId"
