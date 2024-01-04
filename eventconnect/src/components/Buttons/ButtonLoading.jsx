@@ -1,17 +1,16 @@
-import { IconLoading } from "./Icons";
+import { IconLoading } from "../Icons";
 import { Button } from "@mui/material";
 
-export function ButtonLoading({
+export default function ButtonLoading({
   isLoading,
   labelWhenLoading,
-  style,
   children,
+  variant,
   ...others
 }) {
   return (
     <Button
-      style={{ marginTop: "10px", ...style }}
-      variant="contained"
+      variant={isLoading ? "outlined" : variant || "contained"}
       {...others}
     >
       {isLoading ? (

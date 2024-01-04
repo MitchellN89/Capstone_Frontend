@@ -1,10 +1,9 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import {
-  FeatureStylize,
-  Header2,
-  LinkStyled,
-} from "../../../components/TextComponents";
+
+import { FeatureStylize } from "../../../components/Texts/TextStyles";
+import { Header2 } from "../../../components/Texts/TextHeaders";
+import StyledLink from "../../../components/StyledLink";
 import { Divider, Grid } from "@mui/material";
 
 import NotificationPopup from "../../../components/NotifcationPopup";
@@ -16,7 +15,7 @@ import {
 import { TextValidationInput } from "../../../components/InputComponents";
 import { useInputData } from "../../../hooks/useInputData";
 import { useState } from "react";
-import { ButtonLoading } from "../../../components/Buttons";
+import ButtonLoading from "../../../components/Buttons/ButtonLoading";
 import { useUser } from "../../../context/UserProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -322,7 +321,7 @@ export default function SignUpForm(userType) {
             />
             <NotificationPopup {...notificationOptions}></NotificationPopup>
             <p style={{ marginBottom: "42px" }}>
-              Return back to <LinkStyled to={`/auth`}>Login</LinkStyled>
+              Return back to <StyledLink to={`/auth`}>Login</StyledLink>
             </p>
           </Box>
         </form>

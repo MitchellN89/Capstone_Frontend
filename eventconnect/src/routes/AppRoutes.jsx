@@ -5,13 +5,13 @@ import SignUp from "../pages/signup/SignUp";
 import Auth from "../pages/auth/Auth";
 import { useUser } from "../context/UserProvider";
 import EventPlanner from "../pages/eventPlanner/EventPlanner";
-import EventsEP from "../pages/eventPlanner/eventsEP/EventsEP";
-import EventEP from "../pages/eventPlanner/eventEP/EventEP";
+import EventsEP from "../pages/eventPlanner/EventsEP";
+import EventEP from "../pages/eventPlanner/EventEP";
 import EventConnect from "../pages/eventConnet/EventConnect";
-import CreateEventEP from "../pages/eventPlanner/createEventEP/CreateEventEp";
-import EditEventEP from "../pages/eventPlanner/editEventEP/EditEventEp";
-import ServicesEP from "../pages/eventPlanner/servicesEP/ServicesEp";
-import CreateServiceEP from "../pages/eventPlanner/createServiceEP/CreateServiceEP";
+import CreateEventEP from "../pages/eventPlanner/CreateEventEp";
+import EditEventEP from "../pages/eventPlanner/EditEventEp";
+import ServicesEP from "../pages/eventPlanner/ServicesEp";
+import CreateServiceEP from "../pages/eventPlanner/CreateServiceEP";
 
 export default function AppRoutes() {
   return (

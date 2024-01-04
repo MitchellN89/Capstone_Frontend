@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getGeocode, getLatLng } from "use-places-autocomplete";
 
 export function useInputData(init, patterns) {
   const [value, setValue] = useState(init);
@@ -33,10 +34,10 @@ export function useInputData(init, patterns) {
 }
 
 export function useTextInput(
-  init,
-  label,
+  init = "",
+  label = "Text Input",
   name,
-  type,
+  type = "text",
   addtionalPatterns,
   overWritePatterns
 ) {
@@ -141,4 +142,41 @@ export function useTextInput(
   };
 
   return [props, isValid, reset, value, handleManualChange];
+}
+
+export function useAddressInput(init = "", label = "Address", name) {
+  const [value, setValue] = useState(null);
+  const [inputValue, setInputValue] = useState(init);
+  const [coordinates, setCoordinates] = useState(null);
+  const [selectionValue, setSelectionValue] = useState(null);
+  const isValid = true;
+
+  const handleCoordinates = async (address) => {
+    const results = await getGeocode({ address });
+    const { lat, lng } = await getLatLng(results[0]);
+    setCoordinates({ lat, lng });
+    setSelectionValue(address);
+  };
+
+  const reset = () => {
+    setInputValue(init);
+  };
+
+  useEffect(() => {
+    if (value) {
+      handleCoordinates(value.description);
+    }
+  }, [value]);
+
+  const props = {
+    value,
+    setValue,
+    inputValue,
+    setInputValue,
+    name,
+    label,
+    coordinates,
+  };
+
+  return [props, isValid, reset, selectionValue, coordinates];
 }

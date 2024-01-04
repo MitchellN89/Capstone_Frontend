@@ -1,10 +1,9 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import {
-  FeatureStylize,
-  Header2,
-  LinkStyled,
-} from "../../../components/TextComponents";
+import { FeatureStylize } from "../../../components/Texts/TextStyles";
+import { Header2 } from "../../../components/Texts/TextHeaders";
+import StyledLink from "../../../components/StyledLink";
+
 import { Grid } from "@mui/material";
 import { useInputData } from "../../../hooks/useInputData";
 
@@ -18,7 +17,7 @@ import {
   capitaliseAllFirstLetters,
   splitCamelCase,
 } from "../../../utilities/stringFormatter";
-import { ButtonLoading } from "../../../components/Buttons";
+import ButtonLoading from "../../../components/Buttons/ButtonLoading";
 
 export default function LoginForm({ userType }) {
   const [emailValue, emailProps, isValidEmail, resetEmail] = useInputData("");
@@ -122,13 +121,13 @@ export default function LoginForm({ userType }) {
             <NotificationPopup {...notificationOptions}></NotificationPopup>
             <p>
               Don't Have an account?{" "}
-              <LinkStyled to={`/auth/signup/${userType}`}>
+              <StyledLink to={`/auth/signup/${userType}`}>
                 Sign up for{" "}
                 {userTypeLabel === "Event Planner"
                   ? "an Event Planner"
                   : "a Vendor"}{" "}
                 account!
-              </LinkStyled>
+              </StyledLink>
             </p>
           </Box>
         </form>

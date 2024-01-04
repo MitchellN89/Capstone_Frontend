@@ -1,6 +1,4 @@
 import { ThemeProvider } from "@mui/material/styles";
-import themes from "../themes";
-import { useUser } from "../context/UserProvider";
 import { createTheme } from "@mui/material";
 import defaultTheme from "../themes/defaultTheme";
 

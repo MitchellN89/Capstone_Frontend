@@ -1,15 +1,11 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+import { Box, TextField, Autocomplete } from "@mui/material";
+import { useEffect, useState, useRef, useMemo } from "react";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
 
-// This key was created specifically for the demo in mui.com.
-// You need to create a new one for your application.
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_MAP_API_KEY;
 
 function loadScript(src, position, id) {
@@ -26,11 +22,17 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-export default function AddressPicker() {
-  const [value, setValue] = React.useState(null);
-  const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] = React.useState([]);
-  const loaded = React.useRef(false);
+export default function AddressInput({
+  value,
+  setValue,
+  inputValue,
+  setInputValue,
+  label,
+  name,
+  coordinates,
+}) {
+  const [options, setOptions] = useState([]);
+  const loaded = useRef(false);
 
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
@@ -44,7 +46,7 @@ export default function AddressPicker() {
     loaded.current = true;
   }
 
-  const fetch = React.useMemo(
+  const fetch = useMemo(
     () =>
       debounce((request, callback) => {
         autocompleteService.current.getPlacePredictions(request, callback);
@@ -52,7 +54,7 @@ export default function AddressPicker() {
     []
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     if (!autocompleteService.current && window.google) {
@@ -96,8 +98,6 @@ export default function AddressPicker() {
 
   return (
     <Autocomplete
-      id="google-map-demo"
-      sx={{ width: 300 }}
       getOptionLabel={(option) =>
         typeof option === "string" ? option : option.description
       }
@@ -111,12 +111,26 @@ export default function AddressPicker() {
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
+        console.log("VALUE: ", newValue);
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
+        console.log("INPUTVALUE: ", newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Add a location" fullWidth />
+        <>
+          <TextField {...params} label={label} fullWidth name={name} />
+          <input
+            name="lat"
+            value={coordinates ? coordinates.lat : null}
+            style={{ display: "none" }}
+          ></input>
+          <input
+            name="lng"
+            value={coordinates ? coordinates.lng : null}
+            style={{ display: "none" }}
+          ></input>
+        </>
       )}
       renderOption={(props, option) => {
         const matches =

@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
-import GridCard from "../../../components/GridCard";
-import useData from "../../../hooks/useData";
-import CreateCard from "../../../components/CreateCard";
+import GridCard from "../../components/GridCard";
+import useData from "../../hooks/useData";
+import CreateCard from "../../components/CreateCard";
 
 export default function EventsEP() {
   const [events, isLoadingEvents, handleTrigger] = useData("/events");

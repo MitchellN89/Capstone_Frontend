@@ -1,22 +1,14 @@
+import { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
-import TextValidationError from "./Texts/TextValidationError";
-import { debouncer } from "../utilities/higherOrderFuncs";
-import { useEffect, useState } from "react";
+import { debouncer } from "../../utilities/higherOrderFuncs";
+import TextValidationError from "../Texts/TextValidationError";
 
-export function TextValidationInput({
-  value,
-  onChange,
-  fullWidth,
-  type,
-  id,
-  label,
-  required,
-  notValid,
+export default function TextInput({
+  isValid,
   patterns,
-  handleNotValid,
-  name,
-  disabled,
-  style,
+  handleIsValid,
+  value,
+  ...others
 }) {
   const [invalidList, setInvalidList] = useState(null);
 
@@ -29,8 +21,7 @@ export function TextValidationInput({
     }
   };
 
-  const handleInvalidList = debouncer((str) => {
-    handleNotValid(false);
+  const handleInvalidList = debouncer((str, patterns) => {
     if (patterns && value !== "") {
       setInvalidList(
         patterns
@@ -46,36 +37,30 @@ export function TextValidationInput({
       // updateNotValid(patterns, str);
     } else {
       setInvalidList(null);
-      handleNotValid(false);
     }
   }, 250);
 
   useEffect(() => {
-    handleInvalidList(value);
+    handleInvalidList(value, patterns);
   }, [value, patterns]);
 
   useEffect(() => {
+    if (!handleIsValid) return;
     if (invalidList && invalidList.length > 0) {
-      handleNotValid(true);
+      handleIsValid(false);
     } else {
-      handleNotValid(false);
+      handleIsValid(true);
     }
   }, [invalidList]);
 
   return (
     <div>
       <TextField
-        value={value || ""}
-        onChange={onChange ? onChange : null}
-        fullWidth={fullWidth ? true : false}
-        type={type || "text"}
-        id={id || "inputId"}
-        label={label || "Text Validation Input"}
+        fullWidth
+        {...others}
+        value={value}
         variant="outlined"
-        required={required ? true : false}
-        disabled={disabled}
-        error={notValid ? true : false}
-        name={name}
+        error={!isValid}
       />
       {invalidList}
     </div>

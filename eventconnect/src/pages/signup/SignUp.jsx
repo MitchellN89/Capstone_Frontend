@@ -1,7 +1,7 @@
 import FullScreenContainer from "../../components/FullScreenContainer";
 import BreakpointContainer from "../../components/BreakpointContainer";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
-import LogoHeader from "../../components/LogoHeader";
+import LogoHeader from "../../components/Logos/LogoHeader";
 import { Paper } from "@mui/material";
 import { useTheme } from "@mui/material";
 import { useParams } from "react-router-dom";

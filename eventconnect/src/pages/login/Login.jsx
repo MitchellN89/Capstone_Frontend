@@ -2,7 +2,7 @@ import FullScreenContainer from "../../components/FullScreenContainer";
 import BreakpointContainer from "../../components/BreakpointContainer";
 import LoginUserSelectionTabs from "./Components/LoginUserSelection";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
-import LogoHeader from "../../components/LogoHeader";
+import LogoHeader from "../../components/Logos/LogoHeader";
 import { Paper } from "@mui/material";
 import { useTheme } from "@mui/material";
 
