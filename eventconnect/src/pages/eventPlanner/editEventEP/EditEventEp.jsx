@@ -1,6 +1,6 @@
 import { Grid, Paper } from "@mui/material";
 import { TextValidationInput } from "../../../components/InputComponents";
-import useInputData from "../../../hooks/useInputData";
+import { useInputData } from "../../../hooks/useInputData";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import MaxWidthContainer from "../../../components/MaxWidthContainer";

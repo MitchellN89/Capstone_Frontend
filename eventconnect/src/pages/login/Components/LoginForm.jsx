@@ -5,8 +5,8 @@ import {
   Header2,
   LinkStyled,
 } from "../../../components/TextComponents";
-import { Button, Grid } from "@mui/material";
-import useInputData from "../../../hooks/useInputData";
+import { Grid } from "@mui/material";
+import { useInputData } from "../../../hooks/useInputData";
 
 import { useUser } from "../../../context/UserProvider";
 import NotificationPopup from "../../../components/NotifcationPopup";

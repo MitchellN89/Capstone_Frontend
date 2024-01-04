@@ -14,7 +14,7 @@ import {
   capitaliseAllFirstLetters,
 } from "../../../utilities/stringFormatter";
 import { TextValidationInput } from "../../../components/InputComponents";
-import useInputData from "../../../hooks/useInputData";
+import { useInputData } from "../../../hooks/useInputData";
 import { useState } from "react";
 import { ButtonLoading } from "../../../components/Buttons";
 import { useUser } from "../../../context/UserProvider";
@@ -163,7 +163,7 @@ export default function SignUpForm(userType) {
                   patterns={[
                     {
                       type: "required",
-                      value: /^[a-zA-Z\s]+$/,
+                      value: /^[a-zA-Z\s']+$/,
                       message: "Please use only standard letters and spaces",
                       label: "lettersOnly",
                     },

@@ -3,14 +3,7 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import {
-  FeatureStylize,
-  Header2,
-  LinkStyled,
-} from "../../../components/TextComponents";
-import { Button, Link, TextField, useTheme } from "@mui/material";
-import useInputData from "../../../hooks/useInputData";
-import { Icon } from "@iconify/react";
+import { useTheme } from "@mui/material";
 import LoginForm from "./LoginForm";
 
 function CustomTabPanel(props) {

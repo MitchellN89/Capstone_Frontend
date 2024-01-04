@@ -3,7 +3,7 @@ import {
   ComboBox,
   TextValidationInput,
 } from "../../../components/InputComponents";
-import useInputData from "../../../hooks/useInputData";
+import { useInputData } from "../../../hooks/useInputData";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import MaxWidthContainer from "../../../components/MaxWidthContainer";
@@ -12,7 +12,7 @@ import { ButtonLoading } from "../../../components/Buttons";
 import { apiCall } from "../../../utilities/apiCall";
 import { convertFormDataToObject } from "../../../utilities/formData";
 import { useNavigate } from "react-router-dom";
-import AddressPicker from "../../../components/AddressPicker";
+// import { AddressPicker } from "../../../components/InputComponents";
 
 export default function CreateServiceEP() {
   const [eventNameValue, eventNameProps, notValidEventName, resetEventName] =
@@ -111,7 +111,7 @@ export default function CreateServiceEP() {
                     />
                   </Grid>
                   <Grid item xs={12}>
-                    <AddressPicker></AddressPicker>
+                    {/* <AddressPicker></AddressPicker> */}
                   </Grid>
                   <Grid textAlign="right" item xs={12}>
                     <ButtonLoading
