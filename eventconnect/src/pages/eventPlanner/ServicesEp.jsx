@@ -28,7 +28,9 @@ export default function ServicesEP() {
               ></GridCard>
             );
           })}
-        <CreateCard url={`/eventplanner/${eventId}/createservice`}></CreateCard>
+        <CreateCard url={`/eventplanner/${eventId}/createservice`}>
+          CREATE EVENT SERVICE
+        </CreateCard>
       </Grid>
     </>
   );

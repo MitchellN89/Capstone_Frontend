@@ -1,7 +1,7 @@
 import { Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-export default function CreateCard({ url }) {
+export default function CreateCard({ url, children }) {
   const styles = {
     minHeight: "200px",
     height: "100%",
@@ -21,7 +21,7 @@ export default function CreateCard({ url }) {
       xl={2}
     >
       <Paper style={styles}>
-        <h2>CREATE EVENT</h2>
+        <h2>{children}</h2>
       </Paper>
     </Grid>
   );

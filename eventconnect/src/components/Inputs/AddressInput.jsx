@@ -30,6 +30,8 @@ export default function AddressInput({
   label,
   name,
   coordinates,
+  lat,
+  lng,
 }) {
   const [options, setOptions] = useState([]);
   const loaded = useRef(false);
@@ -53,6 +55,10 @@ export default function AddressInput({
       }, 400),
     []
   );
+
+  useEffect(() => {
+    setInputValue(inputValue);
+  }, [inputValue]);
 
   useEffect(() => {
     let active = true;
@@ -103,35 +109,39 @@ export default function AddressInput({
       }
       filterOptions={(x) => x}
       options={options}
+      inputValue={inputValue}
       autoComplete
       includeInputInList
       filterSelectedOptions
       value={value}
       noOptionsText="No locations"
+      defaultValue="Tester"
       onChange={(event, newValue) => {
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
-        console.log("VALUE: ", newValue);
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
-        console.log("INPUTVALUE: ", newInputValue);
       }}
-      renderInput={(params) => (
-        <>
-          <TextField {...params} label={label} fullWidth name={name} />
-          <input
-            name="lat"
-            value={coordinates ? coordinates.lat : null}
-            style={{ display: "none" }}
-          ></input>
-          <input
-            name="lng"
-            value={coordinates ? coordinates.lng : null}
-            style={{ display: "none" }}
-          ></input>
-        </>
-      )}
+      renderInput={(params) => {
+        return (
+          <>
+            <TextField {...params} label={label} fullWidth name={name} />
+            <input
+              readOnly
+              name="lat"
+              value={coordinates ? coordinates.lat : lat || 0}
+              style={{ display: "none" }}
+            ></input>
+            <input
+              readOnly
+              name="lng"
+              value={coordinates ? coordinates.lng : lng || 0}
+              style={{ display: "none" }}
+            ></input>
+          </>
+        );
+      }}
       renderOption={(props, option) => {
         const matches =
           option.structured_formatting.main_text_matched_substrings || [];

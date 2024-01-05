@@ -1,6 +1,5 @@
 import { Grid, Paper } from "@mui/material";
-import { TextValidationInput } from "../../components/InputComponents";
-import { useAddressInput, useInputData } from "../../hooks/useInputData";
+import TextInput from "../../components/Inputs/TextInput";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
@@ -9,18 +8,59 @@ import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
 import { useNavigate } from "react-router-dom";
+import {
+  useAddressInput,
+  useSelectInput,
+  useTextInput,
+} from "../../hooks/useInputData";
 import AddressInput from "../../components/Inputs/AddressInput";
+import { useEventsEPContext } from "../../context/EventEPProvider";
+import SelectInput from "../../components/Inputs/SelectInput";
 
-export default function CreateServiceEP() {
-  const [eventNameValue, eventNameProps, notValidEventName, resetEventName] =
-    useInputData("");
+export default function CreateEventEP() {
+  const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
+  const { isLoading } = events;
 
-  const [addressValue, addressProps, notValidAddress, resetAddress] =
-    useInputData("");
-
-  const [addressProps1] = useAddressInput("", "Address", "address");
-  const [isLocked, setIsLocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [serviceIdProps, isValidServiceId] = useSelectInput(
+    "",
+    "Service",
+    "serviceId",
+    "text"
+  );
+  const [requestBodyProps, isValidRequestBody] = useTextInput(
+    "",
+    "Request Details",
+    "requestBody",
+    "text"
+  );
+  const [tagsProps, isValidTags] = useTextInput(
+    "",
+    "Tags",
+    "tags",
+    "text",
+    "E.g. 'Kid's' Birthday'"
+  );
+  const [volumesProps, isValidVolumes] = useTextInput(
+    "",
+    "Volumes",
+    "eventName",
+    "text",
+    "Capacity required for service. E.g. amount of people attending"
+  );
+  const [logisticsProps, isValidLogistics] = useTextInput(
+    "",
+    "Logistics",
+    "logistics",
+    "text",
+    "E.g. 'Only available to setup on the previous day'"
+  );
+  const [specialRequirementsProps, isValidSpecialRequirements] = useTextInput(
+    "",
+    "Special Requirements",
+    "specialRequirements",
+    "text",
+    "E.g. 'Vegan only foods'"
+  );
 
   const navigate = useNavigate();
 
@@ -29,12 +69,12 @@ export default function CreateServiceEP() {
       setTimeout(() => {
         res(
           [
-            notValidAddress,
-            notValidEndClientEmailAddress,
-            notValidEndClientFirstName,
-            notValidEndClientLastName,
-            notValidEndClientPhoneNumber,
-            notValidEventName,
+            isValidLogistics,
+            isValidRequestBody,
+            isValidServiceId,
+            isValidSpecialRequirements,
+            isValidTags,
+            isValidVolumes,
           ].every((i) => i)
         );
       }, 250);
@@ -43,31 +83,31 @@ export default function CreateServiceEP() {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-
-    setIsLoading(true);
-
     const isValid = await isValidForm();
-    if (isValid) return;
+    if (!isValid) return;
 
-    const payload = convertFormDataToObject(new FormData(evt.target));
+    const body = convertFormDataToObject(new FormData(evt.target));
+    eventsDispatch({ type: "PROCESSING_REQUEST" });
+    try {
+      const result = await apiCall("/events", "post", body);
+      const { id: eventId } = result.data;
 
-    await apiCall("/events", "post", payload)
-      .then((newEvent) => {
-        const { id: eventId } = newEvent.data;
-        console.log("MARKER: Need success notifications");
-        navigate(`/eventplanner/${eventId}`);
-      })
-      .catch((err) => {
-        console.error(err);
-        console.log("MARKER: Need error notifications");
-      })
-      .finally(() => {
-        setIsLoading(false);
+      eventsDispatch({
+        type: "CREATE_EVENT",
+        payload: result.data,
+        response: result.response,
       });
+
+      navigate(`/eventplanner/${eventId}`, { replace: true });
+    } catch (err) {
+      eventsDispatch({ type: "REQUEST_FAILED", error: err });
+      console.error(err);
+    }
   };
+
   return (
     <>
-      <Header1>CREATE NEW EVENT</Header1>
+      <Header1>Services</Header1>
       <MaxWidthContainer maxWidth="lg" centered>
         <Paper>
           <Box padding={2}>
@@ -75,48 +115,33 @@ export default function CreateServiceEP() {
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <Header2>New Event</Header2>
+                    <Header2>New Service</Header2>
                   </Grid>
                   <Grid item xs={12}>
-                    <TextValidationInput
-                      {...eventNameProps}
-                      fullWidth
-                      label="Event Name"
-                      type="text"
-                      name="eventName"
-                      required
-                      disabled={isLocked || isLoading}
-                      patterns={[
-                        {
-                          type: "required",
-                          value: /^[a-zA-Z0-9,\s'!\-]+$/,
-                          message:
-                            "Please use only standard letters, spaces, numbers, dashes, apostrophes and exclamation marks",
-                          label: "lettersOnly",
-                        },
-                      ]}
-                    />
+                    <SelectInput {...serviceIdProps} required />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextInput multiline rows={10} {...requestBodyProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextInput {...tagsProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextInput {...volumesProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextInput {...logisticsProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextInput {...specialRequirementsProps} />
                   </Grid>
 
-                  <Grid item xs={12}>
-                    <TextValidationInput
-                      {...addressProps}
-                      label="Address"
-                      fullWidth
-                      type="text"
-                      name="address"
-                      disabled={isLocked || isLoading}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    {/* <AddressPicker></AddressPicker> */}
-                  </Grid>
                   <Grid textAlign="right" item xs={12}>
                     <ButtonLoading
                       color="error"
                       type="button"
                       variant="text"
-                      disabled={isLocked || isLoading}
+                      disabled={isLoading}
                       onClick={() => {
                         navigate(-1);
                       }}
@@ -126,13 +151,10 @@ export default function CreateServiceEP() {
                     <ButtonLoading
                       type="submit"
                       isLoading={isLoading}
-                      disabled={isLocked || isLoading}
+                      disabled={isLoading}
                     >
                       Submit
                     </ButtonLoading>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <AddressInput {...addressProps1}></AddressInput>
                   </Grid>
                 </Grid>
               </form>

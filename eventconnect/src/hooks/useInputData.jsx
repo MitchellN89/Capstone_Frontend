@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 
@@ -38,6 +39,7 @@ export function useTextInput(
   label = "Text Input",
   name,
   type = "text",
+  placeholder = "",
   addtionalPatterns,
   overWritePatterns
 ) {
@@ -139,6 +141,7 @@ export function useTextInput(
     handleIsValid,
     patterns,
     type: types[type],
+    placeholder,
   };
 
   return [props, isValid, reset, value, handleManualChange];
@@ -163,6 +166,10 @@ export function useAddressInput(init = "", label = "Address", name) {
   };
 
   useEffect(() => {
+    setInputValue(init);
+  }, [init]);
+
+  useEffect(() => {
     if (value) {
       handleCoordinates(value.description);
     }
@@ -179,4 +186,78 @@ export function useAddressInput(init = "", label = "Address", name) {
   };
 
   return [props, isValid, reset, selectionValue, coordinates];
+}
+
+export function useSelectInput(
+  init = "",
+  label = "Select",
+  name,
+  placeholder = ""
+) {
+  const [value, setValue] = useState(init);
+  const [isValid, setIsValid] = useState(true);
+
+  const handleIsValid = (bool) => {
+    setIsValid(bool);
+  };
+
+  const handleChange = (evt) => {
+    setValue(evt.target.value);
+  };
+
+  const reset = () => {
+    setValue(init);
+  };
+
+  const handleManualChange = (val) => {
+    setValue(val);
+  };
+
+  const props = {
+    label,
+    name,
+    value,
+    onChange: handleChange,
+    isValid,
+    handleIsValid,
+    placeholder,
+  };
+
+  return [props, isValid, reset, value, handleManualChange];
+}
+
+export function useDateTimeInput(
+  init,
+  label = "Date",
+  name,
+  addtionalPatterns,
+  overWritePatterns
+) {
+  console.log("INIT: ", init);
+  const [value, setValue] = useState(init ? dayjs(init) : null);
+  const [isValid, setIsValid] = useState(true);
+
+  const handleValue = (newValue) => {
+    setValue(newValue);
+  };
+
+  const handleIsValid = (bool) => {
+    setIsValid(bool);
+  };
+
+  const reset = () => {
+    setValue(init);
+  };
+
+  const props = {
+    value,
+    onChange: handleValue,
+    handleIsValid,
+    label,
+    name,
+    addtionalPatterns,
+    overWritePatterns,
+  };
+
+  return [props, isValid, reset, value];
 }

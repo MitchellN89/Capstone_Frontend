@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiCall } from "../utilities/apiCall";
 
 const domain = import.meta.env.VITE_BACKEND_DOMAIN;
 
@@ -21,6 +22,7 @@ export default function useData(
 
   useEffect(() => {
     let ignore = false;
+
     const token = localStorage.getItem("key");
     const config = {
       headers: {
@@ -29,12 +31,12 @@ export default function useData(
       body: body,
     };
     setIsLoading(true);
-    axios[method](`${domain}${url}`, config)
+
+    apiCall(url, method, body)
       .then((data) => {
         if (!ignore) {
-          setData(data.data.data);
+          setData(data.data);
         }
-        console.log("internal use only: data retrieved");
       })
       .catch((err) => {
         if (!ignore) {

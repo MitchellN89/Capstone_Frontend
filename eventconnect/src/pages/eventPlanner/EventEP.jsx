@@ -1,35 +1,52 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import useData from "../../hooks/useData";
-import { useState } from "react";
 import { Grid, Typography } from "@mui/material";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
+import { useEventsEPContext } from "../../context/EventEPProvider";
 
 export default function EventEP() {
   let { eventId } = useParams();
-  const [trigger, setTrigger] = useState(true);
-  const url = `/events/${eventId}`;
-  const [event, isLoadingEvent] = useData(url, trigger);
-  console.log("EVENT: ", event);
+  const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
+  console.log("EVENTs: ", events.data);
   const navigate = useNavigate();
+  console.log("EventEP > Context(Events).data: ", events.data);
+  console.log("EventEP > Params(eventId): ", typeof eventId);
+
+  const event = events.data.find((event) => {
+    return event.id == eventId;
+  });
 
   const handleDelete = async () => {
+    eventsDispatch({ type: "PROCESSING_REQUEST" });
     apiCall(`/events/${eventId}`, "delete")
       .then(() => {
         console.log("MARKER: Need deleted notification");
-        navigate("/eventplanner");
+        eventsDispatch({ type: "DELETE_EVENT", id: eventId });
+        navigate("/eventplanner", { replace: true });
       })
       .catch((err) => {
         console.error(err);
+        eventsDispatch({ type: "REQUEST_FAILED", error: err });
       });
   };
 
-  if (!event) return <></>;
+  if (!event)
+    return (
+      <>
+        <h1>Can't find it</h1>
+      </>
+    );
   return (
     <>
       <Header1>{event.eventName}</Header1>
-
+      <button
+        onClick={() => {
+          navigate("/eventPlanner");
+        }}
+      >
+        Go Back
+      </button>
       <Paper>
         <Box padding={2}>
           <Grid container spacing={5} padding={2}>
@@ -51,9 +68,7 @@ export default function EventEP() {
           </Grid>
           <button
             onClick={() => {
-              navigate(`/eventplanner/${eventId}/editevent`, {
-                state: event,
-              });
+              navigate(`/eventplanner/${eventId}/editevent`);
             }}
           >
             EDIT EVENT

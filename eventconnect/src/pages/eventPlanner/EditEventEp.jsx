@@ -1,6 +1,7 @@
 import { Grid, Paper } from "@mui/material";
-import { useTextInput } from "../../hooks/useInputData";
+import { useTextInput, useDateTimeInput } from "../../hooks/useInputData";
 import TextInput from "../../components/Inputs/TextInput";
+import DateTimeInput from "../../components/Inputs/DateTimeInput";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
@@ -8,32 +9,49 @@ import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import useData from "../../hooks/useData";
+import { useEventsEPContext } from "../../context/EventEPProvider";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function EditEventEP() {
   const { eventId } = useParams();
-  const location = useLocation();
-  const event = location.state || useData(`/events/${eventId}[0]`);
+  const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
+  const { isLoading } = events;
+  const event = events.data.find((event) => eventId == event.id);
   const navigate = useNavigate();
+
+  if (!event) navigate(`/eventplanner/${eventId}`);
+  // TODO - notification here
 
   const [eventNameProps, isValidEventName] = useTextInput(
     event.eventName,
     "Event Name",
     "eventName",
-    "name"
-  );
-  const [addressProps, isValidAddress] = useTextInput(
-    event.address,
-    "Address",
-    "address",
     "text"
   );
+
+  const [startDateTimeProps, isValidStartDateTime] = useDateTimeInput(
+    event.startDate,
+    "Start Date/Time",
+    "startDateTime"
+  );
+
+  const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
+    event.endDate,
+    "Start Date/Time",
+    "startDateTime"
+  );
+
   const [endClientFirstNameProps, isValidEndClientFirstName] = useTextInput(
     event.endClientFirstName,
     "Client First Name",
     "endClientFirstName",
     "name"
+  );
+  const [venueProps, isValidVenue] = useTextInput(
+    event.venue,
+    "Venue",
+    "venue",
+    "text"
   );
   const [endClientLastNameProps, isValidEndClientLastName] = useTextInput(
     event.endClientLastName,
@@ -55,15 +73,13 @@ export default function EditEventEP() {
     "phoneNumber"
   );
 
-  const [isLocked, setIsLocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
   const isValidForm = () => {
     return new Promise((res) => {
       setTimeout(() => {
         res(
           [
-            isValidAddress,
+            // isValidAddress,
+            isValidVenue,
             isValidEndClientEmailAddress,
             isValidEndClientFirstName,
             isValidEndClientLastName,
@@ -81,26 +97,31 @@ export default function EditEventEP() {
     const isValid = await isValidForm();
     if (!isValid) return;
 
-    setIsLoading(true);
-    const payload = convertFormDataToObject(new FormData(evt.target));
+    const body = convertFormDataToObject(new FormData(evt.target));
+    console.log("87: Running");
+    eventsDispatch({ type: "PROCESSING_REQUEST" });
 
-    await apiCall(`/events/${eventId}`, "put", payload)
-      .then((data) => {
-        console.log("CREATED EVENT SUCESS: ", data);
+    apiCall(`/events/${eventId}`, "put", body)
+      .then((result) => {
+        console.log(result);
+        eventsDispatch({
+          type: "UPDATE_EVENT",
+          payload: body,
+          id: eventId,
+          response: result.response,
+        });
         console.log("MARKER: Need success notifications");
-        navigate(`/eventplanner/${eventId}`);
+        navigate(`/eventplanner/${eventId}`, { replace: true });
       })
       .catch((err) => {
         console.error(err);
+        eventsDispatch({ type: "REQUEST_FAILED", error: err });
         console.log("MARKER: Need error notifications");
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   };
   return (
     <>
-      <Header1>CREATE NEW EVENT</Header1>
+      <Header1>EDIT EVENT</Header1>
       <MaxWidthContainer maxWidth="lg" centered>
         <Paper>
           <Box padding={2}>
@@ -113,9 +134,14 @@ export default function EditEventEP() {
                   <Grid item xs={12}>
                     <TextInput {...eventNameProps} />
                   </Grid>
-
                   <Grid item xs={12}>
-                    <TextInput {...addressProps} />
+                    <TextInput {...venueProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <DateTimeInput {...startDateTimeProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <DateTimeInput {...endDateTimeProps} />
                   </Grid>
                   <Grid item xs={12}>
                     <TextInput {...endClientFirstNameProps} />
@@ -134,7 +160,7 @@ export default function EditEventEP() {
                       color="error"
                       type="button"
                       variant="text"
-                      disabled={isLocked || isLoading}
+                      disabled={isLoading}
                       onClick={() => {
                         navigate(-1);
                       }}
@@ -144,7 +170,7 @@ export default function EditEventEP() {
                     <ButtonLoading
                       type="submit"
                       isLoading={isLoading}
-                      disabled={isLocked || isLoading}
+                      disabled={isLoading}
                     >
                       Update Event
                     </ButtonLoading>

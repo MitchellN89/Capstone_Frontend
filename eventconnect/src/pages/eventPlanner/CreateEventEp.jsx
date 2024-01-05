@@ -8,11 +8,18 @@ import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
 import { useNavigate } from "react-router-dom";
-import { useTextInput } from "../../hooks/useInputData";
+import {
+  useAddressInput,
+  useTextInput,
+  useDateTimeInput,
+} from "../../hooks/useInputData";
+import AddressInput from "../../components/Inputs/AddressInput";
+import { useEventsEPContext } from "../../context/EventEPProvider";
+import DateTimeInput from "../../components/Inputs/DateTimeInput";
 
 export default function CreateEventEP() {
-  const [isLocked, setIsLocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
+  const { isLoading } = events;
 
   const [eventNameProps, isValidEventName] = useTextInput(
     "",
@@ -20,18 +27,25 @@ export default function CreateEventEP() {
     "eventName",
     "text"
   );
-  const [addressProps, isValidAddress] = useTextInput(
-    "",
-    "Address",
-    "address",
-    "text"
+  const [startDateTimeProps, isValidStartDateTime] = useDateTimeInput(
+    undefined,
+    "Start Date/Time",
+    "startDateTime"
   );
+
+  const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
+    undefined,
+    "Start Date/Time",
+    "startDateTime"
+  );
+
   const [endClientFirstNameProps, isValidEndClientFirstName] = useTextInput(
     "",
     "Client First Name",
     "endClientFirstName",
     "name"
   );
+  const [venueProps, isValidVenue] = useTextInput("", "Venue", "venue", "text");
   const [endClientLastNameProps, isValidEndClientLastName] = useTextInput(
     "",
     "Client Last Name",
@@ -58,7 +72,8 @@ export default function CreateEventEP() {
       setTimeout(() => {
         res(
           [
-            isValidAddress,
+            // isValidAddress,
+            isValidVenue,
             isValidEndClientEmailAddress,
             isValidEndClientFirstName,
             isValidEndClientLastName,
@@ -75,22 +90,23 @@ export default function CreateEventEP() {
     const isValid = await isValidForm();
     if (!isValid) return;
 
-    setIsLoading(true);
-    const payload = convertFormDataToObject(new FormData(evt.target));
+    const body = convertFormDataToObject(new FormData(evt.target));
+    eventsDispatch({ type: "PROCESSING_REQUEST" });
+    try {
+      const result = await apiCall("/events", "post", body);
+      const { id: eventId } = result.data;
 
-    await apiCall("/events", "post", payload)
-      .then((newEvent) => {
-        const { id: eventId } = newEvent.data;
-        console.log("MARKER: Need success notifications");
-        navigate(`/eventplanner/${eventId}`);
-      })
-      .catch((err) => {
-        console.error(err);
-        console.log("MARKER: Need error notifications");
-      })
-      .finally(() => {
-        setIsLoading(false);
+      eventsDispatch({
+        type: "CREATE_EVENT",
+        payload: result.data,
+        response: result.response,
       });
+
+      navigate(`/eventplanner/${eventId}`, { replace: true });
+    } catch (err) {
+      eventsDispatch({ type: "REQUEST_FAILED", error: err });
+      console.error(err);
+    }
   };
 
   return (
@@ -108,9 +124,14 @@ export default function CreateEventEP() {
                   <Grid item xs={12}>
                     <TextInput {...eventNameProps} required />
                   </Grid>
-
                   <Grid item xs={12}>
-                    <TextInput {...addressProps} />
+                    <TextInput {...venueProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <DateTimeInput {...startDateTimeProps} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <DateTimeInput {...endDateTimeProps} />
                   </Grid>
                   <Grid item xs={12}>
                     <TextInput {...endClientFirstNameProps} />
@@ -129,7 +150,7 @@ export default function CreateEventEP() {
                       color="error"
                       type="button"
                       variant="text"
-                      disabled={isLocked || isLoading}
+                      disabled={isLoading}
                       onClick={() => {
                         navigate(-1);
                       }}
@@ -139,7 +160,7 @@ export default function CreateEventEP() {
                     <ButtonLoading
                       type="submit"
                       isLoading={isLoading}
-                      disabled={isLocked || isLoading}
+                      disabled={isLoading}
                     >
                       Submit
                     </ButtonLoading>

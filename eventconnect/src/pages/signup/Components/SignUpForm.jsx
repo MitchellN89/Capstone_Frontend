@@ -109,7 +109,7 @@ export default function SignUpForm(userType) {
         });
 
         timer = setTimeout(() => {
-          navigate(`/auth`);
+          navigate(`/auth`, { replace: true });
         }, 2000);
         break;
       case 409:
@@ -118,7 +118,7 @@ export default function SignUpForm(userType) {
           severity: "warning",
         });
         timer = setTimeout(() => {
-          navigate(`/auth`);
+          navigate(`/auth`, { replace: true });
         }, 2000);
         break;
       default:

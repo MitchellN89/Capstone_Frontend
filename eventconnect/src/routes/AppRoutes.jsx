@@ -17,29 +17,30 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="*" element={<RedirectRoute />} />
-      <Route path="/" element={<EventConnect />}>
-        <Route path="/auth" element={<Auth />}>
-          <Route index element={<Login />} />
-          <Route path="signup/:type" element={<SignUp />} />
-        </Route>
+      {/* <Route path="/" element={<RedirectRoute />} /> */}
 
-        <Route
-          path="/eventplanner/*"
-          element={
-            <ProtectedRoute userType="eventPlanner">
-              <EventPlannerRoutes />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/vendor"
-          element={
-            <ProtectedRoute userType="vendor">
-              <VendorRoutes />
-            </ProtectedRoute>
-          }
-        />
+      <Route path="/auth" element={<Auth />}>
+        <Route index element={<Login />} />
+        <Route path="signup/:type" element={<SignUp />} />
       </Route>
+
+      <Route
+        path="/eventplanner/*"
+        element={
+          <ProtectedRoute userType="eventPlanner">
+            <EventPlannerRoutes />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/vendor"
+        element={
+          <ProtectedRoute userType="vendor">
+            <VendorRoutes />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
