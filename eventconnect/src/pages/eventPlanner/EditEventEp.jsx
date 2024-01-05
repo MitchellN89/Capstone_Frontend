@@ -30,15 +30,15 @@ export default function EditEventEP() {
   );
 
   const [startDateTimeProps, isValidStartDateTime] = useDateTimeInput(
-    event.startDate,
+    event.startDateTime,
     "Start Date/Time",
     "startDateTime"
   );
 
   const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
-    event.endDate,
-    "Start Date/Time",
-    "startDateTime"
+    event.endDateTime,
+    "End Date/Time",
+    "endDateTime"
   );
 
   const [endClientFirstNameProps, isValidEndClientFirstName] = useTextInput(

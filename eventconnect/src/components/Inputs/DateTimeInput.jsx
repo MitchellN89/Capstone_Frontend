@@ -17,7 +17,7 @@ export default function DateTimeInput({
       <DemoContainer
         components={["DateTimeField", "DateTimeField", "DateTimeField"]}
       >
-        <DateTimeField format="DD/MM/YY hh:mm a" {...others} />
+        <DateTimeField format="DD MMMM YYYY hh:mm a" {...others} />
       </DemoContainer>
     </LocalizationProvider>
   );

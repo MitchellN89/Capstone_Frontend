@@ -6,7 +6,10 @@ import MaxWidthContainer from "../../components/MaxWidthContainer";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
-import { convertFormDataToObject } from "../../utilities/formData";
+import {
+  convertDatesToValid,
+  convertFormDataToObject,
+} from "../../utilities/formData";
 import { useNavigate } from "react-router-dom";
 import {
   useAddressInput,
@@ -35,8 +38,8 @@ export default function CreateEventEP() {
 
   const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
     undefined,
-    "Start Date/Time",
-    "startDateTime"
+    "End Date/Time",
+    "endDateTime"
   );
 
   const [endClientFirstNameProps, isValidEndClientFirstName] = useTextInput(
@@ -78,6 +81,8 @@ export default function CreateEventEP() {
             isValidEndClientFirstName,
             isValidEndClientLastName,
             isValidEndClientPhoneNumber,
+            isValidEndDateTime,
+            isValidStartDateTime,
             isValidEventName,
           ].every((i) => i)
         );
@@ -90,7 +95,13 @@ export default function CreateEventEP() {
     const isValid = await isValidForm();
     if (!isValid) return;
 
-    const body = convertFormDataToObject(new FormData(evt.target));
+    let body = convertFormDataToObject(new FormData(evt.target));
+    body = convertDatesToValid(
+      body,
+      "Date",
+      "DD MMMM YYYY hh:mm a",
+      "YYYY/MM/DD HH:mm"
+    );
     eventsDispatch({ type: "PROCESSING_REQUEST" });
     try {
       const result = await apiCall("/events", "post", body);
