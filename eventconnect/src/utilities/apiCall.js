@@ -3,7 +3,7 @@ import axios from "axios";
 const domain = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export async function apiCall(url, method = "get", body, useToken = true) {
-  const token = localStorage.getItem("key");
+  const token = sessionStorage.getItem("key");
 
   const headers = {
     Authorization: useToken ? `Bearer ${token}` : "",

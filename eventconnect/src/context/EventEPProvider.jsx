@@ -5,16 +5,11 @@ import {
   useReducer,
   useEffect,
 } from "react";
-import axios from "axios";
 import { apiCall } from "../utilities/apiCall";
 const EventEPContext = createContext();
 
 const reducer = (state, action) => {
   const { type, payload, error, response, id } = action;
-  console.log("TYPE", type);
-  console.log("PAYLOAD", payload);
-  console.log("ERROR", error);
-  console.log("RESPONSE", response);
 
   switch (type) {
     case "PROCESSING_REQUEST":
@@ -25,6 +20,7 @@ const reducer = (state, action) => {
         ...state,
         isLoading: false,
         error: error,
+        response: null,
       };
     case "GET_EVENTS":
       return {
@@ -34,16 +30,9 @@ const reducer = (state, action) => {
         error: null,
         response: response,
       };
-    case "GET_EVENT":
-      return {
-        ...state /* Function here */,
-        isLoading: false,
-        error: null,
-        response: response,
-      };
     case "CREATE_EVENT":
       return {
-        ...state /* Function here */,
+        ...state,
         data: appendNewEvent(state, payload),
         isLoading: false,
         error: null,
@@ -82,7 +71,7 @@ const updateEvent = (state, id, updatedEvent) => {
   const log = data.map((event) =>
     event.id == id ? { ...event, ...updatedEvent } : event
   );
-  console.log(id, updatedEvent, log);
+
   return log;
 };
 
@@ -115,7 +104,10 @@ export function EventEPProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log("Use effect running");
+    console.log("EventEPProvider.jsx > ContextState: ", state);
+  }, [state]);
+
+  useEffect(() => {
     let ignore = false;
     let queryString = "";
     if (Object.keys(queryParams).length) {
@@ -152,7 +144,6 @@ export function EventEPProvider({ children }) {
 
     return () => {
       ignore = true;
-      console.log("Component unmounted");
     };
   }, [queryParams]);
 

@@ -12,6 +12,10 @@ import CreateEventEP from "../pages/eventPlanner/CreateEventEp";
 import EditEventEP from "../pages/eventPlanner/EditEventEp";
 import ServicesEP from "../pages/eventPlanner/ServicesEp";
 import CreateServiceEP from "../pages/eventPlanner/CreateServiceEP";
+import ServiceEP from "../pages/eventPlanner/ServiceEP";
+import EditServiceEP from "../pages/eventPlanner/EditServiceEP";
+import Vendor from "../pages/vendor/Vendor";
+import ServiceRequestsV from "../pages/vendor/ServiceRequestsV";
 
 export default function AppRoutes() {
   return (
@@ -34,7 +38,7 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/vendor"
+        path="/vendor/*"
         element={
           <ProtectedRoute userType="vendor">
             <VendorRoutes />
@@ -70,16 +74,11 @@ function EventPlannerRoutes() {
         <Route path=":eventId" element={<EventEP />}>
           <Route index element={<ServicesEP />} />
           <Route path="createService" element={<CreateServiceEP />} />
-          <Route path=":serviceId/editService" element={<h2>SERVICE EP</h2>} />
           <Route
-            path=":serviceId"
-            element={
-              <>
-                <h2>SERVICE EP</h2>
-                <Outlet />
-              </>
-            }
-          >
+            path=":eventServiceId/editService"
+            element={<EditServiceEP />}
+          />
+          <Route path=":eventServiceId" element={<ServiceEP />}>
             <Route index element={<h3>CONNECTIONS EP</h3>} />
             <Route path=":connectionId" element={<h3>CONNECTION EP</h3>} />
           </Route>
@@ -92,7 +91,9 @@ function EventPlannerRoutes() {
 function VendorRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<h1>Vendor Dashboard</h1>} />
+      <Route path="/" element={<Vendor />}>
+        <Route index element={<ServiceRequestsV />} />
+      </Route>
     </Routes>
   );
 }

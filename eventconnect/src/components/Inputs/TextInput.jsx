@@ -18,6 +18,8 @@ export default function TextInput({
         return pattern.value.test(str);
       case "match":
         return pattern.value === str;
+      case "notInclude":
+        return !pattern.value.includes(str);
     }
   };
 

@@ -8,10 +8,8 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 export default function EventEP() {
   let { eventId } = useParams();
   const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
-  console.log("EVENTs: ", events.data);
+
   const navigate = useNavigate();
-  console.log("EventEP > Context(Events).data: ", events.data);
-  console.log("EventEP > Params(eventId): ", typeof eventId);
 
   const event = events.data.find((event) => {
     return event.id == eventId;
@@ -21,7 +19,6 @@ export default function EventEP() {
     eventsDispatch({ type: "PROCESSING_REQUEST" });
     apiCall(`/events/${eventId}`, "delete")
       .then(() => {
-        console.log("MARKER: Need deleted notification");
         eventsDispatch({ type: "DELETE_EVENT", id: eventId });
         navigate("/eventplanner", { replace: true });
       })
@@ -51,19 +48,15 @@ export default function EventEP() {
         <Box padding={2}>
           <Grid container spacing={5} padding={2}>
             <Grid item xs={12} lg={5}>
-              <Header2>{event.eventName}</Header2>
+              <Header2>{event.eventName || ""}</Header2>
               <Typography>
                 <b>Client:</b>{" "}
-                {`${event.endClientFirstName} ${event.endClientLastName}`}
+                {`${event.endClientFirstName || ""} ${
+                  event.endClientLastName || ""
+                }`}
               </Typography>
-              <Typography>{event.endClientEmailAddress}</Typography>
-              <Typography>{event.endClientPhoneNumber}</Typography>
-            </Grid>
-            <Grid item xs={12} lg={7}>
-              <h1>{event.eventName}</h1>
-              <h2>{`${event.endClientFirstName} ${event.endClientLastName}`}</h2>
-              <h3>{event.endClientEmailAddress}</h3>
-              <h3>{event.endClientPhoneNumber}</h3>
+              <Typography>{event.endClientEmailAddress || ""}</Typography>
+              <Typography>{event.endClientPhoneNumber || ""}</Typography>
             </Grid>
           </Grid>
           <button

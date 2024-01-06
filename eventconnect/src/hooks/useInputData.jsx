@@ -129,7 +129,6 @@ export function useTextInput(
         setPatterns((cur) => [...cur, ...addtionalPatterns]);
       }
     }
-    console.log(patterns);
   }, [addtionalPatterns]);
 
   const props = {
@@ -233,7 +232,6 @@ export function useDateTimeInput(
   addtionalPatterns,
   overWritePatterns
 ) {
-  console.log("INIT: ", init);
   const [value, setValue] = useState(init ? dayjs(init) : null);
   const [isValid, setIsValid] = useState(true);
 

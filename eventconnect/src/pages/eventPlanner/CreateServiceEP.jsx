@@ -1,25 +1,24 @@
 import { Grid, Paper } from "@mui/material";
 import TextInput from "../../components/Inputs/TextInput";
-import { useState } from "react";
 import { Box } from "@mui/system";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
-import { useNavigate } from "react-router-dom";
-import {
-  useAddressInput,
-  useSelectInput,
-  useTextInput,
-} from "../../hooks/useInputData";
-import AddressInput from "../../components/Inputs/AddressInput";
-import { useEventsEPContext } from "../../context/EventEPProvider";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelectInput, useTextInput } from "../../hooks/useInputData";
+import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import SelectInput from "../../components/Inputs/SelectInput";
 
-export default function CreateEventEP() {
-  const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
-  const { isLoading } = events;
+export default function CreateServiceEP() {
+  const { state: services, dispatch: servicesDispatch } =
+    useServicesEPContext();
+  const { isLoading } = services;
+  const { eventId } = useParams();
+  const eventServices = services.eventServices.filter(
+    (eventService) => eventService.eventId == eventId
+  );
 
   const [serviceIdProps, isValidServiceId] = useSelectInput(
     "",
@@ -43,7 +42,7 @@ export default function CreateEventEP() {
   const [volumesProps, isValidVolumes] = useTextInput(
     "",
     "Volumes",
-    "eventName",
+    "volumes",
     "text",
     "Capacity required for service. E.g. amount of people attending"
   );
@@ -63,6 +62,12 @@ export default function CreateEventEP() {
   );
 
   const navigate = useNavigate();
+
+  const options = services.services.filter((service) => {
+    return !eventServices.some(
+      (eventService) => eventService.serviceId == service.id
+    );
+  });
 
   const isValidForm = () => {
     return new Promise((res) => {
@@ -87,27 +92,28 @@ export default function CreateEventEP() {
     if (!isValid) return;
 
     const body = convertFormDataToObject(new FormData(evt.target));
-    eventsDispatch({ type: "PROCESSING_REQUEST" });
-    try {
-      const result = await apiCall("/events", "post", body);
-      const { id: eventId } = result.data;
+    servicesDispatch({ type: "PROCESSING_REQUEST" });
 
-      eventsDispatch({
-        type: "CREATE_EVENT",
+    try {
+      const result = await apiCall(`/events/${eventId}/services`, "post", body);
+      const { id: eventServiceId } = result.data;
+
+      servicesDispatch({
+        type: "CREATE_EVENT_SERVICE",
         payload: result.data,
         response: result.response,
       });
 
-      navigate(`/eventplanner/${eventId}`, { replace: true });
+      navigate(`/eventplanner/${eventId}/${eventServiceId}`, { replace: true });
     } catch (err) {
-      eventsDispatch({ type: "REQUEST_FAILED", error: err });
+      servicesDispatch({ type: "REQUEST_FAILED", error: err });
       console.error(err);
     }
   };
 
   return (
     <>
-      <Header1>Services</Header1>
+      <Header1>Services &gt; New</Header1>
       <MaxWidthContainer maxWidth="lg" centered>
         <Paper>
           <Box padding={2}>
@@ -118,10 +124,14 @@ export default function CreateEventEP() {
                     <Header2>New Service</Header2>
                   </Grid>
                   <Grid item xs={12}>
-                    <SelectInput {...serviceIdProps} required />
+                    <SelectInput
+                      {...serviceIdProps}
+                      options={options}
+                      required
+                    />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextInput multiline rows={10} {...requestBodyProps} />
+                    <TextInput multiline {...requestBodyProps} />
                   </Grid>
                   <Grid item xs={12}>
                     <TextInput {...tagsProps} />
@@ -133,7 +143,7 @@ export default function CreateEventEP() {
                     <TextInput {...logisticsProps} />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextInput {...specialRequirementsProps} />
+                    <TextInput multiline {...specialRequirementsProps} />
                   </Grid>
 
                   <Grid textAlign="right" item xs={12}>

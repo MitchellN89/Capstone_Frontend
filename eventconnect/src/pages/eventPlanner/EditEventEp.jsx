@@ -23,51 +23,51 @@ export default function EditEventEP() {
   // TODO - notification here
 
   const [eventNameProps, isValidEventName] = useTextInput(
-    event.eventName,
+    event.eventName || "",
     "Event Name",
     "eventName",
     "text"
   );
 
   const [startDateTimeProps, isValidStartDateTime] = useDateTimeInput(
-    event.startDateTime,
+    event.startDateTime || "",
     "Start Date/Time",
     "startDateTime"
   );
 
   const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
-    event.endDateTime,
+    event.endDateTime || "",
     "End Date/Time",
     "endDateTime"
   );
 
   const [endClientFirstNameProps, isValidEndClientFirstName] = useTextInput(
-    event.endClientFirstName,
+    event.endClientFirstName || "",
     "Client First Name",
     "endClientFirstName",
     "name"
   );
   const [venueProps, isValidVenue] = useTextInput(
-    event.venue,
+    event.venue || "",
     "Venue",
     "venue",
     "text"
   );
   const [endClientLastNameProps, isValidEndClientLastName] = useTextInput(
-    event.endClientLastName,
+    event.endClientLastName || "",
     "Client Last Name",
     "endClientLastName",
     "name"
   );
   const [endClientEmailAddressProps, isValidEndClientEmailAddress] =
     useTextInput(
-      event.endClientEmailAddress,
+      event.endClientEmailAddress || "",
       "Client Email Address",
       "endClientEmailAddress",
       "emailAddress"
     );
   const [endClientPhoneNumberProps, isValidEndClientPhoneNumber] = useTextInput(
-    event.endClientPhoneNumber,
+    event.endClientPhoneNumber || "",
     "Client Phone Number",
     "endClientPhoneNumber",
     "phoneNumber"
@@ -98,25 +98,23 @@ export default function EditEventEP() {
     if (!isValid) return;
 
     const body = convertFormDataToObject(new FormData(evt.target));
-    console.log("87: Running");
+
     eventsDispatch({ type: "PROCESSING_REQUEST" });
 
     apiCall(`/events/${eventId}`, "put", body)
       .then((result) => {
-        console.log(result);
         eventsDispatch({
           type: "UPDATE_EVENT",
           payload: body,
           id: eventId,
           response: result.response,
         });
-        console.log("MARKER: Need success notifications");
+
         navigate(`/eventplanner/${eventId}`, { replace: true });
       })
       .catch((err) => {
         console.error(err);
         eventsDispatch({ type: "REQUEST_FAILED", error: err });
-        console.log("MARKER: Need error notifications");
       });
   };
   return (

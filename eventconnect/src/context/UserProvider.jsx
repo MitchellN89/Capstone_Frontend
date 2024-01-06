@@ -1,11 +1,10 @@
 import { createContext, useContext, useState, useReducer } from "react";
 import axios from "axios";
+import { useEffect } from "react";
 const UserContext = createContext();
 
 const userReducer = (state, action) => {
   switch (action.type) {
-    case "ADD_EVENT":
-      return {};
     case "LOGIN_USER":
       return action.payload;
     default:
@@ -16,17 +15,6 @@ const userReducer = (state, action) => {
 export function UserProvider({ children }) {
   const [user, dispatch] = useReducer(userReducer, {});
   const [isLoading, setIsLoading] = useState(false);
-  const [theme, setTheme] = useState("light");
-
-  const handleThemeChange = () => {
-    setTheme((st) => {
-      if (st === "light") {
-        return "dark";
-      } else {
-        return "light";
-      }
-    });
-  };
 
   const signUpUser = async (
     firstName,
@@ -53,6 +41,7 @@ export function UserProvider({ children }) {
           accountType,
         }
       );
+
       const { response } = dbResponse.data;
       const { status } = dbResponse;
       return { status, response };
@@ -76,6 +65,7 @@ export function UserProvider({ children }) {
     accountType
   ) => {
     try {
+      console.log("UserProvider > loginUserWithCredentials: ", accountType);
       setIsLoading(true);
       const dbResponse = await axios.post(
         "http://localhost:8080/auth/loginwithcredentials",
@@ -89,7 +79,7 @@ export function UserProvider({ children }) {
       const { status } = dbResponse;
 
       dispatch({ type: "LOGIN_USER", payload: data });
-      localStorage.setItem("key", token);
+      sessionStorage.setItem("key", token);
 
       return { status, response };
     } catch (err) {
@@ -105,6 +95,10 @@ export function UserProvider({ children }) {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log("USER: ", user);
+  }, [user]);
 
   const provide = {
     user,

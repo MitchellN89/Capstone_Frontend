@@ -6,6 +6,7 @@ import Overlay from "../../components/Overlay";
 import Modal from "../../components/ModalContainer";
 import ModalContainer from "../../components/ModalContainer";
 import { EventEPProvider } from "../../context/EventEPProvider";
+import { ServicesEPProvider } from "../../context/EventServiceEPProvider";
 
 export default function EventPlanner() {
   return (
@@ -16,9 +17,11 @@ export default function EventPlanner() {
         <h1>Test</h1>
       </ModalContainer> */}
       <EventEPProvider>
-        <Container maxWidth="xl">
-          <Outlet />
-        </Container>
+        <ServicesEPProvider>
+          <Container maxWidth="xl">
+            <Outlet />
+          </Container>
+        </ServicesEPProvider>
       </EventEPProvider>
     </>
   );

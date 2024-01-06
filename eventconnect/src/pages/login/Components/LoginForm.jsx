@@ -33,6 +33,7 @@ export default function LoginForm({ userType }) {
 
   useEffect(() => {
     // remove user from context
+    let timer;
     return () => {
       if (timer) {
         clearTimeout(timer);
@@ -43,6 +44,7 @@ export default function LoginForm({ userType }) {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     setIsLocked(true);
+    console.log("LOGIN PROCESS > userType - Passed in as props: ", userType);
     const result = await loginUserWithCredentials(
       emailValue,
       passwordValue,
@@ -54,7 +56,7 @@ export default function LoginForm({ userType }) {
         handleNotificationOptions({
           message: result.response,
         });
-
+        console.log("LOGIN PROCESS > LOGGING IN AS: ", userType);
         timer = setTimeout(() => {
           navigate(`/${userType}`, { replace: true });
         }, 2000);
