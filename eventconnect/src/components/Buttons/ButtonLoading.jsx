@@ -3,22 +3,29 @@ import { Button } from "@mui/material";
 
 export default function ButtonLoading({
   isLoading,
+  disabled,
+  label,
   labelWhenLoading,
-  children,
+  icon,
   variant,
+  variantWhenLoading,
   ...others
 }) {
   return (
     <Button
-      variant={isLoading ? "outlined" : variant || "contained"}
+      variant={
+        isLoading ? variantWhenLoading || "contained" : variant || "contained"
+      }
+      disabled={disabled || isLoading}
       {...others}
     >
+      {isLoading ? labelWhenLoading || "Submitting " : label || "Submit"}
       {isLoading ? (
         <>
-          {labelWhenLoading || "Loading"} <IconLoading />
+          <IconLoading />
         </>
       ) : (
-        <>{children}</>
+        icon || ""
       )}
     </Button>
   );

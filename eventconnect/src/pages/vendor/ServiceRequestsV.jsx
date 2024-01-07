@@ -17,8 +17,8 @@ export default function ServiceRequestsV() {
 
   useEffect(() => {
     let ignore = false;
-    let queryString = "";
 
+    let queryString = "";
     if (Object.keys(queryParams).length) {
       queryString += "?";
 
@@ -44,8 +44,13 @@ export default function ServiceRequestsV() {
         }
       });
 
+    let timer = setTimeout(() => {
+      setTrigger((curState) => !curState);
+    }, 5000);
+
     return () => {
       ignore = true;
+      clearTimeout(timer);
     };
   }, [queryParams, trigger]);
 
@@ -53,24 +58,22 @@ export default function ServiceRequestsV() {
     console.log(requests);
   }, [requests]);
 
-  useEffect(() => {
-    let timer;
-    timer = setInterval(() => {
-      setTrigger((curState) => !curState);
-    }, 60000 * 5);
-    return () => {
-      clearTimeout(timer);
-    };
-  });
-
-  const handleDelete = () => {};
-  const handleClick = () => {};
+  const handleClick = (id) => {
+    navigate(`/vendor/${id}`);
+  };
 
   return (
     // TODO Need title
     // TODO need serach criteria
     <>
       {/* <button onClick={handleTrigger}>refresh</button> */}
+      <button
+        onClick={() => {
+          setTrigger((curState) => !curState);
+        }}
+      >
+        REFRESH
+      </button>
       <h1>Service Requests</h1>
 
       <Grid container spacing={3}>
@@ -79,7 +82,6 @@ export default function ServiceRequestsV() {
           requests.map((request) => {
             return (
               <GridCard
-                handleDelete={handleDelete}
                 handleClick={handleClick}
                 id={request.id}
                 key={request.id}

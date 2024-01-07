@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-
 import Login from "../pages/login/Login";
 import SignUp from "../pages/signup/SignUp";
 import Auth from "../pages/auth/Auth";
@@ -16,6 +15,8 @@ import ServiceEP from "../pages/eventPlanner/ServiceEP";
 import EditServiceEP from "../pages/eventPlanner/EditServiceEP";
 import Vendor from "../pages/vendor/Vendor";
 import ServiceRequestsV from "../pages/vendor/ServiceRequestsV";
+import ServiceRequestV from "../pages/vendor/ServiceRequestV";
+import ServiceConnectionsEP from "../pages/eventPlanner/ServiceConnectionsEP";
 
 export default function AppRoutes() {
   return (
@@ -79,7 +80,7 @@ function EventPlannerRoutes() {
             element={<EditServiceEP />}
           />
           <Route path=":eventServiceId" element={<ServiceEP />}>
-            <Route index element={<h3>CONNECTIONS EP</h3>} />
+            <Route index element={<ServiceConnectionsEP />} />
             <Route path=":connectionId" element={<h3>CONNECTION EP</h3>} />
           </Route>
         </Route>
@@ -93,6 +94,7 @@ function VendorRoutes() {
     <Routes>
       <Route path="/" element={<Vendor />}>
         <Route index element={<ServiceRequestsV />} />
+        <Route path=":serviceRequestId" element={<ServiceRequestV />} />
       </Route>
     </Routes>
   );
