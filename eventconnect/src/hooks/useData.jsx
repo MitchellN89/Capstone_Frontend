@@ -1,58 +1,66 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { apiCall } from "../utilities/apiCall";
 
-const domain = import.meta.env.VITE_BACKEND_DOMAIN;
-
-export default function useData(
-  url,
-  body = {},
-  method = "get",
-  useAuthentication = true
-) {
+export default function useData(urlStr, queryParams, handleError, repeatTime) {
   const [data, setData] = useState(null);
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [trigger, setTrigger] = useState(true);
 
+  // const counter = useRef(0);
+
   const handleTrigger = () => {
-    setTrigger((cur) => !cur);
+    setTrigger((curState) => !curState);
   };
 
   useEffect(() => {
+    // counter.current += 1;
+    // console.log(counter.current);
     let ignore = false;
+    let timer;
 
-    const token = localStorage.getItem("key");
-    const config = {
-      headers: {
-        Authorization: useAuthentication ? `Bearer ${token}` : "",
-      },
-      body: body,
-    };
+    // if (counter.current >= 3) {
+    console.log("useData > useEfect has run");
+    let queryString = "";
+    if (Object.keys(queryParams).length) {
+      queryString += "?";
+
+      Object.keys(queryParams).forEach((key, index, array) => {
+        queryString += `${key}=${queryParams[key]}`;
+        if (index < array.length - 1) queryString += "&";
+      });
+
+      for (let param in queryParams) {
+        queryString += `${param}=`;
+      }
+    }
     setIsLoading(true);
-
-    apiCall(url, method, body)
-      .then((data) => {
+    apiCall(`${urlStr}${queryString}`)
+      .then((result) => {
         if (!ignore) {
-          setData(data.data);
+          setData(result.data);
         }
       })
       .catch((err) => {
         if (!ignore) {
-          console.error(err);
-          navigate(-1);
+          handleError(err);
         }
       })
       .finally(() => {
-        if (!ignore) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       });
+
+    if (repeatTime) {
+      timer = setTimeout(() => {
+        handleTrigger();
+      }, repeatTime);
+    }
+    // }
 
     return () => {
       ignore = true;
+      clearTimeout(timer);
     };
-  }, [url, trigger]);
+  }, [trigger, queryParams]);
+
   return [data, isLoading, handleTrigger];
 }

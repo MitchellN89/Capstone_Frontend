@@ -19,8 +19,7 @@ import ButtonLoading from "../../../components/Buttons/ButtonLoading";
 import { useUser } from "../../../context/UserProvider";
 import { useNavigate } from "react-router-dom";
 
-export default function SignUpForm(userType) {
-  userType = userType.userType;
+export default function SignUpForm({ userType }) {
   const [notificationOptions, handleNotificationOptions] =
     useNotificationOptions();
   const [isLocked, setIsLocked] = useState(false);

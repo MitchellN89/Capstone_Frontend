@@ -97,7 +97,6 @@ const appendNewEventService = (state, newEventService) => {
 };
 
 const updateEventService = (state, id, updatedEventService) => {
-  console.log("UPDATE", id, updateEventService);
   const eventServices = [...state.eventServices];
   return eventServices.map((eventService) =>
     eventService.id == id
@@ -157,6 +156,10 @@ export function ServicesEPProvider({ children }) {
   }, []);
 
   const context = { state, dispatch };
+
+  useEffect(() => {
+    if (state) console.log("CONTEXT ? EventServicesEP > state: ", state);
+  }, [state]);
 
   return (
     <ServicesEPContext.Provider value={context}>

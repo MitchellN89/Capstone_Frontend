@@ -1,13 +1,14 @@
 import { Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-export default function GridCard({
+export default function ServiceConnectionCardEP({
   hasDelete,
   id,
   handleDelete,
   handleClick,
   isLoading,
   children,
+  vendorId,
 }) {
   const styles = {
     minHeight: "200px",
@@ -19,7 +20,7 @@ export default function GridCard({
     <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
       <Paper
         onClick={() => {
-          handleClick(id);
+          handleClick(vendorId);
         }}
         style={styles}
       >

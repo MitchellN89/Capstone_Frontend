@@ -35,6 +35,7 @@ export default function ServiceRequestsV() {
     apiCall(`/serviceRequests${queryString}`)
       .then((result) => {
         if (!ignore) {
+          console.log(`/serviceRequests/${queryString}: `, result);
           setRequests(result.data);
         }
       })
@@ -46,7 +47,7 @@ export default function ServiceRequestsV() {
 
     let timer = setTimeout(() => {
       setTrigger((curState) => !curState);
-    }, 5000);
+    }, 60000);
 
     return () => {
       ignore = true;
@@ -54,12 +55,8 @@ export default function ServiceRequestsV() {
     };
   }, [queryParams, trigger]);
 
-  useEffect(() => {
-    console.log(requests);
-  }, [requests]);
-
-  const handleClick = (id) => {
-    navigate(`/vendor/${id}`);
+  const handleClick = (serviceRequestId) => {
+    navigate(`/vendor/servicerequests/${serviceRequestId}`);
   };
 
   return (

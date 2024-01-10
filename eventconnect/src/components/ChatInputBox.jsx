@@ -1,6 +1,6 @@
 import { IconSend } from "./Icons";
 
-export default function ChatInputBox() {
+export default function ChatInputBox({ value, handleChange, sendMessage }) {
   const containerStyle = {
     display: "flex",
   };
@@ -11,8 +11,17 @@ export default function ChatInputBox() {
 
   return (
     <div style={containerStyle}>
-      <input style={inputStyle} value="tester text here" type="text" />{" "}
-      <button>
+      <input
+        style={inputStyle}
+        value={value}
+        onChange={handleChange}
+        type="text"
+      />{" "}
+      <button
+        onClick={() => {
+          sendMessage(value);
+        }}
+      >
         <IconSend />
       </button>
     </div>

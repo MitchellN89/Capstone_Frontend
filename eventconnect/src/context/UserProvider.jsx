@@ -65,7 +65,6 @@ export function UserProvider({ children }) {
     accountType
   ) => {
     try {
-      console.log("UserProvider > loginUserWithCredentials: ", accountType);
       setIsLoading(true);
       const dbResponse = await axios.post(
         "http://localhost:8080/auth/loginwithcredentials",
@@ -95,10 +94,6 @@ export function UserProvider({ children }) {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    console.log("USER: ", user);
-  }, [user]);
 
   const provide = {
     user,

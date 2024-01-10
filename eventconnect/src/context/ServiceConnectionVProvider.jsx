@@ -59,10 +59,6 @@ export function ServiceConnectionVProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log("ServiceConnectionVProvider.jsx > ContextState: ", state);
-  }, [state]);
-
-  useEffect(() => {
     let ignore = false;
     let queryString = "";
     if (Object.keys(queryParams).length) {

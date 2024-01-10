@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 
 export function convertFormDataToObject(formData) {
   const obj = {};
-  console.log("FORM DATA PRE JSON", formData);
   formData.forEach((val, key) => {
     val = val === "" ? null : val;
     obj[key] = val;

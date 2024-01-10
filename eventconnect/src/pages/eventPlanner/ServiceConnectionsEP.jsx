@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import GridCard from "../../components/GridCard";
 import useData from "../../hooks/useData";
 import CreateCard from "../../components/CreateCard";
@@ -7,48 +7,35 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { useState, useEffect } from "react";
+import { Header2 } from "../../components/Texts/TextHeaders";
+import { useServicesEPContext } from "../../context/EventServiceEPProvider";
+import { Navigate } from "react-router-dom";
+import ServiceConnectionCardEP from "./Components/ServiceConnectionCardEP";
 
-export default function ServiceConnectionsEP() {
-  const [serviceConnections, setServiceConnections] = useState(null);
+export default function ServiceConnectionsEP({
+  serviceConnections,
+  handleSelectedVendorId,
+  handleTrigger,
+}) {
   const [trigger, setTrigger] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const { eventId, eventServiceId } = useParams();
 
   useEffect(() => {
-    let ignore = false;
-    setIsLoading(true);
-    apiCall(`/events/${eventId}/services/${eventServiceId}/connections`)
-      .then((result) => {
-        if (!ignore) {
-          setServiceConnections(result.data);
-        }
-      })
-      .catch((err) => {
-        if (!ignore) {
-          console.error(err);
-        }
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (serviceConnections) {
+      console.log(
+        "ServiceConnectionsEP.jsx > serviceConnections :",
+        serviceConnections
+      );
+    }
+  }, [serviceConnections]);
 
-    const timer = setTimeout(() => {
-      setTrigger((curState) => !curState);
-    }, 60000 * 5);
+  const handleClick = (vendorId) => {
+    handleSelectedVendorId(vendorId);
+  };
 
-    return () => {
-      ignore = true;
-      clearTimeout(timer);
-    };
-  }, [trigger]);
-
-  useEffect(
-    (err) => {
-      console.log(serviceConnections);
-    },
-    [serviceConnections]
-  );
+  if (!serviceConnections) return;
 
   return (
     <>
@@ -63,6 +50,21 @@ export default function ServiceConnectionsEP() {
 
       <Grid container spacing={3}>
         <LoadingCard isLoading={isLoading} />
+        {serviceConnections &&
+          serviceConnections.map((serviceConnection) => {
+            console.log("MAP: ", serviceConnection);
+            return (
+              <ServiceConnectionCardEP
+                handleClick={handleClick}
+                key={serviceConnection.id}
+                id={serviceConnection.id}
+                vendorId={serviceConnection.vendorId}
+              >
+                {serviceConnection.user.companyName ||
+                  `${serviceConnection.user.firstName} ${serviceConnection.user.lastName}`}
+              </ServiceConnectionCardEP>
+            );
+          })}
       </Grid>
     </>
   );

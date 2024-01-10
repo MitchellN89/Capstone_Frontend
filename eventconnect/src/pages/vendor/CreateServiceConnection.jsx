@@ -14,10 +14,12 @@ import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { IconSend } from "../../components/Icons";
 import { convertFormDataToObject } from "../../utilities/formData";
 import { apiCall } from "../../utilities/apiCall";
+import { useParams } from "react-router-dom";
 
 export default function CreateServiceConnection({
+  handleTrigger,
   serviceRequestId,
-  toggleTrigger,
+  eventPlannerId,
 }) {
   const [responseOptionValue, setResponseOptionValue] = useState("connect");
   const [messageProps, isValidMessage] = useTextInput(
@@ -42,17 +44,16 @@ export default function CreateServiceConnection({
     if (!isValid) return;
 
     let body = convertFormDataToObject(new FormData(evt.target));
-    console.log("FORM DATA:", body);
 
     try {
+      console.log("body: ", body);
+      console.log("eventPlannerId: ", eventPlannerId);
       const result = await apiCall(
         `/serviceRequests/${serviceRequestId}/connect`,
         "post",
-        body
+        { ...body, eventPlannerId }
       );
-      //   const { id: eventId } = result.data;
-      console.log(result);
-      //   navigate(`/eventplanner/${eventId}`, { replace: true });
+      handleTrigger();
     } catch (err) {
       console.error(err);
     }

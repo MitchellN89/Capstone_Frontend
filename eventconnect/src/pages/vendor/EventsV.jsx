@@ -6,35 +6,34 @@ import LoadingCard from "../../components/LoadingCard";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
+import { useEffect, useState } from "react";
 
 export default function EventsV() {
-  // const [events, isLoadingEvents, handleTrigger] = useData("/events");
-  const {
-    state: events,
-    dispatch: eventsDispatch,
-    actions: eventsActions,
-  } = useEventsEPContext();
-  const { isLoading } = events;
   const navigate = useNavigate();
+  const [events, setEvents] = useState(null);
+  const [trigger, setTrigger] = useState(true);
 
-  const handleDelete = async (id) => {
-    if (isLoading) return;
-    eventsDispatch({ type: "PROCESSING_REQUEST" });
-
-    apiCall(`/events/${id}`, "delete")
-      .then(() => {
-        eventsDispatch({ type: "DELETE_EVENT", id });
+  useEffect(() => {
+    apiCall(`/events`)
+      .then((result) => {
+        setEvents(result.data);
       })
       .catch((err) => {
-        eventsDispatch({ type: "REQUEST_FAILED", error: err });
         console.error(err);
       });
-  };
 
-  const handleClick = (id) => {
-    if (isLoading) return;
-    navigate(`/eventPlanner/${id}`);
-  };
+    const timer = setTimeout(() => {
+      setTrigger((curState) => !curState);
+    }, 60000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [trigger]);
+
+  useEffect(() => {
+    if (events) console.log("EVENTS V, events: ", events);
+  }, [events]);
 
   return (
     // TODO Need title
@@ -43,24 +42,18 @@ export default function EventsV() {
       {/* <button onClick={handleTrigger}>refresh</button> */}
       <h1>Events</h1>
 
-      <Grid container spacing={3}>
+      {/* <Grid container spacing={3}>
         <LoadingCard isLoading={isLoading} />
         {events.data &&
           events.data.map((event) => {
             return (
-              <GridCard
-                handleDelete={handleDelete}
-                handleClick={handleClick}
-                hasDelete
-                id={event.id}
-                key={event.id}
-              >
+              <GridCard handleClick={handleClick} id={event.id} key={event.id}>
                 {event.eventName}
               </GridCard>
             );
           })}
         <CreateCard url="/eventplanner/createevent">CREATE EVENT</CreateCard>
-      </Grid>
+      </Grid> */}
     </>
   );
 }

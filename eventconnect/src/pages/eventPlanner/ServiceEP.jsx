@@ -5,34 +5,90 @@ import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ServiceConnectionsEP from "./ServiceConnectionsEP";
+import ServiceConnectionEp from "./ServiceConnectionEP";
+import useLiveChat from "../../hooks/useLiveChat";
 
 export default function ServiceEP() {
   let { eventId, eventServiceId } = useParams();
   const { state: services, dispatch: servicesDispatch } =
     useServicesEPContext();
-
-  const navigate = useNavigate();
-
-  const [isFormComplete, setIsFormComplete] = useState(true);
-
   const eventService = services.eventServices.find((eventService) => {
-    console.log("eventService", eventService);
     return eventService.id == eventServiceId;
   });
 
-  const {
-    broadcast,
-    requestBody,
-    volumes,
-    tags,
-    logistics,
-    specialRequirements,
-  } = eventService;
+  if (!eventService) return;
 
-  const title = services.services.find(
-    (service) => service.id == eventService.serviceId
-  ).service;
+  const [trigger, setTrigger] = useState(true);
+  const [isFormComplete, setIsFormComplete] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [serviceConnections, setServiceConnections] = useState(null);
+  const [serviceConnection, setServiceConnection] = useState(null);
+  const vendorId = eventService.vendorId || null;
+  const [selectedVendorId, setSelectedVendorId] = useState(vendorId);
+
+  const [liveChatProps, dispatchLiveChat] = useLiveChat(
+    serviceConnection ? serviceConnection.user : null,
+    serviceConnection ? serviceConnection.id : null
+  );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let ignore = false;
+    let timer;
+
+    // Get service connections
+    if (!selectedVendorId) {
+      setIsLoading(true);
+
+      apiCall(`/events/${eventId}/services/${eventServiceId}/connections`)
+        .then((result) => {
+          if (!ignore) {
+            console.log("ServiceEp.jsx > get service events: ", result);
+            setServiceConnections(result.data);
+          }
+        })
+        .catch((err) => {
+          if (!ignore) {
+            console.error(err);
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+
+    // Get ONE Service Connection
+    if (selectedVendorId) {
+      apiCall(
+        `/events/${eventId}/services/${eventServiceId}/connections/vendor/${selectedVendorId}`
+      )
+        .then((result) => {
+          setServiceConnection(result.data);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+
+    timer = setTimeout(() => {
+      setTrigger((curState) => !curState);
+    }, 60000);
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
+  }, [selectedVendorId, trigger]);
+
+  const handleSelectedVendorId = (vendorId) => {
+    setSelectedVendorId(vendorId);
+  };
+
+  const resetSelectedVendorId = () => {
+    setSelectedVendorId(vendorId);
+  };
 
   const handleDelete = async () => {
     servicesDispatch({ type: "PROCESSING_REQUEST" });
@@ -49,20 +105,18 @@ export default function ServiceEP() {
       });
   };
 
-  const handleBroadcast = (bool) => {
+  const enableBroadcast = () => {
     if (!isFormComplete) return;
-    const reducerCommand = bool ? "ENABLE_BROADCAST" : "DISABLE_BROADCAST";
-    const urlExtension = bool ? "enable" : "disable";
     servicesDispatch({ type: "PROCESSING_REQUEST" });
     apiCall(
-      `/events/${eventId}/services/${eventServiceId}/broadcast/${urlExtension}`,
+      `/events/${eventId}/services/${eventServiceId}/broadcast/enable`,
       "patch"
     )
       .then(() => {
         servicesDispatch({
-          type: reducerCommand,
+          type: "ENABLE_BROADCAST",
           id: eventServiceId,
-          payload: bool,
+          payload: true,
         });
       })
       .catch(() => {
@@ -70,18 +124,29 @@ export default function ServiceEP() {
       });
   };
 
+  const handleTrigger = () => {
+    setTrigger((curState) => !curState);
+  };
+
   if (!eventService) return;
+
+  const {
+    broadcast,
+    requestBody,
+    volumes,
+    tags,
+    logistics,
+    specialRequirements,
+  } = eventService;
+
+  const title = services.services.find(
+    (service) => service.id == eventService.serviceId
+  ).service;
 
   return (
     <>
       <Header1>Services &gt; {title}</Header1>
-      <button
-        onClick={() => {
-          navigate(`/eventplanner/${eventId}`);
-        }}
-      >
-        Go Back
-      </button>
+      <button onClick={handleTrigger}>Go Back</button>
       <Paper>
         <Box padding={2}>
           <Grid container spacing={5} padding={2}>
@@ -104,17 +169,27 @@ export default function ServiceEP() {
             EDIT EVENT
           </button>
           <button onClick={handleDelete}>DELETE EVENT SERVICE</button>
-          <button
-            disabled={!isFormComplete}
-            onClick={() => {
-              handleBroadcast(!broadcast);
-            }}
-          >
+          <button disabled={!isFormComplete} onClick={enableBroadcast}>
             {broadcast ? "Broadcasting" : "Broadcast"}
           </button>
         </Box>
       </Paper>
-      <Outlet />
+
+      {!selectedVendorId && (
+        <ServiceConnectionsEP
+          serviceConnections={serviceConnections}
+          handleSelectedVendorId={handleSelectedVendorId}
+          handleTrigger={handleTrigger}
+        />
+      )}
+      {selectedVendorId && (
+        <ServiceConnectionEp
+          resetSelectedVendorId={resetSelectedVendorId}
+          liveChatProps={liveChatProps}
+          serviceConnection={serviceConnection}
+          handleTrigger={handleTrigger}
+        />
+      )}
     </>
   );
 }

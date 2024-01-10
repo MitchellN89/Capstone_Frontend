@@ -14,16 +14,18 @@ export default function ServiceRequestV() {
   const navigate = useNavigate();
   const { serviceRequestId } = useParams();
 
-  const toggleTrigger = () => {
+  const handleTrigger = () => {
     setTrigger((curState) => !curState);
   };
 
+  // TODO - useData here instead
   useEffect(() => {
     let ignore = false;
 
     apiCall(`/serviceRequests/${serviceRequestId}`)
       .then((result) => {
         if (!ignore) {
+          console.log(`/serviceRequests/${serviceRequestId}: `, result);
           setServiceRequest(result.data);
         }
       })
@@ -40,10 +42,6 @@ export default function ServiceRequestV() {
       ignore = true;
     };
   }, [trigger]);
-
-  useEffect(() => {
-    console.log("SERVICE REQUEST: ", serviceRequest);
-  }, [serviceRequest]);
 
   if (isLoading) return <h1>Loading...</h1>;
   if (!serviceRequest) return;
@@ -72,16 +70,19 @@ export default function ServiceRequestV() {
           </Grid>
         </Box>
       </Paper>
-      {serviceRequest.vendor_event_connections.length === 0 && (
+      {serviceRequest.vendorEventConnections.length === 0 && (
         <CreateServiceConnection
-          toggleTrigger={toggleTrigger}
+          handleTrigger={handleTrigger}
+          trigger={trigger}
           serviceRequestId={serviceRequestId}
+          eventPlannerId={serviceRequest.event.user.id}
         />
       )}
-      {serviceRequest.vendor_event_connections.length > 0 && (
+      {serviceRequest.vendorEventConnections.length > 0 && (
         <ServiceConnectionV
-          toggleTrigger={toggleTrigger}
+          handleTrigger={handleTrigger}
           serviceRequestId={serviceRequestId}
+          trigger={trigger}
         />
       )}
     </>

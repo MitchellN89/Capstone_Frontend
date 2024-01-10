@@ -17,6 +17,9 @@ import Vendor from "../pages/vendor/Vendor";
 import ServiceRequestsV from "../pages/vendor/ServiceRequestsV";
 import ServiceRequestV from "../pages/vendor/ServiceRequestV";
 import ServiceConnectionsEP from "../pages/eventPlanner/ServiceConnectionsEP";
+import ServiceConnectionEP from "../pages/eventPlanner/ServiceConnectionEP";
+import EventV from "../pages/vendor/EventV";
+import EventsV from "../pages/vendor/EventsV";
 
 export default function AppRoutes() {
   return (
@@ -80,8 +83,11 @@ function EventPlannerRoutes() {
             element={<EditServiceEP />}
           />
           <Route path=":eventServiceId" element={<ServiceEP />}>
-            <Route index element={<ServiceConnectionsEP />} />
-            <Route path=":connectionId" element={<h3>CONNECTION EP</h3>} />
+            {/* <Route index element={<ServiceConnectionsEP />} />
+            <Route
+              path=":serviceConnectionId"
+              element={<ServiceConnectionEP />}
+            /> */}
           </Route>
         </Route>
       </Route>
@@ -93,8 +99,14 @@ function VendorRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Vendor />}>
-        <Route index element={<ServiceRequestsV />} />
-        <Route path=":serviceRequestId" element={<ServiceRequestV />} />
+        <Route index element={<Navigate to={"/vendor/servicerequests"} />} />
+        <Route path="servicerequests" element={<ServiceRequestsV />} />
+        <Route
+          path="servicerequests/:serviceRequestId"
+          element={<ServiceRequestV />}
+        />
+        <Route path="events" element={<EventsV />} />
+        <Route path="events/:serviceRequestId" element={<EventV />} />
       </Route>
     </Routes>
   );

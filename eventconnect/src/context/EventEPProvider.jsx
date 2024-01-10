@@ -104,10 +104,6 @@ export function EventEPProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log("EventEPProvider.jsx > ContextState: ", state);
-  }, [state]);
-
-  useEffect(() => {
     let ignore = false;
     let queryString = "";
     if (Object.keys(queryParams).length) {
@@ -152,6 +148,10 @@ export function EventEPProvider({ children }) {
   };
 
   const context = { state, dispatch, actions };
+
+  useEffect(() => {
+    if (state) console.log("CONTEXT: EventEP > state: ", state);
+  }, [state]);
 
   return (
     <EventEPContext.Provider value={context}>
