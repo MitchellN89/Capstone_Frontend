@@ -48,8 +48,8 @@ export default function ChatBoxV({
       });
 
       socket.on("promoteVendor", (message) => {
-        console.log("PROMOTION RECEIVED");
-        navigate(`/vendors/events/${eventServiceId}`);
+        console.log("PROMOTION RECEIVED", message);
+        navigate(`/vendor/events/${eventServiceId}`);
       });
     }
   }, [socket]);

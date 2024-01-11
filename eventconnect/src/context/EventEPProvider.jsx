@@ -55,6 +55,9 @@ const reducer = (state, action) => {
         error: null,
         response: response,
       };
+    case "UPDATE_EVENT_SERVICE":
+      return;
+    // TODO - promote and broadcast can change
     default:
       return state;
   }

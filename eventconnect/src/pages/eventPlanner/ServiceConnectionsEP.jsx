@@ -17,7 +17,6 @@ export default function ServiceConnectionsEP({
   handleSelectedVendorId,
   handleTrigger,
 }) {
-  const [trigger, setTrigger] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const { eventId, eventServiceId } = useParams();
@@ -39,13 +38,7 @@ export default function ServiceConnectionsEP({
 
   return (
     <>
-      <button
-        onClick={() => {
-          setTrigger((curState) => !curState);
-        }}
-      >
-        Refresh
-      </button>
+      <button onClick={handleTrigger}>Refresh</button>
       <h1>Service Connections</h1>
 
       <Grid container spacing={3}>

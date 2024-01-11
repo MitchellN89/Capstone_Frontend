@@ -7,11 +7,17 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { useEffect, useState } from "react";
+import EventCardV from "./Components/EventCardV";
 
 export default function EventsV() {
   const navigate = useNavigate();
   const [events, setEvents] = useState(null);
   const [trigger, setTrigger] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = (eventServiceId) => {
+    navigate(`/vendor/events/${eventServiceId}`);
+  };
 
   useEffect(() => {
     apiCall(`/events`)
@@ -42,18 +48,21 @@ export default function EventsV() {
       {/* <button onClick={handleTrigger}>refresh</button> */}
       <h1>Events</h1>
 
-      {/* <Grid container spacing={3}>
+      <Grid container spacing={3}>
         <LoadingCard isLoading={isLoading} />
-        {events.data &&
-          events.data.map((event) => {
+        {events &&
+          events.map((event) => {
             return (
-              <GridCard handleClick={handleClick} id={event.id} key={event.id}>
-                {event.eventName}
-              </GridCard>
+              <EventCardV
+                handleClick={handleClick}
+                eventServiceId={event.id}
+                key={event.id}
+              >
+                {event.service.service}
+              </EventCardV>
             );
           })}
-        <CreateCard url="/eventplanner/createevent">CREATE EVENT</CreateCard>
-      </Grid> */}
+      </Grid>
     </>
   );
 }

@@ -18,6 +18,8 @@ export default function ServiceEP() {
     return eventService.id == eventServiceId;
   });
 
+  console.log("ServiceEP.jsx > eventService: ", eventService);
+
   if (!eventService) return;
 
   const [trigger, setTrigger] = useState(true);
@@ -28,9 +30,12 @@ export default function ServiceEP() {
   const vendorId = eventService.vendorId || null;
   const [selectedVendorId, setSelectedVendorId] = useState(vendorId);
 
+  const connectedWithUser = serviceConnection ? serviceConnection.user : null;
+  const roomId = serviceConnection ? serviceConnection.id : null;
+
   const [liveChatProps, dispatchLiveChat] = useLiveChat(
-    serviceConnection ? serviceConnection.user : null,
-    serviceConnection ? serviceConnection.id : null
+    connectedWithUser,
+    roomId
   );
 
   const navigate = useNavigate();
@@ -47,6 +52,7 @@ export default function ServiceEP() {
         .then((result) => {
           if (!ignore) {
             console.log("ServiceEp.jsx > get service events: ", result);
+
             setServiceConnections(result.data);
           }
         })
@@ -66,7 +72,14 @@ export default function ServiceEP() {
         `/events/${eventId}/services/${eventServiceId}/connections/vendor/${selectedVendorId}`
       )
         .then((result) => {
-          setServiceConnection(result.data);
+          const { chatEntries } = result.data;
+
+          dispatchLiveChat({ type: "SET_ENTRIES", payload: chatEntries });
+
+          const serviceConnectionWithoutChatEntries = { ...result.data };
+          delete serviceConnectionWithoutChatEntries.chatEntries;
+
+          setServiceConnection(serviceConnectionWithoutChatEntries);
         })
         .catch((err) => {
           console.error(err);
@@ -146,7 +159,13 @@ export default function ServiceEP() {
   return (
     <>
       <Header1>Services &gt; {title}</Header1>
-      <button onClick={handleTrigger}>Go Back</button>
+      <button
+        onClick={() => {
+          navigate(`/eventPlanner/${eventService.event.id}`);
+        }}
+      >
+        Go Back
+      </button>
       <Paper>
         <Box padding={2}>
           <Grid container spacing={5} padding={2}>

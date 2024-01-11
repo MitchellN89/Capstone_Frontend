@@ -13,18 +13,17 @@ export default function ServiceConnectionEp({
   serviceRequestId,
   trigger,
 }) {
-  const urlStr = `/serviceRequests/${serviceRequestId}/connection`;
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUser();
   // const [trigger, setTrigger] = useState(true);
   const [serviceConnection, setServiceConnection] = useState(null);
+
   const roomId = serviceConnection ? serviceConnection.id : null;
   const connectedWithUser = serviceConnection
     ? serviceConnection.eventService.event.user
     : null;
 
   const [liveChatProps, dispatchLiveChat] = useLiveChat(
-    user,
     connectedWithUser,
     roomId
   );
@@ -36,7 +35,7 @@ export default function ServiceConnectionEp({
   useEffect(() => {
     let ignore = false;
 
-    apiCall(urlStr)
+    apiCall(`/serviceRequests/${serviceRequestId}/connection`)
       .then((result) => {
         if (!ignore) {
           dispatchLiveChat({
@@ -67,7 +66,7 @@ export default function ServiceConnectionEp({
 
   useEffect(() => {
     if (serviceConnection)
-      console.log("SERVICE CONNECTION: ", serviceConnection);
+      console.log("SERVICE CONNECTION: ", serviceConnection, roomId);
   }, [serviceConnection]);
 
   if (!serviceConnection) return <span>No data available yet</span>;

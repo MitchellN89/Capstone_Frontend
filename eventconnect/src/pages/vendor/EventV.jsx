@@ -7,13 +7,13 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useEffect, useState } from "react";
 
 export default function EventV() {
-  let { eventId } = useParams();
+  let { serviceRequestId } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [trigger, setTrigger] = useState(true);
 
   useEffect(() => {
-    apiCall(`/events/${eventId}`)
+    apiCall(`/events/${serviceRequestId}`)
       .then((result) => {
         setEvent(result.data);
       })
@@ -23,7 +23,7 @@ export default function EventV() {
   }, [trigger]);
 
   useEffect(() => {
-    if (event) console.log(event);
+    if (event) console.log("EVENT V > event: ", event);
   }, [event]);
 
   return (

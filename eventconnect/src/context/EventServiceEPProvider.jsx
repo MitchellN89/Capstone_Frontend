@@ -9,7 +9,7 @@ import { apiCall } from "../utilities/apiCall";
 const ServicesEPContext = createContext();
 
 const reducer = (state, action) => {
-  const { type, payload, error, response, id } = action;
+  const { type, payload, error, response, id, eventId } = action;
 
   switch (type) {
     case "PROCESSING_REQUEST":

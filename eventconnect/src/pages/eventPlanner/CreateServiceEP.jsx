@@ -98,9 +98,11 @@ export default function CreateServiceEP() {
       const result = await apiCall(`/events/${eventId}/services`, "post", body);
       const { id: eventServiceId } = result.data;
 
+      const newEventService = { ...result.data, event: { id: eventId } };
+      console.log("CreateServiceEP.jsx > newEventService: ", newEventService);
       servicesDispatch({
         type: "CREATE_EVENT_SERVICE",
-        payload: result.data,
+        payload: newEventService,
         response: result.response,
       });
 
