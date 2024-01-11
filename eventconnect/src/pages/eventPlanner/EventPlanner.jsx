@@ -11,7 +11,7 @@ import { ServicesEPProvider } from "../../context/EventServiceEPProvider";
 export default function EventPlanner() {
   return (
     <>
-      <Overlay></Overlay>
+      {/* <Overlay></Overlay> */}
       <NavBarEP></NavBarEP>
       {/* <ModalContainer>
         <h1>Test</h1>

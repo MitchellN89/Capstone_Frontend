@@ -1,109 +1,36 @@
-import { createContext, useContext, useState, useReducer } from "react";
-import axios from "axios";
-import { useEffect } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
+
 const UserContext = createContext();
 
 const userReducer = (state, action) => {
   switch (action.type) {
-    case "LOGIN_USER":
-      return action.payload;
+    case "PROCESSING_REQUEST":
+      return { ...state, isLoading: true };
+    case "REQUEST_FAILED":
+      return { ...state, isLoading: false };
+    case "SET_USER":
+      return { user: action.payload, isLoading: false };
+    case "LOGOUT_USER":
+      return { user: {}, isLoading: false };
     default:
       return state;
   }
 };
 
 export function UserProvider({ children }) {
-  const [user, dispatch] = useReducer(userReducer, {});
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, dispatch] = useReducer(userReducer, {
+    user: {},
+    isLoading: false,
+  });
 
-  const signUpUser = async (
-    firstName,
-    lastName,
-    password,
-    emailAddress,
-    phoneNumber,
-    companyName,
-    websiteUrl,
-    accountType
-  ) => {
-    try {
-      setIsLoading(true);
-      const dbResponse = await axios.post(
-        "http://localhost:8080/auth/createuser",
-        {
-          firstName,
-          lastName,
-          password,
-          emailAddress,
-          phoneNumber,
-          companyName,
-          websiteUrl,
-          accountType,
-        }
-      );
-
-      const { response } = dbResponse.data;
-      const { status } = dbResponse;
-      return { status, response };
-    } catch (err) {
-      console.error(err);
-      const { response } = err.response.data;
-      const { status } = err.response;
-
-      return {
-        status,
-        response,
-      };
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loginUserWithCredentials = async (
-    emailAddress,
-    password,
-    accountType
-  ) => {
-    try {
-      setIsLoading(true);
-      const dbResponse = await axios.post(
-        "http://localhost:8080/auth/loginwithcredentials",
-        {
-          password,
-          emailAddress,
-          accountType,
-        }
-      );
-      const { data, token, response } = dbResponse.data;
-      const { status } = dbResponse;
-
-      dispatch({ type: "LOGIN_USER", payload: data });
-      sessionStorage.setItem("key", token);
-
-      return { status, response };
-    } catch (err) {
-      console.error(err);
-      const { response } = err.response.data;
-      const { status } = err.response;
-
-      return {
-        status,
-        response,
-      };
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const provide = {
-    user,
-    isLoading,
-    loginUserWithCredentials,
-    signUpUser,
-  };
+  useEffect(() => {
+    console.log("UserProvider > state", state);
+  }, [state]);
 
   return (
-    <UserContext.Provider value={provide}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ state, dispatch }}>
+      {children}
+    </UserContext.Provider>
   );
 }
 

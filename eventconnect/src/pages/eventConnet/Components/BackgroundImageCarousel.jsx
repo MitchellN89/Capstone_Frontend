@@ -7,7 +7,7 @@ export default function BackgroundImageCarousel({ cycleTime, imageUrls }) {
   const [currentImage, setCurrentImage] = useState(0);
   const animatingImage = useRef();
 
-  const Container = styled("div")({
+  const containerStyles = {
     height: "100vh",
     width: "100vw",
     overflow: "hidden",
@@ -15,7 +15,7 @@ export default function BackgroundImageCarousel({ cycleTime, imageUrls }) {
     top: "0",
     left: "0",
     zIndex: "-1",
-  });
+  };
 
   function handleImageChange() {
     setTimeout(() => {
@@ -28,16 +28,14 @@ export default function BackgroundImageCarousel({ cycleTime, imageUrls }) {
   }
 
   return (
-    <Container>
+    <div style={containerStyles}>
       <Overlay></Overlay>
-
       <BackgroundImage
         onAnimationEnd={handleImageChange}
         src={imageUrls[currentImage]}
         cycleTime={cycleTime}
         animatingImage={animatingImage}
       ></BackgroundImage>
-      <h1 style={{ zIndex: "9999" }}>dsfkvjhbsdflkjh</h1>
-    </Container>
+    </div>
   );
 }

@@ -1,12 +1,9 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import Login from "../pages/login/Login";
-import SignUp from "../pages/signup/SignUp";
-import Auth from "../pages/auth/Auth";
+import Auth from "../pages/Auth/Auth";
 import { useUser } from "../context/UserProvider";
 import EventPlanner from "../pages/eventPlanner/EventPlanner";
 import EventsEP from "../pages/eventPlanner/EventsEP";
 import EventEP from "../pages/eventPlanner/EventEP";
-import EventConnect from "../pages/eventConnet/EventConnect";
 import CreateEventEP from "../pages/eventPlanner/CreateEventEp";
 import EditEventEP from "../pages/eventPlanner/EditEventEp";
 import ServicesEP from "../pages/eventPlanner/ServicesEp";
@@ -16,24 +13,34 @@ import EditServiceEP from "../pages/eventPlanner/EditServiceEP";
 import Vendor from "../pages/vendor/Vendor";
 import ServiceRequestsV from "../pages/vendor/ServiceRequestsV";
 import ServiceRequestV from "../pages/vendor/ServiceRequestV";
-import ServiceConnectionsEP from "../pages/eventPlanner/ServiceConnectionsEP";
-import ServiceConnectionEP from "../pages/eventPlanner/ServiceConnectionEP";
 import EventV from "../pages/vendor/EventV";
 import EventsV from "../pages/vendor/EventsV";
+import PageNotFound404 from "../pages/PageNotFound404";
+import AccountSelect from "../pages/Auth/AccountSelect";
+import EventPlannerLogin from "../pages/Auth/EventPlannerLogin";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="*" element={<RedirectRoute />} />
-      {/* <Route path="/" element={<RedirectRoute />} /> */}
+      <Route path="*" element={<PageNotFound404 />} />
+      <Route path="/" element={<RedirectRoute />} />
 
-      <Route path="/auth" element={<Auth />}>
-        <Route index element={<Login />} />
+      {/* <Route path="/auth" element={<h1>AUTH</h1>}>
+        <Route index element={<h1>LOGIN PAGE</h1>} />
         <Route path="signup/:type" element={<SignUp />} />
+      </Route> */}
+
+      <Route index element={<Navigate to="/auth" />} />
+      <Route path="/auth" element={<Auth />}>
+        <Route index element={<AccountSelect />} />
+        <Route path="eventPlanner/login" element={<EventPlannerLogin />} />
+        <Route path="vendor/login" />
+        <Route path="eventPlanner/signup" />
+        <Route path="vendor/signup" />
       </Route>
 
       <Route
-        path="/eventplanner/*"
+        path="/eventPlanner/*"
         element={
           <ProtectedRoute userType="eventPlanner">
             <EventPlannerRoutes />
@@ -54,7 +61,8 @@ export default function AppRoutes() {
 }
 
 function RedirectRoute() {
-  const { user } = useUser();
+  const { user } = useUser().state;
+
   let redirectPath;
 
   if (user.accountType === "eventPlanner") {
@@ -113,7 +121,7 @@ function VendorRoutes() {
 }
 
 function ProtectedRoute({ children, userType }) {
-  const { user } = useUser();
+  const { user } = useUser().state;
 
   const isAuthorised = userType === user.accountType;
 

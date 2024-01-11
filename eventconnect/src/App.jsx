@@ -3,6 +3,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import { UserProvider } from "./context/UserProvider";
 import VariableTheme from "./components/VariableTheme";
+import EventConnect from "./pages/eventConnet/EventConnect";
+import { NotificationProvider } from "./context/NotificationProvider";
 
 function App() {
   return (
@@ -10,7 +12,11 @@ function App() {
       <CssBaseline /> {/* resets the css */}
       <UserProvider>
         <VariableTheme>
-          <AppRoutes></AppRoutes>
+          <NotificationProvider>
+            <EventConnect>
+              <AppRoutes></AppRoutes>
+            </EventConnect>
+          </NotificationProvider>
         </VariableTheme>
       </UserProvider>
     </>

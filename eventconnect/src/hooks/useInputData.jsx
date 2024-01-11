@@ -121,8 +121,12 @@ export function useTextInput(
   };
 
   useEffect(() => {
+    console.log("useInputData > useTextInput > useEffect run");
     setPatterns([...defaultPatterns[type]]);
-    if (addtionalPatterns) {
+    if (
+      Array.isArray(addtionalPatterns) &&
+      typeof overWritePatterns === "boolean"
+    ) {
       if (overWritePatterns) {
         setPatterns(addtionalPatterns);
       } else {

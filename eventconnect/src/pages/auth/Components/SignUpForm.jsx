@@ -59,7 +59,7 @@ export default function SignUpForm({ userType }) {
     notValidReTypePassword,
     resetReTypePassword,
   ] = useInputData("");
-  const { isLoading, signUpUser } = useUser();
+  // const { isLoading, signUpUser } = useUser();
   const navigate = useNavigate();
 
   const resetControls = () => {

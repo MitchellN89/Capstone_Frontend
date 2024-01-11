@@ -3,7 +3,6 @@ import { createTheme } from "@mui/material";
 import defaultTheme from "../themes/defaultTheme";
 
 export default function VariableTheme({ children }) {
-  // const [curTheme] = useUser();
   const blueTheme = createTheme({
     palette: {
       mode: "light",
