@@ -7,7 +7,7 @@ import Overlay from "../../components/Overlay";
 export default function Vendor() {
   return (
     <>
-      <Overlay></Overlay>
+      {/* <Overlay></Overlay> */}
       <NavBarV></NavBarV>
 
       <Container maxWidth="xl">

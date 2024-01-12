@@ -12,7 +12,13 @@ export default function AccountSelect() {
       >
         eventplanner
       </button>
-      <button>vendor</button>
+      <button
+        onClick={() => {
+          navigate("/auth/vendor/login");
+        }}
+      >
+        vendor
+      </button>
     </>
   );
 }

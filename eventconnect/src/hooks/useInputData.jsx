@@ -39,13 +39,10 @@ export function useTextInput(
   label = "Text Input",
   name,
   type = "text",
-  placeholder = "",
-  addtionalPatterns,
-  overWritePatterns
+  placeholder = ""
 ) {
   const [value, setValue] = useState(init);
-  const [isValid, setIsValid] = useState(false);
-  const [patterns, setPatterns] = useState([]);
+  const [isValid, setIsValid] = useState(true);
 
   const handleChange = (evt) => {
     setValue(evt.target.value);
@@ -63,77 +60,20 @@ export function useTextInput(
     setValue(init);
   };
 
-  const defaultPatterns = {
-    text: [],
-    name: [
-      {
-        type: "required",
-        value: /^[a-zA-Z\s']+$/,
-        message: "Only letters, spaces and apostrophes allowed",
-        label: "validation_letters_spaces_apostrophes",
-      },
-    ],
-    phoneNumber: [
-      {
-        type: "required",
-        value: /^(\d|\-|#|ext|\+| )+$/,
-        message: "Only numbers, dashes, hashes, pluses and 'ext' allowed",
-        label: "validation_numbers_dashes_hashes_pluses_'ext'",
-      },
-    ],
-    emailAddress: [],
-    websiteUrl: [],
-    password: [
-      {
-        type: "required",
-        value: /[!@#$%^&*()_+={}[\]:;<>,.?~\\/-]/,
-        message: "Must contain at least one special character",
-        label: "validation_special",
-      },
-      {
-        type: "required",
-        value: /.*[a-z].*/,
-        message: "Must contain at least one lowercase letter",
-        label: "validation_lowercase",
-      },
-      {
-        type: "required",
-        value: /.*[A-Z].*/,
-        message: "Must contain at least one uppercase letter",
-        label: "validation_uppercase",
-      },
-      {
-        type: "required",
-        value: /.*\d.*/,
-        message: "Must contain at least one number",
-        label: "validation_number",
-      },
-    ],
-  };
-
-  const types = {
-    text: "text",
-    name: "text",
-    phoneNumber: "text",
-    emailAddress: "email",
-    websiteUrl: "url",
-    password: "password",
-  };
-
-  useEffect(() => {
-    console.log("useInputData > useTextInput > useEffect run");
-    setPatterns([...defaultPatterns[type]]);
-    if (
-      Array.isArray(addtionalPatterns) &&
-      typeof overWritePatterns === "boolean"
-    ) {
-      if (overWritePatterns) {
-        setPatterns(addtionalPatterns);
-      } else {
-        setPatterns((cur) => [...cur, ...addtionalPatterns]);
-      }
-    }
-  }, [addtionalPatterns]);
+  // useEffect(() => {
+  //   console.log("useInputData > useTextInput > useEffect run");
+  //   setPatterns([...defaultPatterns[type]]);
+  //   if (
+  //     Array.isArray(addtionalPatterns) &&
+  //     typeof overWritePatterns === "boolean"
+  //   ) {
+  //     if (overWritePatterns) {
+  //       setPatterns(addtionalPatterns);
+  //     } else {
+  //       setPatterns((cur) => [...cur, ...addtionalPatterns]);
+  //     }
+  //   }
+  // }, [addtionalPatterns]);
 
   const props = {
     label,
@@ -142,8 +82,7 @@ export function useTextInput(
     onChange: handleChange,
     isValid,
     handleIsValid,
-    patterns,
-    type: types[type],
+    type: type,
     placeholder,
   };
 

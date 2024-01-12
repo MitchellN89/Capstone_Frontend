@@ -18,12 +18,17 @@ import EventsV from "../pages/vendor/EventsV";
 import PageNotFound404 from "../pages/PageNotFound404";
 import AccountSelect from "../pages/Auth/AccountSelect";
 import EventPlannerLogin from "../pages/Auth/EventPlannerLogin";
+import VendorLogin from "../pages/Auth/VendorLogin";
+import EventPlannerSignUp from "../pages/Auth/EventPlannerSignUp";
+import VendorSignUp from "../pages/Auth/VendorSignUp";
+import MapComponent from "../components/GoogleMap";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="*" element={<PageNotFound404 />} />
       <Route path="/" element={<RedirectRoute />} />
+      <Route path="/maptest" element={<MapComponent />} />
 
       {/* <Route path="/auth" element={<h1>AUTH</h1>}>
         <Route index element={<h1>LOGIN PAGE</h1>} />
@@ -34,9 +39,9 @@ export default function AppRoutes() {
       <Route path="/auth" element={<Auth />}>
         <Route index element={<AccountSelect />} />
         <Route path="eventPlanner/login" element={<EventPlannerLogin />} />
-        <Route path="vendor/login" />
-        <Route path="eventPlanner/signup" />
-        <Route path="vendor/signup" />
+        <Route path="vendor/login" element={<VendorLogin />} />
+        <Route path="eventPlanner/signup" element={<EventPlannerSignUp />} />
+        <Route path="vendor/signup" element={<VendorSignUp />} />
       </Route>
 
       <Route

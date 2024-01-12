@@ -19,11 +19,20 @@ import {
 import AddressInput from "../../components/Inputs/AddressInput";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import DateTimeInput from "../../components/Inputs/DateTimeInput";
+import { useNotification } from "../../context/NotificationProvider";
+
+const allValid = (...inputs) => {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res(inputs.every((input) => input));
+    }, 250);
+  });
+};
 
 export default function CreateEventEP() {
   const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
   const { isLoading } = events;
-
+  const { triggerNotification } = useNotification();
   const [eventNameProps, isValidEventName] = useTextInput(
     "",
     "Event Name",
@@ -46,54 +55,45 @@ export default function CreateEventEP() {
     "",
     "Client First Name",
     "endClientFirstName",
-    "name"
+    "text"
   );
   const [venueProps, isValidVenue] = useTextInput("", "Venue", "venue", "text");
   const [endClientLastNameProps, isValidEndClientLastName] = useTextInput(
     "",
     "Client Last Name",
     "endClientLastName",
-    "name"
+    "text"
   );
   const [endClientEmailAddressProps, isValidEndClientEmailAddress] =
-    useTextInput(
-      "",
-      "Client Email Address",
-      "endClientEmailAddress",
-      "emailAddress"
-    );
+    useTextInput("", "Client Email Address", "endClientEmailAddress", "email");
   const [endClientPhoneNumberProps, isValidEndClientPhoneNumber] = useTextInput(
     "",
     "Client Phone Number",
     "endClientPhoneNumber",
-    "phoneNumber"
+    "text"
   );
   const navigate = useNavigate();
 
-  const isValidForm = () => {
-    return new Promise((res) => {
-      setTimeout(() => {
-        res(
-          [
-            // isValidAddress,
-            isValidVenue,
-            isValidEndClientEmailAddress,
-            isValidEndClientFirstName,
-            isValidEndClientLastName,
-            isValidEndClientPhoneNumber,
-            isValidEndDateTime,
-            isValidStartDateTime,
-            isValidEventName,
-          ].every((i) => i)
-        );
-      }, 250);
-    });
-  };
-
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const isValid = await isValidForm();
-    if (!isValid) return;
+    const isValidForm = await allValid(
+      isValidVenue,
+      isValidEndClientEmailAddress,
+      isValidEndClientFirstName,
+      isValidEndClientLastName,
+      isValidEndClientPhoneNumber,
+      isValidEndDateTime,
+      isValidStartDateTime,
+      isValidEventName
+    );
+
+    if (!isValidForm) {
+      triggerNotification({
+        message: "Please make sure all fields contain valid data",
+        severity: "error",
+      });
+      return;
+    }
 
     let body = convertFormDataToObject(new FormData(evt.target));
     body = convertDatesToValid(
@@ -102,6 +102,7 @@ export default function CreateEventEP() {
       "DD MMMM YYYY hh:mm a",
       "YYYY/MM/DD HH:mm"
     );
+
     eventsDispatch({ type: "PROCESSING_REQUEST" });
     try {
       const result = await apiCall("/events", "post", body);
@@ -113,9 +114,20 @@ export default function CreateEventEP() {
         response: result.response,
       });
 
+      triggerNotification({
+        message: "Successfully created new Event",
+      });
+
       navigate(`/eventplanner/${eventId}`, { replace: true });
     } catch (err) {
       eventsDispatch({ type: "REQUEST_FAILED", error: err });
+      switch (err.response.status) {
+        default:
+          triggerNotification({
+            message: "Server error. For more details, see log",
+            severity: "error",
+          });
+      }
       console.error(err);
     }
   };

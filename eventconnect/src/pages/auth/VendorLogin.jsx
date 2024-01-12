@@ -7,12 +7,12 @@ import SignUpLink from "./Components/SignUpLink";
 import { useUser } from "../../context/UserProvider";
 import { useTextInput } from "../../hooks/useInputData";
 import { convertFormDataToObject } from "../../utilities/formData";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../context/NotificationProvider";
+import { useLocation } from "react-router-dom";
 
-export default function EventPlannerLogin() {
+export default function VendorLogin() {
   const { state: initValues } = useLocation();
-
   const { dispatch: dispatchUser } = useUser();
   const { isLoading } = useUser().state;
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export default function EventPlannerLogin() {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     let body = convertFormDataToObject(new FormData(evt.target));
-    body.accountType = "eventPlanner";
+    body.accountType = "vendor";
 
     dispatchUser({ type: "PROCESSING_REQUEST" });
     try {
@@ -44,7 +44,7 @@ export default function EventPlannerLogin() {
 
       dispatchUser({ type: "SET_USER", payload: data });
       triggerNotification({ message: "Successfully logged in" });
-      navigate("/eventPlanner/");
+      navigate("/vendor/");
     } catch (err) {
       switch (err.response.status) {
         case 404:
@@ -60,7 +60,7 @@ export default function EventPlannerLogin() {
 
   return (
     <>
-      <AuthHeader accountTypeLabel="Event Planner" />
+      <AuthHeader accountTypeLabel="Vendor" />
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -81,9 +81,9 @@ export default function EventPlannerLogin() {
           </Grid>
           <Grid item xs={12}>
             <SignUpLink
-              accountType="eventPlanner"
               textValue="Don't have an account?"
-              linkValue="Sign up for an Event Planner account"
+              linkValue="Sign up for a Vendor account"
+              accountType="vendor"
             />
           </Grid>
         </Grid>

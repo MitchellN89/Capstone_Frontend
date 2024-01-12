@@ -23,6 +23,7 @@ export function NotificationProvider({ children }) {
 
   const triggerNotification = (newOptions) => {
     console.log("triggerNotification: ", newOptions);
+    setOpen(false);
     const allowedOptions = {
       message: newOptions.message || "",
       severity: newOptions.severity || "success",

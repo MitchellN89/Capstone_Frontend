@@ -6,7 +6,7 @@ import usePlacesAutocomplete, {
   getLatLng,
 } from "use-places-autocomplete";
 
-const API_KEY = import.meta.evn.VITE_MAP_API_KEY;
+const API_KEY = import.meta.env.VITE_MAP_API_KEY;
 const libraries = ["places"];
 
 export default function MapComponent() {
@@ -29,11 +29,12 @@ function Map() {
       </div>
 
       <GoogleMap
-        zoom={10}
-        center={position}
+        zoom={selected ? 15 : 10}
+        center={selected || position}
         mapContainerClassName="map-container"
       >
         {selected && <Marker position={selected} />}
+        {/* <Marker position={position} /> */}
       </GoogleMap>
     </>
   );
@@ -56,23 +57,27 @@ const PlacesAutocomplete = ({ setSelected }) => {
     setValue(address, false);
     clearSuggestions();
 
-    try {
-      // Use getGeocode to get detailed information about the selected place
-      const results = await getGeocode({ address });
-      const { address_components } = results[0];
+    const results = await getGeocode({ address });
+    const { lat, lng } = getLatLng(results[0]);
+    setSelected({ lat, lng });
 
-      // Extract the city from address components
-      const city = address_components.find((component) =>
-        component.types.includes("locality")
-      );
+    // try {
+    //   // Use getGeocode to get detailed information about the selected place
+    //   const results = await getGeocode({ address });
+    //   const { address_components } = results[0];
 
-      // You can now use the 'city' variable as needed
-      console.log("Selected city:", city.long_name);
+    //   // Extract the city from address components
+    //   const city = address_components.find((component) =>
+    //     component.types.includes("locality")
+    //   );
 
-      // You might want to pass this information to the parent component using setSelected
-    } catch (error) {
-      console.error("Error selecting place:", error);
-    }
+    //   // You can now use the 'city' variable as needed
+    //   console.log("Selected city:", city.long_name);
+
+    //   // You might want to pass this information to the parent component using setSelected
+    // } catch (error) {
+    //   console.error("Error selecting place:", error);
+    // }
   };
 
   return (
@@ -87,10 +92,13 @@ const PlacesAutocomplete = ({ setSelected }) => {
       />
       <div>
         {status === "OK" &&
-          data.map((object, place_id) => (
+          data.map((object, id) => (
             <div
-              key={place_id}
-              onClick={() => handleSelect(object.description)}
+              key={id}
+              onClick={() => {
+                // console.log(object, place_id);
+                handleSelect(object.description);
+              }}
             >
               {object.description}
             </div>
