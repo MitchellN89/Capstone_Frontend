@@ -8,11 +8,8 @@ export default function ComboBox(props) {
         { label: "mitchell", age: 34 },
         { label: "kirsty", age: 31 },
       ]}
-      onChange={(evt) => {
-        console.log(evt.target);
-      }}
+      onChange={(evt) => {}}
       renderInput={(params, option) => {
-        console.log(option);
         return <TextField {...params} label="Combo Box" />;
       }}
       {...props}

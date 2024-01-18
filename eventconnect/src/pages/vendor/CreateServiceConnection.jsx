@@ -44,15 +44,14 @@ export default function CreateServiceConnection({
     if (!isValid) return;
 
     let body = convertFormDataToObject(new FormData(evt.target));
+    const { vendorStatus } = body;
 
     try {
-      console.log("body: ", body);
-      console.log("eventPlannerId: ", eventPlannerId);
-      const result = await apiCall(
-        `/serviceRequests/${serviceRequestId}/connect`,
-        "post",
-        { ...body, eventPlannerId }
-      );
+      await apiCall(`/serviceRequests/${serviceRequestId}/connect`, "post", {
+        ...body,
+        eventPlannerId,
+      });
+
       handleTrigger();
     } catch (err) {
       console.error(err);

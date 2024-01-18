@@ -21,7 +21,7 @@ import EventPlannerLogin from "../pages/Auth/EventPlannerLogin";
 import VendorLogin from "../pages/Auth/VendorLogin";
 import EventPlannerSignUp from "../pages/Auth/EventPlannerSignUp";
 import VendorSignUp from "../pages/Auth/VendorSignUp";
-import MapComponent from "../components/GoogleMap";
+import MapComponent from "../components/Map";
 
 export default function AppRoutes() {
   return (

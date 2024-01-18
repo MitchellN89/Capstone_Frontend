@@ -35,7 +35,6 @@ export default function ServiceRequestsV() {
     apiCall(`/serviceRequests${queryString}`)
       .then((result) => {
         if (!ignore) {
-          console.log(`/serviceRequests/${queryString}: `, result);
           setRequests(result.data);
         }
       })

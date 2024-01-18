@@ -64,11 +64,6 @@ export default function ServiceConnectionEp({
     };
   }, [trigger]);
 
-  useEffect(() => {
-    if (serviceConnection)
-      console.log("SERVICE CONNECTION: ", serviceConnection, roomId);
-  }, [serviceConnection]);
-
   if (!serviceConnection) return <span>No data available yet</span>;
   return (
     <>

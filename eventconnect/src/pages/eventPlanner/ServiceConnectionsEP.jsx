@@ -21,15 +21,6 @@ export default function ServiceConnectionsEP({
 
   const { eventId, eventServiceId } = useParams();
 
-  useEffect(() => {
-    if (serviceConnections) {
-      console.log(
-        "ServiceConnectionsEP.jsx > serviceConnections :",
-        serviceConnections
-      );
-    }
-  }, [serviceConnections]);
-
   const handleClick = (vendorId) => {
     handleSelectedVendorId(vendorId);
   };
@@ -45,7 +36,6 @@ export default function ServiceConnectionsEP({
         <LoadingCard isLoading={isLoading} />
         {serviceConnections &&
           serviceConnections.map((serviceConnection) => {
-            console.log("MAP: ", serviceConnection);
             return (
               <ServiceConnectionCardEP
                 handleClick={handleClick}

@@ -37,10 +37,6 @@ export default function EventsV() {
     };
   }, [trigger]);
 
-  useEffect(() => {
-    if (events) console.log("EVENTS V, events: ", events);
-  }, [events]);
-
   return (
     // TODO Need title
     // TODO need serach criteria

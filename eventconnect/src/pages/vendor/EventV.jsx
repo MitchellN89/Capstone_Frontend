@@ -22,10 +22,6 @@ export default function EventV() {
       });
   }, [trigger]);
 
-  useEffect(() => {
-    if (event) console.log("EVENT V > event: ", event);
-  }, [event]);
-
   return (
     <>
       <Header1>VENDOR EVENT</Header1>

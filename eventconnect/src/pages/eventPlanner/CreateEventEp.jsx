@@ -1,6 +1,6 @@
 import { Grid, Paper } from "@mui/material";
 import TextInput from "../../components/Inputs/TextInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
@@ -16,10 +16,11 @@ import {
   useTextInput,
   useDateTimeInput,
 } from "../../hooks/useInputData";
-import AddressInput from "../../components/Inputs/AddressInput";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import DateTimeInput from "../../components/Inputs/DateTimeInput";
 import { useNotification } from "../../context/NotificationProvider";
+import AddressInput from "../../components/Inputs/AddressInput";
+import Map from "../../components/Map";
 
 const allValid = (...inputs) => {
   return new Promise((res) => {
@@ -132,6 +133,8 @@ export default function CreateEventEP() {
     }
   };
 
+  const [inputValue, setInputValue] = useState("");
+
   return (
     <>
       <Header1>CREATE NEW EVENT</Header1>
@@ -168,6 +171,12 @@ export default function CreateEventEP() {
                   <Grid item xs={12}>
                     <TextInput {...endClientPhoneNumberProps} />
                   </Grid>
+                  <Grid item xs={12}>
+                    <AddressInput
+                      inputValue={inputValue}
+                      setInputValue={setInputValue}
+                    />
+                  </Grid>
                   <Grid textAlign="right" item xs={12}>
                     <ButtonLoading
                       color="error"
@@ -194,6 +203,7 @@ export default function CreateEventEP() {
           </Box>
         </Paper>
       </MaxWidthContainer>
+      <Map></Map>
     </>
   );
 }

@@ -6,79 +6,70 @@ import {
   useEffect,
 } from "react";
 import { apiCall } from "../utilities/apiCall";
+import { useEventsEPContext } from "./EventEPProvider";
 const ServicesEPContext = createContext();
 
 const reducer = (state, action) => {
-  const { type, payload, error, response, id, eventId } = action;
+  const { type, payload, id, eventId, eventServiceId, vendorId } = action;
 
   switch (type) {
     case "PROCESSING_REQUEST":
-      return { ...state, isLoading: true, error: null, response: null };
+      return { ...state, isLoading: true };
     case "REQUEST_FAILED":
       console.err;
       return {
         ...state,
         isLoading: false,
-        error: error,
-        response: null,
       };
     case "GET_SERVICES":
       return {
         ...state,
         services: [...payload],
         isLoading: false,
-        error: null,
-        response: response,
       };
     case "GET_EVENT_SERVICES":
       return {
         ...state,
         eventServices: appendEventServices(state, payload),
         isLoading: false,
-        error: null,
-        response: response,
       };
     case "CREATE_EVENT_SERVICE":
       return {
         ...state,
         eventServices: appendNewEventService(state, payload),
         isLoading: false,
-        error: null,
-        response: response,
-        newEvent: payload,
       };
     case "UPDATE_EVENT_SERVICE":
       return {
         ...state,
         eventServices: updateEventService(state, id, payload),
         isLoading: false,
-        error: null,
-        response: response,
       };
     case "DELETE_EVENT_SERVICE":
       return {
         ...state,
         eventServices: deleteEventService(state, id),
         isLoading: false,
-        error: null,
-        response: response,
       };
     case "ENABLE_BROADCAST":
       return {
         ...state,
         eventServices: broadCastEventService(state, id, payload),
         isLoading: false,
-        response: response,
       };
-    case "DISABLE_BROADCAST":
+    // case "DISABLE_BROADCAST":
+    //   return {
+    //     ...state,
+    //     eventServices: broadCastEventService(state, id, payload),
+    //     isLoading: false,
+    //     response: response,
+    //   };
+    case "PROMOTE_VENDOR":
       return {
         ...state,
-        eventServices: broadCastEventService(state, id, payload),
+        eventServices: promoteVendor(state, eventServiceId, vendorId),
         isLoading: false,
-        response: response,
       };
-    case "PROMOTE_VENDOR":
-      return;
     default:
       return state;
   }
@@ -117,7 +108,15 @@ const broadCastEventService = (state, id, bool) => {
   );
 };
 
-const promoteVendor = () => {};
+const promoteVendor = (state, eventServiceId, vendorId) => {
+  const eventServices = [...state.eventServices];
+  return eventServices.map((eventService) => {
+    if (eventService.id == eventServiceId) {
+      eventService.vendorId = vendorId;
+      return eventService;
+    } else return eventService;
+  });
+};
 
 export function ServicesEPProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, {
@@ -127,6 +126,10 @@ export function ServicesEPProvider({ children }) {
     error: null,
     response: null,
   });
+
+  useEffect(() => {
+    console.log("EventServiceEPProvider > State: ", state);
+  }, [state]);
 
   useEffect(() => {
     let ignore = false;
@@ -156,10 +159,6 @@ export function ServicesEPProvider({ children }) {
   }, []);
 
   const context = { state, dispatch };
-
-  useEffect(() => {
-    if (state) console.log("CONTEXT ? EventServicesEP > state: ", state);
-  }, [state]);
 
   return (
     <ServicesEPContext.Provider value={context}>

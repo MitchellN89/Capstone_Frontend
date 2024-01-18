@@ -17,11 +17,9 @@ const reducer = (state, action) => {
 export default function useLiveChat(connectedWithUser = {}, roomId = 0) {
   const [entries, dispatch] = useReducer(reducer, []);
   const [value, setValue] = useState("");
-  const { user } = useUser();
+  const { user } = useUser().state;
 
   roomId = parseInt(roomId);
-
-  console.log(user, connectedWithUser);
 
   const users = {
     me: {

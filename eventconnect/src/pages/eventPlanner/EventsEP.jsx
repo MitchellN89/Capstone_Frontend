@@ -45,8 +45,8 @@ export default function EventsEP() {
 
       <Grid container spacing={3}>
         <LoadingCard isLoading={isLoading} />
-        {events.data &&
-          events.data.map((event) => {
+        {events.events &&
+          events.events.map((event) => {
             return (
               <GridCard
                 handleDelete={handleDelete}

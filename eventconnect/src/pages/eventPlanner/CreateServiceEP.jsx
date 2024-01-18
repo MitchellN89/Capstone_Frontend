@@ -10,10 +10,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelectInput, useTextInput } from "../../hooks/useInputData";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import SelectInput from "../../components/Inputs/SelectInput";
+import { useEventsEPContext } from "../../context/EventEPProvider";
 
 export default function CreateServiceEP() {
   const { state: services, dispatch: servicesDispatch } =
     useServicesEPContext();
+  const { dispatch: eventDispatch } = useEventsEPContext();
   const { isLoading } = services;
   const { eventId } = useParams();
   const eventServices = services.eventServices.filter(
@@ -99,11 +101,17 @@ export default function CreateServiceEP() {
       const { id: eventServiceId } = result.data;
 
       const newEventService = { ...result.data, event: { id: eventId } };
-      console.log("CreateServiceEP.jsx > newEventService: ", newEventService);
+
       servicesDispatch({
         type: "CREATE_EVENT_SERVICE",
         payload: newEventService,
         response: result.response,
+      });
+
+      eventDispatch({
+        type: "CREATE_EVENT_SERVICE",
+        id: eventServiceId,
+        eventId,
       });
 
       navigate(`/eventplanner/${eventId}/${eventServiceId}`, { replace: true });

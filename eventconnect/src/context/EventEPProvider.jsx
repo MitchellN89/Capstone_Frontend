@@ -9,69 +9,119 @@ import { apiCall } from "../utilities/apiCall";
 const EventEPContext = createContext();
 
 const reducer = (state, action) => {
-  const { type, payload, error, response, id } = action;
+  const { type, payload, id, eventId, eventServiceId, vendorId } = action;
 
   switch (type) {
     case "PROCESSING_REQUEST":
-      return { ...state, isLoading: true, error: null, response: null };
+      return { ...state, isLoading: true };
     case "REQUEST_FAILED":
       console.err;
       return {
         ...state,
         isLoading: false,
-        error: error,
-        response: null,
       };
     case "GET_EVENTS":
       return {
         ...state,
-        data: [...payload],
+        events: [...payload],
         isLoading: false,
-        error: null,
-        response: response,
       };
     case "CREATE_EVENT":
       return {
         ...state,
-        data: appendNewEvent(state, payload),
+        events: appendNewEvent(state, payload),
         isLoading: false,
-        error: null,
-        response: response,
-        newEvent: payload,
       };
     case "UPDATE_EVENT":
       return {
         ...state,
-        data: updateEvent(state, id, payload),
+        events: updateEvent(state, id, payload),
         isLoading: false,
-        error: null,
-        response: response,
       };
     case "DELETE_EVENT":
       return {
         ...state,
-        data: deleteEvent(state, id),
+        events: deleteEvent(state, id),
         isLoading: false,
-        error: null,
-        response: response,
       };
-    case "UPDATE_EVENT_SERVICE":
-      return;
-    // TODO - promote and broadcast can change
+    case "CREATE_EVENT_SERVICE":
+      return {
+        ...state,
+        events: appendNewEventService(state, id, eventId),
+        isLoading: false,
+      };
+    case "DELETE_EVENT_SERVICE":
+      console.log("DELETE_EVENT_SERVICE", id, eventId);
+      return {
+        ...state,
+        events: deleteEventService(state, id, eventId),
+      };
+    case "PROMOTE_VENDOR":
+      return {
+        ...state,
+        events: promoteVendor(state, eventServiceId, vendorId, eventId),
+        isLoading: false,
+      };
     default:
       return state;
   }
 };
 
+const appendNewEventService = (state, id, eventId) => {
+  const events = [...state.events];
+  console.log("_____ appendNewEventService function run");
+  return events.map((event) => {
+    if (event.id == eventId) {
+      console.log("Append new event service: ", eventId, event.id);
+      if (!event.eventServices) {
+        event.eventServices = [];
+      }
+
+      event.eventServices.push({ id, vendorId: null });
+    }
+    return event;
+  });
+};
+
+const deleteEventService = (state, eventServiceId, eventId) => {
+  const events = [...state.events];
+  const filteredEvents = events.map((event) => {
+    console.log(
+      "DEBUG: ",
+      "eventId",
+      eventId,
+      "event.id",
+      event.id,
+      "event.eventServices.length",
+      event.eventServices.length
+    );
+    if (event.id == eventId && event.eventServices.length > 0) {
+      event.eventServices = event.eventServices.filter((eventService) => {
+        console.log(
+          "DEBUG: ",
+          "eventService.id:",
+          eventService.id,
+          "eventServiceId",
+          eventServiceId
+        );
+        return eventService.id != eventServiceId;
+      });
+    }
+
+    return event;
+  });
+  return filteredEvents;
+};
+
 const appendNewEvent = (state, newEvent) => {
-  const data = [...state.data];
-  data.push(newEvent);
-  return data;
+  const events = [...state.events];
+  events.push(newEvent);
+  return events;
 };
 
 const updateEvent = (state, id, updatedEvent) => {
-  const data = [...state.data];
-  const log = data.map((event) =>
+  const events = [...state.events];
+  const log = events.map((event) =>
     event.id == id ? { ...event, ...updatedEvent } : event
   );
 
@@ -79,16 +129,30 @@ const updateEvent = (state, id, updatedEvent) => {
 };
 
 const deleteEvent = (state, id) => {
-  const data = [...state.data];
-  return data.filter((event) => event.id != id);
+  const events = [...state.events];
+  return events.filter((event) => event.id != id);
+};
+
+const promoteVendor = (state, eventServiceId, vendorId, eventId) => {
+  const events = [...state.events];
+  const newEvents = events.map((event) => {
+    if (event.id == eventId && event.eventServices.length > 0) {
+      event.eventServices = event.eventServices.map((eventService) => {
+        if (eventService.id == eventServiceId) {
+          eventService.vendorId = vendorId;
+        }
+        return eventService;
+      });
+    }
+    return event;
+  });
+  return newEvents;
 };
 
 export function EventEPProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, {
-    data: [],
+    events: [],
     isLoading: false,
-    error: null,
-    response: null,
   });
 
   const [queryParams, setQueryParams] = useState({});
@@ -105,6 +169,10 @@ export function EventEPProvider({ children }) {
       }
     });
   };
+
+  useEffect(() => {
+    console.log("EventEPProvider > State: ", state);
+  }, [state]);
 
   useEffect(() => {
     let ignore = false;
@@ -130,7 +198,6 @@ export function EventEPProvider({ children }) {
           dispatch({
             type: "GET_EVENTS",
             payload: result.data,
-            response: result.response,
           });
         }
       })
@@ -151,10 +218,6 @@ export function EventEPProvider({ children }) {
   };
 
   const context = { state, dispatch, actions };
-
-  useEffect(() => {
-    if (state) console.log("CONTEXT: EventEP > state: ", state);
-  }, [state]);
 
   return (
     <EventEPContext.Provider value={context}>

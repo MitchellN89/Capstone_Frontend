@@ -13,8 +13,6 @@ export default function ChatMessage({ message, createdAt, sender, users }) {
     textAlign: sender == "me" ? "right" : "left",
   };
 
-  const messageStyle = {};
-
   return (
     <div style={containerStyle}>
       <span>{users[sender].name}</span>

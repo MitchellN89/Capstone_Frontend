@@ -18,8 +18,6 @@ export default function ServiceEP() {
     return eventService.id == eventServiceId;
   });
 
-  console.log("ServiceEP.jsx > eventService: ", eventService);
-
   if (!eventService) return;
 
   const [trigger, setTrigger] = useState(true);
@@ -41,6 +39,13 @@ export default function ServiceEP() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("__ SELECTEDVENDORID: ", selectedVendorId);
+  }, [selectedVendorId]);
+  useEffect(() => {
+    console.log("__ EVENTSERVICE: ", eventService);
+  }, [eventService]);
+
+  useEffect(() => {
     let ignore = false;
     let timer;
 
@@ -51,8 +56,6 @@ export default function ServiceEP() {
       apiCall(`/events/${eventId}/services/${eventServiceId}/connections`)
         .then((result) => {
           if (!ignore) {
-            console.log("ServiceEp.jsx > get service events: ", result);
-
             setServiceConnections(result.data);
           }
         })

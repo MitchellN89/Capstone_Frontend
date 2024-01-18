@@ -32,7 +32,6 @@ export default function ChatBoxV({
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("Socket connected: ", newSocket.id);
       newSocket.emit("joinRoom", roomId, users.me.id);
     });
 
@@ -48,7 +47,6 @@ export default function ChatBoxV({
       });
 
       socket.on("promoteVendor", (message) => {
-        console.log("PROMOTION RECEIVED", message);
         navigate(`/vendor/events/${eventServiceId}`);
       });
     }

@@ -11,7 +11,7 @@ export default function EventEP() {
 
   const navigate = useNavigate();
 
-  const event = events.data.find((event) => {
+  const event = events.events.find((event) => {
     return event.id == eventId;
   });
 

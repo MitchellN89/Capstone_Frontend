@@ -11,10 +11,9 @@ import StyledLink from "../../components/StyledLink";
 
 export default function Login() {
   const theme = useTheme();
-  console.log("Auth.jsx");
+
   const location = useLocation();
   const { pathname } = location;
-  console.log("Location:", location);
 
   return (
     <>

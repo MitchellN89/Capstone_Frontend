@@ -25,7 +25,6 @@ export default function ServiceRequestV() {
     apiCall(`/serviceRequests/${serviceRequestId}`)
       .then((result) => {
         if (!ignore) {
-          console.log(`/serviceRequests/${serviceRequestId}: `, result);
           setServiceRequest(result.data);
         }
       })

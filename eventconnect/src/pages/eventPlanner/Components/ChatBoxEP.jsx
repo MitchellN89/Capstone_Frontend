@@ -4,6 +4,8 @@ import ChatMessage from "../../../components/ChatMessage";
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { apiCall } from "../../../utilities/apiCall";
+import { useServicesEPContext } from "../../../context/EventServiceEPProvider";
+import { useEventsEPContext } from "../../../context/EventEPProvider";
 
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
@@ -19,7 +21,8 @@ export default function ChatBoxEP({
 }) {
   const [socket, setSocket] = useState(null);
   const vendorId = users.connectedWith.id;
-
+  const { dispatch: eventDispatch } = useEventsEPContext();
+  const { dispatch: serviceDispatch } = useServicesEPContext();
   const { eventId, eventServiceId, serviceConnectionId } = useParams();
 
   const sendMessage = (message) => {
@@ -35,10 +38,22 @@ export default function ChatBoxEP({
       `/events/${eventId}/services/${eventServiceId}/connections/${serviceConnectionId}/promoteVendor/${vendorId}`,
       "patch"
     )
-      .then((result) => {
+      .then(() => {
         handleTrigger();
+        serviceDispatch({
+          type: "PROMOTE_VENDOR",
+          eventServiceId,
+          vendorId,
+        });
+
+        eventDispatch({
+          type: "PROMOTE_VENDOR",
+          eventServiceId,
+          vendorId,
+          eventId,
+        });
+
         socket.emit("promoteVendor", roomId, { eventServiceId });
-        console.log(result);
       })
       .catch((err) => {
         console.error(err);
@@ -51,7 +66,6 @@ export default function ChatBoxEP({
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      console.log("Socket connected: ", newSocket.id);
       newSocket.emit("joinRoom", roomId, users.me.id);
     });
 

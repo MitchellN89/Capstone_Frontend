@@ -22,7 +22,6 @@ export function NotificationProvider({ children }) {
   const [options, setOptions] = useState(defaultOptions);
 
   const triggerNotification = (newOptions) => {
-    console.log("triggerNotification: ", newOptions);
     setOpen(false);
     const allowedOptions = {
       message: newOptions.message || "",
@@ -32,10 +31,6 @@ export function NotificationProvider({ children }) {
     setOptions(allowedOptions);
     setOpen(true);
   };
-
-  useEffect(() => {
-    console.log(open);
-  }, [open]);
 
   const notificationProps = {
     open,

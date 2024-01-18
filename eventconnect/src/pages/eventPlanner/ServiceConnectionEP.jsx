@@ -15,19 +15,9 @@ export default function ServiceConnectionEp({
 }) {
   if (!serviceConnection) return <span>No data available yet</span>;
 
-  const { user } = useUser();
+  const { user } = useUser().state;
   const roomId = parseInt(serviceConnection ? serviceConnection.id : null);
   const connectedWithUser = serviceConnection ? serviceConnection.user : null;
-  // const [liveChatProps, dispatchLiveChat] = useLiveChat(
-  //   user,
-  //   connectedWithUser,
-  //   roomId
-  // );
-
-  console.log(
-    "ServiceConnectionEp.jsx > serviceConnection: ",
-    serviceConnection
-  );
 
   return (
     <>

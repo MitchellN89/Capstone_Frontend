@@ -73,7 +73,7 @@ export default function TextInput({
           return result.isValid;
         })
       );
-      console.log("invalidList (inner func dec)", invalidList);
+
       if (invalidList.length > 0) {
         setInvalidList(invalidList);
       } else {

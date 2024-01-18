@@ -6,14 +6,18 @@ import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { useEffect } from "react";
 import { apiCall } from "../../utilities/apiCall";
 import { useNavigate } from "react-router-dom";
+import { useEventsEPContext } from "../../context/EventEPProvider";
 
 export default function ServicesEP() {
   const { eventId } = useParams();
   const { state: services, dispatch: servicesDispatch } =
     useServicesEPContext();
+  const { dispatch: eventDispatch } = useEventsEPContext();
+  console.log("DEBUG > EventServiceEPProvider: ", services);
   const eventServices = services.eventServices.filter(
     (service) => service.eventId == eventId
   );
+
   const { isLoading } = services;
   const navigate = useNavigate();
 
@@ -24,6 +28,7 @@ export default function ServicesEP() {
     apiCall(`/events/${eventId}/services/${id}`, "delete")
       .then(() => {
         servicesDispatch({ type: "DELETE_EVENT_SERVICE", id });
+        eventDispatch({ type: "DELETE_EVENT_SERVICE", id, eventId });
       })
       .catch((err) => {
         servicesDispatch({ type: "REQUEST_FAILED", error: err });
@@ -36,22 +41,34 @@ export default function ServicesEP() {
     navigate(`/eventPlanner/${eventId}/${id}`);
   };
 
+  console.log("ServicesEp.jsx > eventServices: ", eventServices);
+
   useEffect(() => {
+    let ignore = false;
     if (eventServices.length === 0) {
       servicesDispatch({ type: "PROCESSING_REQUEST" });
+      console.log("DEBUG > useEffect in ServicesEP running");
       apiCall(`/events/${eventId}/services`)
         .then((result) => {
-          servicesDispatch({
-            type: "GET_EVENT_SERVICES",
-            payload: result.data,
-            response: result.response,
-          });
+          if (!ignore) {
+            servicesDispatch({
+              type: "GET_EVENT_SERVICES",
+              payload: result.data,
+              response: result.response,
+            });
+          }
         })
         .catch((err) => {
-          console.error(err);
-          servicesDispatch({ type: "REQUEST_FAILED", error: err });
+          if (!ignore) {
+            console.error(err);
+            servicesDispatch({ type: "REQUEST_FAILED", error: err });
+          }
         });
     }
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return (

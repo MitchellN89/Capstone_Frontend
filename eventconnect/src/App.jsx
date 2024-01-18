@@ -5,6 +5,7 @@ import { UserProvider } from "./context/UserProvider";
 import VariableTheme from "./components/VariableTheme";
 import EventConnect from "./pages/eventConnet/EventConnect";
 import { NotificationProvider } from "./context/NotificationProvider";
+import { GoogleMapsProvider } from "./context/GoogleMapsProvider";
 
 function App() {
   return (
@@ -13,9 +14,11 @@ function App() {
       <UserProvider>
         <VariableTheme>
           <NotificationProvider>
-            <EventConnect>
-              <AppRoutes></AppRoutes>
-            </EventConnect>
+            <GoogleMapsProvider>
+              <EventConnect>
+                <AppRoutes></AppRoutes>
+              </EventConnect>
+            </GoogleMapsProvider>
           </NotificationProvider>
         </VariableTheme>
       </UserProvider>
