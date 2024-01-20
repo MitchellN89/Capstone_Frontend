@@ -13,14 +13,17 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useUser } from "../../../context/UserProvider";
+import { useTheme } from "@emotion/react";
+import LogoSide from "../../../components/Logos/LogoSide";
 
-const pages = ["no data", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ["EVENTS"];
+const settings = ["Profile", "Logout"];
 
 export default function NavBarEP() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { user } = useUser();
+  const theme = useTheme();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -38,10 +41,14 @@ export default function NavBarEP() {
   };
 
   return (
-    <AppBar position="sticky" sx={{ marginBottom: "25px" }}>
+    <AppBar
+      position="sticky"
+      sx={{ marginBottom: "25px", backgroundColor: theme.palette.feature[1] }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
+          <LogoSide />
           <Typography
             variant="h6"
             noWrap

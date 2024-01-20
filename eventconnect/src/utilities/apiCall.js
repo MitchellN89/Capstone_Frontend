@@ -16,7 +16,7 @@ export async function apiCall(url, method = "get", body, useToken = true) {
     url: `${domain}${url}`,
     data: body,
     headers: headers,
-    timeout: 10000,
+    timeout: 20000,
   });
 
   return result.data;

@@ -23,3 +23,15 @@ export function Header2({ children, centered, style }) {
 
   return <StyledH2>{children}</StyledH2>;
 }
+
+export function Header3({ children, centered, style }) {
+  const StyledH2 = styled("h2")(({ theme }) => ({
+    fontSize: "20px",
+    fontWeight: "400",
+    textAlign: centered ? "center" : "left",
+    color: theme.palette.text,
+    ...style,
+  }));
+
+  return <StyledH2>{children}</StyledH2>;
+}

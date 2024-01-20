@@ -6,9 +6,17 @@ import LoadingCard from "../../components/LoadingCard";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
+import CardEventEP from "./Components/CardEventEP";
+import { Header1 } from "../../components/Texts/TextHeaders";
+import HeaderStrip from "../../components/HeaderStrip";
+import { IconCreate } from "../../components/Icons";
+import ButtonLogoCreate from "../../components/Buttons/ButtonLogoCreate";
+import ModalContainer from "../../components/ModalContainer";
+import CreateEventEP from "./CreateEventEp";
+import { useState } from "react";
 
 export default function EventsEP() {
-  // const [events, isLoadingEvents, handleTrigger] = useData("/events");
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const {
     state: events,
     dispatch: eventsDispatch,
@@ -36,31 +44,53 @@ export default function EventsEP() {
     navigate(`/eventPlanner/${id}`);
   };
 
+  const handleOpenCreateModal = (bool) => {
+    setOpenCreateModal(bool);
+  };
+
+  console.log("OPEN STATUS", openCreateModal);
+
   return (
     // TODO Need title
     // TODO need serach criteria
     <>
-      {/* <button onClick={handleTrigger}>refresh</button> */}
-      <h1>Events</h1>
+      <CreateEvent
+        open={openCreateModal}
+        handleOpenCreateModal={handleOpenCreateModal}
+      />
+      <HeaderStrip>
+        <Header1 style={{ margin: "0" }}>EVENTS</Header1>
+        <ButtonLogoCreate handleCreate={handleOpenCreateModal} />
+      </HeaderStrip>
 
       <Grid container spacing={3}>
         <LoadingCard isLoading={isLoading} />
         {events.events &&
           events.events.map((event) => {
             return (
-              <GridCard
+              <CardEventEP
+                key={event.id}
+                eventId={event.id}
+                eventName={event.eventName}
+                hasPromotedVendors={event.vendorId ? true : false}
                 handleDelete={handleDelete}
                 handleClick={handleClick}
-                hasDelete
-                id={event.id}
-                key={event.id}
-              >
-                {event.eventName}
-              </GridCard>
+              />
             );
           })}
-        <CreateCard url="/eventplanner/createevent">CREATE EVENT</CreateCard>
       </Grid>
     </>
   );
 }
+
+const CreateEvent = ({ open, handleOpenCreateModal }) => {
+  return (
+    <ModalContainer
+      open={open}
+      handleOpen={handleOpenCreateModal}
+      maxWidth="md"
+    >
+      <CreateEventEP handleOpen={handleOpenCreateModal} />
+    </ModalContainer>
+  );
+};

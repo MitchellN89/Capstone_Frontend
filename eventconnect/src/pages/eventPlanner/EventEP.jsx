@@ -4,11 +4,14 @@ import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
 import { useEventsEPContext } from "../../context/EventEPProvider";
+import EditEventEP from "./EditEventEp";
+import { useState } from "react";
+import ModalContainer from "../../components/ModalContainer";
 
 export default function EventEP() {
   let { eventId } = useParams();
   const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
-
+  const [openEditModal, setOpenEditModal] = useState(false);
   const navigate = useNavigate();
 
   const event = events.events.find((event) => {
@@ -28,6 +31,10 @@ export default function EventEP() {
       });
   };
 
+  const handleOpenEditModal = (bool) => {
+    setOpenEditModal(bool);
+  };
+
   if (!event)
     return (
       <>
@@ -36,6 +43,10 @@ export default function EventEP() {
     );
   return (
     <>
+      <EditEvent
+        open={openEditModal}
+        handleOpenEditModal={handleOpenEditModal}
+      />
       <Header1>{event.eventName}</Header1>
       <button
         onClick={() => {
@@ -61,7 +72,7 @@ export default function EventEP() {
           </Grid>
           <button
             onClick={() => {
-              navigate(`/eventplanner/${eventId}/editevent`);
+              handleOpenEditModal(true);
             }}
           >
             EDIT EVENT
@@ -73,3 +84,11 @@ export default function EventEP() {
     </>
   );
 }
+
+const EditEvent = ({ open, handleOpenEditModal }) => {
+  return (
+    <ModalContainer open={open} handleOpen={handleOpenEditModal} maxWidth="md">
+      <EditEventEP handleOpen={handleOpenEditModal} />
+    </ModalContainer>
+  );
+};

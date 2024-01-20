@@ -15,3 +15,28 @@ export function IconSend({ style, ...others }) {
     <Icon style={{ marginLeft: "10px", ...style }} {...others} icon="bi:send" />
   );
 }
+
+export function IconDelete({ height, style, ...others }) {
+  return (
+    <Icon
+      height={height || "25px"}
+      style={{ ...style }}
+      {...others}
+      icon="typcn:delete"
+    />
+  );
+}
+
+export function IconCreate({ height, style, ...others }) {
+  return (
+    <div>
+      <Icon
+        display="inline-block"
+        height={height || "25px"}
+        style={{ ...style }}
+        {...others}
+        icon="ion:create-sharp"
+      />
+    </div>
+  );
+}

@@ -14,11 +14,17 @@ export default function DateTimeInput({
 }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer
+      {/* <DemoContainer
         components={["DateTimeField", "DateTimeField", "DateTimeField"]}
-      >
-        <DateTimeField format="DD MMMM YYYY hh:mm a" {...others} />
-      </DemoContainer>
+      > */}
+      <DateTimeField
+        variant="standard"
+        size="small"
+        format="DD MMMM YYYY hh:mm a"
+        fullWidth
+        {...others}
+      />
+      {/* </DemoContainer> */}
     </LocalizationProvider>
   );
 }

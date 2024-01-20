@@ -115,7 +115,7 @@ export default function EventPlannerSignUp() {
 
       triggerNotification({ message: "Successfully created account" });
 
-      navigate("/auth/vendor/login", {
+      navigate("/auth/eventplanner/login", {
         state: { emailAddress: emailAddressValue },
       });
     } catch (err) {
@@ -127,7 +127,7 @@ export default function EventPlannerSignUp() {
             severity: "warning",
           });
 
-          navigate("/auth/vendor/login", {
+          navigate("/auth/eventplanner/login", {
             state: { emailAddress: emailAddressValue },
           });
           break;

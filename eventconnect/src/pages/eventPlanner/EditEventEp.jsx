@@ -11,13 +11,20 @@ import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useParams, useNavigate } from "react-router-dom";
+import AddressInput from "../../components/Inputs/AddressInput";
+import FileInput from "../../components/Inputs/FileInput";
+import { formatImageForJSON } from "../../utilities/imageFormatter";
+import { convertDatesToValid } from "../../utilities/formData";
+import { useNotification } from "../../context/NotificationProvider";
 
-export default function EditEventEP() {
+export default function EditEventEP({ handleOpen }) {
   const { eventId } = useParams();
   const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
   const { isLoading } = events;
-  const event = events.data.find((event) => eventId == event.id);
+  const event = events.events.find((event) => eventId == event.id);
   const navigate = useNavigate();
+  const [fileData, setFileData] = useState(null);
+  const { triggerNotification } = useNotification();
 
   if (!event) navigate(`/eventplanner/${eventId}`);
   // TODO - notification here
@@ -73,112 +80,169 @@ export default function EditEventEP() {
     "phoneNumber"
   );
 
-  const isValidForm = () => {
+  const allValid = (...inputs) => {
     return new Promise((res) => {
       setTimeout(() => {
-        res(
-          [
-            // isValidAddress,
-            isValidVenue,
-            isValidEndClientEmailAddress,
-            isValidEndClientFirstName,
-            isValidEndClientLastName,
-            isValidEndClientPhoneNumber,
-            isValidEventName,
-          ].every((i) => i)
-        );
+        res(inputs.every((input) => input));
       }, 250);
     });
   };
 
+  // const isValidForm = () => {
+  //   return new Promise((res) => {
+  //     setTimeout(() => {
+  //       res(
+  //         [
+  //           // isValidAddress,
+  //           isValidVenue,
+  //           isValidEndClientEmailAddress,
+  //           isValidEndClientFirstName,
+  //           isValidEndClientLastName,
+  //           isValidEndClientPhoneNumber,
+  //           isValidEventName,
+  //         ].every((i) => i)
+  //       );
+  //     }, 250);
+  //   });
+  // };
+
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    const isValid = await isValidForm();
-    if (!isValid) return;
+    const isValidForm = await allValid(
+      isValidEndClientEmailAddress,
+      isValidEndClientFirstName,
+      isValidEndClientLastName,
+      isValidEndClientPhoneNumber,
+      isValidEndDateTime,
+      isValidEventName,
+      isValidStartDateTime,
+      isValidVenue
+    );
 
-    const body = convertFormDataToObject(new FormData(evt.target));
+    if (!isValidForm) {
+      triggerNotification({
+        message: "Please make sure all fields contain valid data",
+        severity: "error",
+      });
+      return;
+    }
+
+    let body = convertFormDataToObject(new FormData(evt.target));
+    body = convertDatesToValid(
+      body,
+      "Date",
+      "DD MMMM YYYY hh:mm a",
+      "YYYY/MM/DD HH:mm"
+    );
 
     eventsDispatch({ type: "PROCESSING_REQUEST" });
 
-    apiCall(`/events/${eventId}`, "put", body)
-      .then((result) => {
-        eventsDispatch({
-          type: "UPDATE_EVENT",
-          payload: body,
-          id: eventId,
-          response: result.response,
-        });
+    try {
+      let imageUpload;
+      if (fileData) {
+        imageUpload = await formatImageForJSON(fileData);
+      }
 
-        navigate(`/eventplanner/${eventId}`, { replace: true });
-      })
-      .catch((err) => {
-        console.error(err);
-        eventsDispatch({ type: "REQUEST_FAILED", error: err });
+      if (imageUpload) body.imageUpload = imageUpload;
+
+      const result = await apiCall(`/events/${eventId}`, "put", body);
+
+      eventsDispatch({
+        type: "UPDATE_EVENT",
+        payload: body,
+        id: eventId,
+        response: result.response,
       });
+
+      triggerNotification({
+        message: "Successfully edited Event",
+      });
+
+      handleOpen(false);
+    } catch (err) {
+      eventsDispatch({ type: "REQUEST_FAILED", error: err });
+      if (err.response && err.response.status)
+        switch (err.response.status) {
+          default:
+            triggerNotification({
+              message: "Server error. For more details, see log",
+              severity: "error",
+            });
+        }
+
+      console.error(err);
+    }
   };
+
+  const handleFileData = (value) => {
+    setFileData(value);
+  };
+
   return (
     <>
-      <Header1>EDIT EVENT</Header1>
-      <MaxWidthContainer maxWidth="lg" centered>
-        <Paper>
-          <Box padding={2}>
-            <Box paddingX={5}>
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Header2>New Event</Header2>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...eventNameProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...venueProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <DateTimeInput {...startDateTimeProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <DateTimeInput {...endDateTimeProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientFirstNameProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientLastNameProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientEmailAddressProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientPhoneNumberProps} />
-                  </Grid>
-                  <Grid textAlign="right" item xs={12}>
-                    <ButtonLoading
-                      color="error"
-                      type="button"
-                      variant="text"
-                      disabled={isLoading}
-                      onClick={() => {
-                        navigate(-1);
-                      }}
-                    >
-                      Cancel
-                    </ButtonLoading>
-                    <ButtonLoading
-                      type="submit"
-                      isLoading={isLoading}
-                      disabled={isLoading}
-                    >
-                      Update Event
-                    </ButtonLoading>
-                  </Grid>
-                </Grid>
-              </form>
-            </Box>
-          </Box>
-        </Paper>
-      </MaxWidthContainer>
+      <Paper>
+        <Box padding={5}>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <Header2>Edit Event</Header2>
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...eventNameProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...venueProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <AddressInput init={event.address} />
+              </Grid>
+              <Grid item xs={12}>
+                <DateTimeInput {...startDateTimeProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <DateTimeInput {...endDateTimeProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientFirstNameProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientLastNameProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientEmailAddressProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientPhoneNumberProps} />
+              </Grid>
+              <Grid item xs={6} marginTop={3}>
+                <FileInput
+                  handleFileData={handleFileData}
+                  fileData={fileData}
+                />
+              </Grid>
+              <Grid item xs={6} marginTop={3} textAlign="right">
+                <ButtonLoading
+                  color="error"
+                  type="button"
+                  label="Cancel"
+                  variant="text"
+                  disabled={isLoading}
+                  onClick={() => {
+                    handleOpen(false);
+                  }}
+                ></ButtonLoading>
+                <ButtonLoading
+                  type="submit"
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                  labelWhenLoading="Submitting"
+                ></ButtonLoading>
+              </Grid>
+            </Grid>
+          </form>
+        </Box>
+      </Paper>
     </>
   );
 }

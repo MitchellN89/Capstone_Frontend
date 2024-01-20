@@ -1,9 +1,8 @@
 import { Grid, Paper } from "@mui/material";
 import TextInput from "../../components/Inputs/TextInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box } from "@mui/system";
-import MaxWidthContainer from "../../components/MaxWidthContainer";
-import { Header1, Header2 } from "../../components/Texts/TextHeaders";
+import { Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import {
@@ -20,7 +19,8 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 import DateTimeInput from "../../components/Inputs/DateTimeInput";
 import { useNotification } from "../../context/NotificationProvider";
 import AddressInput from "../../components/Inputs/AddressInput";
-import Map from "../../components/Map";
+import FileInput from "../../components/Inputs/FileInput";
+import { formatImageForJSON } from "../../utilities/imageFormatter";
 
 const allValid = (...inputs) => {
   return new Promise((res) => {
@@ -30,10 +30,11 @@ const allValid = (...inputs) => {
   });
 };
 
-export default function CreateEventEP() {
+export default function CreateEventEP({ handleOpen }) {
   const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
   const { isLoading } = events;
   const { triggerNotification } = useNotification();
+  const [fileData, setFileData] = useState(null);
   const [eventNameProps, isValidEventName] = useTextInput(
     "",
     "Event Name",
@@ -77,6 +78,7 @@ export default function CreateEventEP() {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+
     const isValidForm = await allValid(
       isValidVenue,
       isValidEndClientEmailAddress,
@@ -105,7 +107,15 @@ export default function CreateEventEP() {
     );
 
     eventsDispatch({ type: "PROCESSING_REQUEST" });
+
     try {
+      let imageUpload;
+      if (fileData) {
+        imageUpload = await formatImageForJSON(fileData);
+      }
+
+      if (imageUpload) body.imageUpload = imageUpload;
+
       const result = await apiCall("/events", "post", body);
       const { id: eventId } = result.data;
 
@@ -122,88 +132,89 @@ export default function CreateEventEP() {
       navigate(`/eventplanner/${eventId}`, { replace: true });
     } catch (err) {
       eventsDispatch({ type: "REQUEST_FAILED", error: err });
-      switch (err.response.status) {
-        default:
-          triggerNotification({
-            message: "Server error. For more details, see log",
-            severity: "error",
-          });
-      }
+
+      if (err.response && err.response.status)
+        switch (err.response.status) {
+          default:
+            triggerNotification({
+              message: "Server error. For more details, see log",
+              severity: "error",
+            });
+        }
+
       console.error(err);
     }
   };
 
-  const [inputValue, setInputValue] = useState("");
+  const handleFileData = (value) => {
+    setFileData(value);
+  };
 
   return (
+    // <FullScreenContainer>
     <>
-      <Header1>CREATE NEW EVENT</Header1>
-      <MaxWidthContainer maxWidth="lg" centered>
-        <Paper>
-          <Box padding={2}>
-            <Box paddingX={5}>
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Header2>New Event</Header2>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...eventNameProps} required />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...venueProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <DateTimeInput {...startDateTimeProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <DateTimeInput {...endDateTimeProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientFirstNameProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientLastNameProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientEmailAddressProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...endClientPhoneNumberProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <AddressInput
-                      inputValue={inputValue}
-                      setInputValue={setInputValue}
-                    />
-                  </Grid>
-                  <Grid textAlign="right" item xs={12}>
-                    <ButtonLoading
-                      color="error"
-                      type="button"
-                      variant="text"
-                      disabled={isLoading}
-                      onClick={() => {
-                        navigate(-1);
-                      }}
-                    >
-                      Cancel
-                    </ButtonLoading>
-                    <ButtonLoading
-                      type="submit"
-                      isLoading={isLoading}
-                      disabled={isLoading}
-                    >
-                      Submit
-                    </ButtonLoading>
-                  </Grid>
-                </Grid>
-              </form>
-            </Box>
-          </Box>
-        </Paper>
-      </MaxWidthContainer>
-      <Map></Map>
+      <Paper>
+        <Box padding={5}>
+          <form onSubmit={handleSubmit}>
+            <Header2>Create New Event</Header2>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <TextInput {...eventNameProps} required />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...venueProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <AddressInput />
+              </Grid>
+              <Grid item xs={12}>
+                <DateTimeInput {...startDateTimeProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <DateTimeInput {...endDateTimeProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientFirstNameProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientLastNameProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientEmailAddressProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...endClientPhoneNumberProps} />
+              </Grid>
+
+              <Grid item xs={6} marginTop={3}>
+                <FileInput
+                  handleFileData={handleFileData}
+                  fileData={fileData}
+                />
+              </Grid>
+              <Grid item xs={6} marginTop={3} textAlign="right">
+                <ButtonLoading
+                  color="error"
+                  type="button"
+                  label="Cancel"
+                  variant="text"
+                  disabled={isLoading}
+                  onClick={() => {
+                    handleOpen(false);
+                  }}
+                ></ButtonLoading>
+                <ButtonLoading
+                  type="submit"
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                  labelWhenLoading="Submitting"
+                ></ButtonLoading>
+              </Grid>
+            </Grid>
+          </form>
+        </Box>
+      </Paper>
     </>
+    // </FullScreenContainer>
   );
 }

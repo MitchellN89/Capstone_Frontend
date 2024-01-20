@@ -13,19 +13,17 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useUser } from "../../../context/UserProvider";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useTheme } from "@emotion/react";
+import LogoSide from "../../../components/Logos/LogoSide";
 
-const pages = [
-  { name: "Service Requests", path: "/vendor/servicerequests" },
-  { name: "Events", path: "/vendor/events" },
-];
-const settings = ["Logout"];
+const pages = ["Events", "Service Requests"];
+const settings = ["Profile", "Logout"];
 
-export default function NavBarserviceRequestId() {
+export default function NavBarEP() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { user } = useUser();
-  const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -43,10 +41,13 @@ export default function NavBarserviceRequestId() {
   };
 
   return (
-    <AppBar position="sticky" sx={{ marginBottom: "25px" }}>
+    <AppBar
+      position="sticky"
+      sx={{ marginBottom: "25px", backgroundColor: theme.palette.feature[1] }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <LogoSide />
           <Typography
             variant="h6"
             noWrap
@@ -62,7 +63,7 @@ export default function NavBarserviceRequestId() {
               textDecoration: "none",
             }}
           >
-            EventConnect - Vendor
+            {user ? user.accountType : ""}
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -95,13 +96,8 @@ export default function NavBarserviceRequestId() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem
-                  key={page.name}
-                  onClick={() => {
-                    navigate(page.path);
-                  }}
-                >
-                  <Typography textAlign="center">{page.name}</Typography>
+                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -128,13 +124,11 @@ export default function NavBarserviceRequestId() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page.name}
-                onClick={() => {
-                  navigate(page.path);
-                }}
+                key={page}
+                onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page.name}
+                {page}
               </Button>
             ))}
           </Box>
