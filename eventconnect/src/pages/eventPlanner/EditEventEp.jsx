@@ -159,6 +159,8 @@ export default function EditEventEP({ handleOpen }) {
         message: "Successfully edited Event",
       });
 
+      // window.location.reload(true);
+
       handleOpen(false);
     } catch (err) {
       eventsDispatch({ type: "REQUEST_FAILED", error: err });

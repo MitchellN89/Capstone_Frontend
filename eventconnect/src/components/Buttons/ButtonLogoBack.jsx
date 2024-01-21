@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { IconCreate } from "../Icons";
+import { IconBack, IconCreate } from "../Icons";
+
 import { useTheme } from "@emotion/react";
 
-export default function ButtonLogoCreate({ handleClick, logoSize }) {
+export default function ButtonLogoBack({ handleClick, logoSize }) {
   const [isHovered, setIsHovered] = useState(false);
   const theme = useTheme();
   const handleHovered = (bool) => {
@@ -24,10 +25,10 @@ export default function ButtonLogoCreate({ handleClick, logoSize }) {
       onClick={(evt) => {
         evt.stopPropagation();
         setIsHovered(false);
-        handleClick(true);
+        handleClick();
       }}
     >
-      <IconCreate height={logoSize || "30px"} style={iconStyle} />
+      <IconBack height={logoSize || "30px"} style={iconStyle} />
     </div>
   );
 }

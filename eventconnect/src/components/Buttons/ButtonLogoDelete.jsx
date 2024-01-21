@@ -2,7 +2,12 @@ import { useState } from "react";
 import { IconDelete } from "../Icons";
 import { useTheme } from "@emotion/react";
 
-export default function ButtonLogoDelete({ isVisible, handleDelete, id }) {
+export default function ButtonLogoDelete({
+  isVisible,
+  handleClick,
+  id,
+  logoSize,
+}) {
   const [isHovered, setIsHovered] = useState(false);
   const theme = useTheme();
   const handleHovered = (bool) => {
@@ -25,10 +30,10 @@ export default function ButtonLogoDelete({ isVisible, handleDelete, id }) {
         onClick={(evt) => {
           evt.stopPropagation();
           setIsHovered(false);
-          handleDelete(id);
+          handleClick(id);
         }}
       >
-        <IconDelete style={iconStyle} />
+        <IconDelete height={logoSize || "30px"} style={iconStyle} />
       </div>
     );
 

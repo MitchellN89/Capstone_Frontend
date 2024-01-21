@@ -12,6 +12,9 @@ export function Text({ children, bold, italic, size, textAlign, style }) {
     textStyle: italic ? "italic" : "inherit",
     fontSize: size ? sizes[size] : "inherit",
     textAlign: textAlign ? textAlign : "inherit",
+    fontFamily: "inherit",
+    overflow: "none",
+    // width: "200px",
   };
   return <p style={{ ...textStyle, ...style }}>{children}</p>;
 }

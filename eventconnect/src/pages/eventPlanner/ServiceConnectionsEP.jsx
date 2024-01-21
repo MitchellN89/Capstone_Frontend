@@ -7,10 +7,13 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { useState, useEffect } from "react";
-import { Header2 } from "../../components/Texts/TextHeaders";
+import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { Navigate } from "react-router-dom";
-import ServiceConnectionCardEP from "./Components/ServiceConnectionCardEP";
+import CardConnectionEP from "./Components/CardConnectionEP";
+import HeaderStrip from "../../components/HeaderStrip";
+import ButtonLogoBack from "../../components/Buttons/ButtonLogoBack";
+import { Box } from "@mui/material";
 
 export default function ServiceConnectionsEP({
   serviceConnections,
@@ -29,26 +32,30 @@ export default function ServiceConnectionsEP({
 
   return (
     <>
-      <button onClick={handleTrigger}>Refresh</button>
-      <h1>Service Connections</h1>
+      <Box>
+        <HeaderStrip>
+          <Header1>PLACEHOLDER</Header1>
+          <ButtonLogoBack />
+        </HeaderStrip>
 
-      <Grid container spacing={3}>
-        <LoadingCard isLoading={isLoading} />
-        {serviceConnections &&
-          serviceConnections.map((serviceConnection) => {
-            return (
-              <ServiceConnectionCardEP
-                handleClick={handleClick}
-                key={serviceConnection.id}
-                id={serviceConnection.id}
-                vendorId={serviceConnection.vendorId}
-              >
-                {serviceConnection.user.companyName ||
-                  `${serviceConnection.user.firstName} ${serviceConnection.user.lastName}`}
-              </ServiceConnectionCardEP>
-            );
-          })}
-      </Grid>
+        <Paper>
+          <Grid container spacing={3}>
+            <LoadingCard isLoading={isLoading} />
+            {serviceConnections &&
+              serviceConnections.map((serviceConnection) => {
+                return (
+                  <CardConnectionEP
+                    handleClick={handleClick}
+                    key={serviceConnection.id}
+                    id={serviceConnection.id}
+                    vendorId={serviceConnection.vendorId}
+                  ></CardConnectionEP>
+                );
+              })}
+          </Grid>
+        </Paper>
+      </Box>
+      <button onClick={handleTrigger}>Refresh</button>
     </>
   );
 }

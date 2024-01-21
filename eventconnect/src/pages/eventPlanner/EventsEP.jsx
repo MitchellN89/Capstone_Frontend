@@ -60,10 +60,10 @@ export default function EventsEP() {
       />
       <HeaderStrip>
         <Header1 style={{ margin: "0" }}>EVENTS</Header1>
-        <ButtonLogoCreate handleCreate={handleOpenCreateModal} />
+        <ButtonLogoCreate handleClick={handleOpenCreateModal} />
       </HeaderStrip>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} marginBottom={4}>
         <LoadingCard isLoading={isLoading} />
         {events.events &&
           events.events.map((event) => {

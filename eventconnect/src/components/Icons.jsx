@@ -40,3 +40,31 @@ export function IconCreate({ height, style, ...others }) {
     </div>
   );
 }
+
+export function IconBack({ height, style, ...others }) {
+  return (
+    <div>
+      <Icon
+        display="inline-block"
+        height={height || "25px"}
+        style={{ ...style }}
+        {...others}
+        icon="icon-park-solid:back"
+      />
+    </div>
+  );
+}
+
+export function IconEdit({ height, style, ...others }) {
+  return (
+    <div>
+      <Icon
+        display="inline-block"
+        height={height || "25px"}
+        style={{ ...style }}
+        {...others}
+        icon="mdi:edit"
+      />
+    </div>
+  );
+}

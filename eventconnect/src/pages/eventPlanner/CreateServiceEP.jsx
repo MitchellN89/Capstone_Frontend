@@ -12,7 +12,7 @@ import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import SelectInput from "../../components/Inputs/SelectInput";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 
-export default function CreateServiceEP() {
+export default function CreateServiceEP({ handleOpenCreateModal }) {
   const { state: services, dispatch: servicesDispatch } =
     useServicesEPContext();
   const { dispatch: eventDispatch } = useEventsEPContext();
@@ -99,7 +99,7 @@ export default function CreateServiceEP() {
     try {
       const result = await apiCall(`/events/${eventId}/services`, "post", body);
       const { id: eventServiceId } = result.data;
-
+      console.log("RETURNED FROM API CALL", result);
       const newEventService = { ...result.data, event: { id: eventId } };
 
       servicesDispatch({

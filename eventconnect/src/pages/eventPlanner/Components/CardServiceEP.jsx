@@ -3,24 +3,22 @@ import { Header3 } from "../../../components/Texts/TextHeaders";
 import { useState } from "react";
 import ButtonLogoDelete from "../../../components/Buttons/ButtonLogoDelete";
 
-const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
-
-export default function CardEventEP({
-  eventName,
-  hasOutstanding,
+export default function CardServiceEP({
+  serviceName,
   hasPromotedVendors,
   handleClick,
   handleDelete,
-  eventId,
+  eventServiceId,
+  imgUrl,
 }) {
   const [isHovered, setIsHovered] = useState(false);
-
+  console.log("IMGURL", imgUrl);
   const handleHover = (bool) => {
     setIsHovered(bool);
   };
 
   const divStyle = {
-    backgroundImage: `url('${DOMAIN}/uploads/events/event${eventId}.jpg')`,
+    backgroundImage: `url('/${imgUrl}')`,
     backgroundSize: "cover",
     backgroundPosition: "center",
     height: "200px",
@@ -58,18 +56,18 @@ export default function CardEventEP({
           handleHover(false);
         }}
         onClick={() => {
-          handleClick(eventId);
+          handleClick(eventServiceId);
         }}
       >
         <div style={overlayStyle} />
         <Header3 style={{ color: "white", position: "relative", zIndex: "10" }}>
-          {eventName}
+          {serviceName}
         </Header3>
         <ButtonBox isHovered={isHovered}>
           <ButtonLogoDelete
             isVisible={isHovered && !hasPromotedVendors}
             handleClick={handleDelete}
-            id={eventId}
+            id={eventServiceId}
           />
         </ButtonBox>
       </div>

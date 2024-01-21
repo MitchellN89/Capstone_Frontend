@@ -40,15 +40,6 @@ export default function AddressInput({ init }) {
     padding: "5px",
   };
 
-  //   const handleSelect = async (address) => {
-  //     setValue(address, false);
-  //     clearSuggestions();
-
-  //     const results = await getGeocode({ address });
-  //     const { lat, lng } = getLatLng(results[0]);
-  //     setSelected({ lat, lng });
-  //   };
-
   if (!isLoaded) return <div>Loading...</div>;
 
   useEffect(() => {

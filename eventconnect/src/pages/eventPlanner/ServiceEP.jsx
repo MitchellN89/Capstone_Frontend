@@ -9,14 +9,26 @@ import { useEffect, useState } from "react";
 import ServiceConnectionsEP from "./ServiceConnectionsEP";
 import ServiceConnectionEp from "./ServiceConnectionEP";
 import useLiveChat from "../../hooks/useLiveChat";
+import EditServiceEP from "./EditServiceEP";
+import HeaderStrip from "../../components/HeaderStrip";
+import ModalContainer from "../../components/ModalContainer";
+import ButtonLogoBack from "../../components/Buttons/ButtonLogoBack";
+import ButtonLogoEdit from "../../components/Buttons/ButtonLogoEdit";
+import ButtonLogoDelete from "../../components/Buttons/ButtonLogoDelete";
+import TextContainer from "../../components/TextContainer";
+import { FeatureStylize } from "../../components/Texts/TextStyles";
+import { Text } from "../../components/Texts/Texts";
 
 export default function ServiceEP() {
   let { eventId, eventServiceId } = useParams();
-  const { state: services, dispatch: servicesDispatch } =
+  const { state: serviceContext, dispatch: servicesDispatch } =
     useServicesEPContext();
-  const eventService = services.eventServices.find((eventService) => {
+
+  const eventService = serviceContext.eventServices.find((eventService) => {
     return eventService.id == eventServiceId;
   });
+
+  const { services } = serviceContext;
 
   if (!eventService) return;
 
@@ -27,7 +39,7 @@ export default function ServiceEP() {
   const [serviceConnection, setServiceConnection] = useState(null);
   const vendorId = eventService.vendorId || null;
   const [selectedVendorId, setSelectedVendorId] = useState(vendorId);
-
+  const [openEditModal, setOpenEditModal] = useState(false);
   const connectedWithUser = serviceConnection ? serviceConnection.user : null;
   const roomId = serviceConnection ? serviceConnection.id : null;
 
@@ -37,13 +49,6 @@ export default function ServiceEP() {
   );
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("__ SELECTEDVENDORID: ", selectedVendorId);
-  }, [selectedVendorId]);
-  useEffect(() => {
-    console.log("__ EVENTSERVICE: ", eventService);
-  }, [eventService]);
 
   useEffect(() => {
     let ignore = false;
@@ -102,9 +107,19 @@ export default function ServiceEP() {
     setSelectedVendorId(vendorId);
   };
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   const resetSelectedVendorId = () => {
     setSelectedVendorId(vendorId);
   };
+
+  const handleOpenEditModal = (bool) => {
+    setOpenEditModal(bool);
+  };
+
+  const handleEditClick = () => {};
 
   const handleDelete = async () => {
     servicesDispatch({ type: "PROCESSING_REQUEST" });
@@ -140,78 +155,129 @@ export default function ServiceEP() {
       });
   };
 
+  const getService = (serviceId) => {
+    return services.find((service) => {
+      return service.id == serviceId;
+    });
+  };
+
   const handleTrigger = () => {
     setTrigger((curState) => !curState);
   };
 
   if (!eventService) return;
 
-  const {
-    broadcast,
-    requestBody,
-    volumes,
-    tags,
-    logistics,
-    specialRequirements,
-  } = eventService;
+  const textStyle = {
+    margin: "0",
+  };
 
-  const title = services.services.find(
-    (service) => service.id == eventService.serviceId
-  ).service;
+  const imgStyle = {
+    backgroundImage: `url('/${getService(eventService.serviceId).imgUrl}')`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    height: "500px",
+    maxHeight: "40vh",
+    backgroundColor: "#cccccc",
+  };
 
   return (
     <>
-      <Header1>Services &gt; {title}</Header1>
-      <button
-        onClick={() => {
-          navigate(`/eventPlanner/${eventService.event.id}`);
-        }}
-      >
-        Go Back
-      </button>
-      <Paper>
-        <Box padding={2}>
-          <Grid container spacing={5} padding={2}>
-            <Grid item xs={12} lg={5}>
-              <Header2>{title || ""}</Header2>
-              <Typography>{requestBody || ""}</Typography>
-              <Typography>{volumes || ""}</Typography>
-              <Typography>{tags || ""}</Typography>
-              <Typography>{logistics || ""}</Typography>
-              <Typography>{specialRequirements || ""}</Typography>
-            </Grid>
-          </Grid>
-          <button
-            onClick={() => {
-              navigate(
-                `/eventplanner/${eventId}/${eventServiceId}/editservice`
-              );
-            }}
-          >
-            EDIT EVENT
-          </button>
-          <button onClick={handleDelete}>DELETE EVENT SERVICE</button>
-          <button disabled={!isFormComplete} onClick={enableBroadcast}>
-            {broadcast ? "Broadcasting" : "Broadcast"}
-          </button>
-        </Box>
-      </Paper>
+      <EditService
+        open={openEditModal}
+        handleOpenEditModal={handleOpenEditModal}
+      />
 
-      {!selectedVendorId && (
-        <ServiceConnectionsEP
-          serviceConnections={serviceConnections}
-          handleSelectedVendorId={handleSelectedVendorId}
-          handleTrigger={handleTrigger}
-        />
-      )}
-      {selectedVendorId && (
-        <ServiceConnectionEp
-          resetSelectedVendorId={resetSelectedVendorId}
-          liveChatProps={liveChatProps}
-          serviceConnection={serviceConnection}
-          handleTrigger={handleTrigger}
-        />
-      )}
+      <Grid container spacing={5}>
+        <Grid item xs={12} md={6}>
+          <HeaderStrip style={{ marginTop: "30px" }}>
+            <Header1 style={{ margin: "0" }}>SERVICES</Header1>
+            <ButtonLogoBack handleClick={handleGoBack} />
+          </HeaderStrip>
+          <Paper>
+            <div style={imgStyle}></div>
+
+            <Box padding="20px 20px 20px" marginBottom={4}>
+              <HeaderStrip>
+                <Header2 style={{ margin: "0" }}>
+                  {getService(eventService.serviceId).service}
+                </Header2>
+                <div style={{ display: "flex" }}>
+                  <ButtonLogoEdit handleClick={handleEditClick} />
+                  <ButtonLogoDelete isVisible />
+                </div>
+              </HeaderStrip>
+
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Request Details:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{eventService.requestBody}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Tags:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{eventService.tags}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Volumes:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{eventService.volumes}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Logistics:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{eventService.logistics}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Special Requirements:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>
+                  {eventService.specialRequirements}
+                </Text>
+              </TextContainer>
+            </Box>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          {!selectedVendorId && (
+            <ServiceConnectionsEP
+              serviceConnections={serviceConnections}
+              handleSelectedVendorId={handleSelectedVendorId}
+              handleTrigger={handleTrigger}
+            />
+          )}
+          {selectedVendorId && (
+            <ServiceConnectionEp
+              resetSelectedVendorId={resetSelectedVendorId}
+              liveChatProps={liveChatProps}
+              serviceConnection={serviceConnection}
+              handleTrigger={handleTrigger}
+            />
+          )}
+        </Grid>
+      </Grid>
     </>
   );
 }
+
+const EditService = ({ open, handleOpenEditModal }) => {
+  return (
+    <ModalContainer open={open} handleOpen={handleOpenEditModal} maxWidth="md">
+      <EditServiceEP handleOpen={handleOpenEditModal} />
+    </ModalContainer>
+  );
+};

@@ -4,6 +4,10 @@ const divStyle = {
   margin: "10px 0 20px",
 };
 
-export default function HeaderStrip({ children }) {
-  return <div style={divStyle}>{children}</div>;
+export default function HeaderStrip({ children, style, ...others }) {
+  return (
+    <div style={{ ...divStyle, ...style }} {...others}>
+      {children}
+    </div>
+  );
 }
