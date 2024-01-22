@@ -18,6 +18,8 @@ import ButtonLogoDelete from "../../components/Buttons/ButtonLogoDelete";
 import TextContainer from "../../components/TextContainer";
 import { FeatureStylize } from "../../components/Texts/TextStyles";
 import { Text } from "../../components/Texts/Texts";
+import ButtonLoading from "../../components/Buttons/ButtonLoading";
+import { IconBroadcast } from "../../components/Icons";
 
 export default function ServiceEP() {
   let { eventId, eventServiceId } = useParams();
@@ -249,6 +251,13 @@ export default function ServiceEP() {
                   {eventService.specialRequirements}
                 </Text>
               </TextContainer>
+              <div style={{ textAlign: "right" }}>
+                <ButtonLoading
+                  label="Broadcast Event"
+                  icon={<IconBroadcast />}
+                  onClick={enableBroadcast}
+                />
+              </div>
             </Box>
           </Paper>
         </Grid>

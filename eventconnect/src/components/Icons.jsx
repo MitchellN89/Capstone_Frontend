@@ -68,3 +68,31 @@ export function IconEdit({ height, style, ...others }) {
     </div>
   );
 }
+
+export function IconRefresh({ height, style, ...others }) {
+  return (
+    <div>
+      <Icon
+        display="inline-block"
+        height={height || "25px"}
+        style={{ ...style }}
+        {...others}
+        icon="ic:baseline-refresh"
+      />
+    </div>
+  );
+}
+
+export function IconBroadcast({ height, style, ...others }) {
+  return (
+    <div>
+      <Icon
+        display="inline-block"
+        height={height || "25px"}
+        style={{ ...style }}
+        {...others}
+        icon="ph:broadcast-bold"
+      />
+    </div>
+  );
+}

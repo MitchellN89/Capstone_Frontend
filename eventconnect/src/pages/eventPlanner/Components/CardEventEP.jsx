@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, styled } from "@mui/material";
 import { Header3 } from "../../../components/Texts/TextHeaders";
 import { useState } from "react";
 import ButtonLogoDelete from "../../../components/Buttons/ButtonLogoDelete";

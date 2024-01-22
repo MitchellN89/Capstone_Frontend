@@ -1,5 +1,8 @@
 import { Grid, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Header3 } from "../../../components/Texts/TextHeaders";
+import { useState } from "react";
+import { styled } from "@mui/material";
 
 export default function CardConnectionEP({
   id,
@@ -8,34 +11,40 @@ export default function CardConnectionEP({
   isLoading,
   children,
   vendorId,
+  companyName,
 }) {
-  const styles = {
-    minHeight: "200px",
-    height: "100%",
-  };
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleIsHovered = (bool) => {
+    setIsHovered(bool);
+  };
+
+  const StyledDiv = styled("div")(() => ({
+    backgroundColor: "rgb(0, 0, 0, 0.6)",
+    color: "white",
+    padding: "10px 30px",
+    borderRadius: "10px",
+    transition: "background-color 0.3s",
+    "&:hover": {
+      backgroundColor: "rgb(0, 0, 0, 0.8)",
+    },
+  }));
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-      <Paper
-        onClick={() => {
-          handleClick(vendorId);
+    <Grid item xs={12}>
+      <StyledDiv
+        onMouseEnter={() => {
+          handleIsHovered(true);
         }}
-        style={styles}
+        onMouseLeave={() => {
+          handleIsHovered(false);
+        }}
       >
-        <span>{children}</span>
-        {hasDelete && (
-          <button
-            disabled={isLoading}
-            onClick={(evt) => {
-              evt.stopPropagation();
-              handleDelete(id);
-            }}
-          >
-            QUICK DELETE
-          </button>
-        )}
-      </Paper>
+        <Header3 centered style={{ margin: "0" }}>
+          {companyName}
+        </Header3>
+      </StyledDiv>
     </Grid>
   );
 }

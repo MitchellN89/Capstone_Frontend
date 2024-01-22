@@ -14,6 +14,7 @@ import CardConnectionEP from "./Components/CardConnectionEP";
 import HeaderStrip from "../../components/HeaderStrip";
 import ButtonLogoBack from "../../components/Buttons/ButtonLogoBack";
 import { Box } from "@mui/material";
+import ButtonLogoRefresh from "../../components/Buttons/ButtonLogoRefresh";
 
 export default function ServiceConnectionsEP({
   serviceConnections,
@@ -28,34 +29,42 @@ export default function ServiceConnectionsEP({
     handleSelectedVendorId(vendorId);
   };
 
+  useEffect(() => {
+    console.log(serviceConnections);
+  }, [serviceConnections]);
+
   if (!serviceConnections) return;
 
   return (
     <>
       <Box>
-        <HeaderStrip>
-          <Header1>PLACEHOLDER</Header1>
-          <ButtonLogoBack />
+        <HeaderStrip style={{ marginTop: "30px" }}>
+          <Header1 style={{ margin: "0" }}>CONNECTIONS</Header1>
+          <ButtonLogoRefresh />
         </HeaderStrip>
 
-        <Paper>
-          <Grid container spacing={3}>
-            <LoadingCard isLoading={isLoading} />
-            {serviceConnections &&
-              serviceConnections.map((serviceConnection) => {
-                return (
-                  <CardConnectionEP
-                    handleClick={handleClick}
-                    key={serviceConnection.id}
-                    id={serviceConnection.id}
-                    vendorId={serviceConnection.vendorId}
-                  ></CardConnectionEP>
-                );
-              })}
-          </Grid>
-        </Paper>
+        {/* <Paper> */}
+        <Grid container spacing={1}>
+          <LoadingCard isLoading={isLoading} />
+          {serviceConnections &&
+            serviceConnections.map((serviceConnection) => {
+              return (
+                <CardConnectionEP
+                  handleClick={handleClick}
+                  key={serviceConnection.id}
+                  id={serviceConnection.id}
+                  vendorId={serviceConnection.vendorId}
+                  companyName={serviceConnection.user.companyName}
+                ></CardConnectionEP>
+              );
+            })}
+          <CardConnectionEP />
+          <CardConnectionEP />
+          <CardConnectionEP />
+        </Grid>
+        {/* </Paper> */}
       </Box>
-      <button onClick={handleTrigger}>Refresh</button>
+      {/* <button onClick={handleTrigger}>Refresh</button> */}
     </>
   );
 }
