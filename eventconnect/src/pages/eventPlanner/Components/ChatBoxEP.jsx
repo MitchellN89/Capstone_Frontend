@@ -6,6 +6,7 @@ import io from "socket.io-client";
 import { apiCall } from "../../../utilities/apiCall";
 import { useServicesEPContext } from "../../../context/EventServiceEPProvider";
 import { useEventsEPContext } from "../../../context/EventEPProvider";
+import { Paper } from "@mui/material";
 
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
@@ -84,19 +85,21 @@ export default function ChatBoxEP({
 
   return (
     <>
-      <div>
-        {entries &&
-          entries.map((entry) => {
-            return (
-              <ChatMessage
-                key={entry.id}
-                users={users}
-                sender={getSender(entry)}
-                {...entry}
-              />
-            );
-          })}
-      </div>
+      <Paper>
+        <div>
+          {entries &&
+            entries.map((entry) => {
+              return (
+                <ChatMessage
+                  key={entry.id}
+                  users={users}
+                  sender={getSender(entry)}
+                  {...entry}
+                />
+              );
+            })}
+        </div>
+      </Paper>
       <ChatInputBox
         sendMessage={sendMessage}
         handleChange={handleChange}

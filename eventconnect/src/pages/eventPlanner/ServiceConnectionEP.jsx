@@ -15,10 +15,6 @@ export default function ServiceConnectionEp({
 }) {
   if (!serviceConnection) return <span>No data available yet</span>;
 
-  const { user } = useUser().state;
-  const roomId = parseInt(serviceConnection ? serviceConnection.id : null);
-  const connectedWithUser = serviceConnection ? serviceConnection.user : null;
-
   return (
     <>
       <button

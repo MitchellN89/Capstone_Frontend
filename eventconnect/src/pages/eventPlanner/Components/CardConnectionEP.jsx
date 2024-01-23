@@ -40,6 +40,9 @@ export default function CardConnectionEP({
         onMouseLeave={() => {
           handleIsHovered(false);
         }}
+        onClick={() => {
+          handleClick(vendorId);
+        }}
       >
         <Header3 centered style={{ margin: "0" }}>
           {companyName}

@@ -93,7 +93,7 @@ export default function EventEP() {
                 <Header2 style={{ margin: "0" }}>{event.eventName}</Header2>
                 <div style={{ display: "flex" }}>
                   <ButtonLogoEdit handleClick={handleEditClick} />
-                  <ButtonLogoDelete isVisible />
+                  <ButtonLogoDelete isVisible handleClick={handleDelete} />
                 </div>
               </HeaderStrip>
 

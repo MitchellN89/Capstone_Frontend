@@ -40,7 +40,7 @@ export default function ServiceConnectionsEP({
       <Box>
         <HeaderStrip style={{ marginTop: "30px" }}>
           <Header1 style={{ margin: "0" }}>CONNECTIONS</Header1>
-          <ButtonLogoRefresh />
+          <ButtonLogoRefresh handleClick={handleTrigger} />
         </HeaderStrip>
 
         {/* <Paper> */}
@@ -58,9 +58,6 @@ export default function ServiceConnectionsEP({
                 ></CardConnectionEP>
               );
             })}
-          <CardConnectionEP />
-          <CardConnectionEP />
-          <CardConnectionEP />
         </Grid>
         {/* </Paper> */}
       </Box>

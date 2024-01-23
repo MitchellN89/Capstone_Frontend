@@ -121,8 +121,6 @@ export default function ServiceEP() {
     setOpenEditModal(bool);
   };
 
-  const handleEditClick = () => {};
-
   const handleDelete = async () => {
     servicesDispatch({ type: "PROCESSING_REQUEST" });
     apiCall(`/events/${eventId}/services/${eventServiceId}`, "delete")
@@ -204,8 +202,12 @@ export default function ServiceEP() {
                   {getService(eventService.serviceId).service}
                 </Header2>
                 <div style={{ display: "flex" }}>
-                  <ButtonLogoEdit handleClick={handleEditClick} />
-                  <ButtonLogoDelete isVisible />
+                  <ButtonLogoEdit
+                    handleClick={() => {
+                      handleOpenEditModal(true);
+                    }}
+                  />
+                  <ButtonLogoDelete isVisible handleClick={handleDelete} />
                 </div>
               </HeaderStrip>
 
@@ -253,7 +255,7 @@ export default function ServiceEP() {
               </TextContainer>
               <div style={{ textAlign: "right" }}>
                 <ButtonLoading
-                  label="Broadcast Event"
+                  label="Broadcast Service "
                   icon={<IconBroadcast />}
                   onClick={enableBroadcast}
                 />

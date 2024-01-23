@@ -11,7 +11,7 @@ import { useSelectInput, useTextInput } from "../../hooks/useInputData";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import SelectInput from "../../components/Inputs/SelectInput";
 
-export default function EditServiceEP() {
+export default function EditServiceEP({ handleOpen }) {
   const { state: services, dispatch: servicesDispatch } =
     useServicesEPContext();
   const { isLoading } = services;
@@ -116,7 +116,7 @@ export default function EditServiceEP() {
         id: eventServiceId,
       });
 
-      navigate(`/eventplanner/${eventId}/${eventServiceId}`, { replace: true });
+      handleOpen(false);
     } catch (err) {
       servicesDispatch({ type: "REQUEST_FAILED", error: err });
       console.error(err);
@@ -125,65 +125,53 @@ export default function EditServiceEP() {
 
   return (
     <>
-      <Header1>Services &gt; New</Header1>
-      <MaxWidthContainer maxWidth="lg" centered>
-        <Paper>
-          <Box padding={2}>
-            <Box paddingX={5}>
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Header2>New Service</Header2>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <SelectInput
-                      {...serviceIdProps}
-                      options={options}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput multiline {...requestBodyProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...tagsProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...volumesProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput {...logisticsProps} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput multiline {...specialRequirementsProps} />
-                  </Grid>
+      <Paper>
+        <Box padding={5}>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={1}>
+              <Header2>Edit Service</Header2>
+              <Grid item xs={12}>
+                <SelectInput {...serviceIdProps} options={options} readOnly />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput multiline {...requestBodyProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...tagsProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...volumesProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput {...logisticsProps} />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInput multiline {...specialRequirementsProps} />
+              </Grid>
 
-                  <Grid textAlign="right" item xs={12}>
-                    <ButtonLoading
-                      color="error"
-                      type="button"
-                      variant="text"
-                      disabled={isLoading}
-                      onClick={() => {
-                        navigate(-1);
-                      }}
-                    >
-                      Cancel
-                    </ButtonLoading>
-                    <ButtonLoading
-                      type="submit"
-                      isLoading={isLoading}
-                      disabled={isLoading}
-                    >
-                      Submit
-                    </ButtonLoading>
-                  </Grid>
-                </Grid>
-              </form>
-            </Box>
-          </Box>
-        </Paper>
-      </MaxWidthContainer>
+              <Grid textAlign="right" item xs={12} marginTop={3}>
+                <ButtonLoading
+                  color="error"
+                  type="button"
+                  variant="text"
+                  disabled={isLoading}
+                  label="Cancel"
+                  onClick={() => {
+                    handleOpen(false);
+                  }}
+                ></ButtonLoading>
+                <ButtonLoading
+                  type="submit"
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                >
+                  Submit
+                </ButtonLoading>
+              </Grid>
+            </Grid>
+          </form>
+        </Box>
+      </Paper>
     </>
   );
 }
