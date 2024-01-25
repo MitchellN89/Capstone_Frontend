@@ -40,12 +40,21 @@ export default function CreateServiceConnection({
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+
     const isValid = await isValidForm();
     if (!isValid) return;
 
     let body = convertFormDataToObject(new FormData(evt.target));
     const { vendorStatus } = body;
 
+    if (vendorStatus == "connect") {
+      handleConnect(body);
+    } else if (vendorStatus == "ignore") {
+      handleIgnore();
+    }
+  };
+
+  const handleConnect = async (body) => {
     try {
       await apiCall(`/serviceRequests/${serviceRequestId}/connect`, "post", {
         ...body,
@@ -58,68 +67,63 @@ export default function CreateServiceConnection({
     }
   };
 
+  const handleIgnore = () => {};
+
   const handleResponseOptionChange = (evt) => {
     setResponseOptionValue(evt.target.value);
   };
 
   return (
     <>
-      <Header1>Response</Header1>
-      <MaxWidthContainer maxWidth="lg" centered>
-        <Paper>
-          <Box padding={2}>
-            <Box paddingX={5}>
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Header2>New Event</Header2>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextInput
-                      {...messageProps}
-                      multiline
-                      disabled={
-                        responseOptionValue == "ignore" ||
-                        responseOptionValue == "watchlist"
-                      }
+      <Paper>
+        <Box padding={5}>
+          <form onSubmit={handleSubmit}>
+            <Header2>Respond To Event Request</Header2>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <TextInput
+                  {...messageProps}
+                  multiline
+                  disabled={
+                    responseOptionValue == "ignore" ||
+                    responseOptionValue == "watchlist"
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl>
+                  <FormLabel id="demo-controlled-radio-buttons-group">
+                    Response Type
+                  </FormLabel>
+                  <RadioGroup
+                    aria-labelledby="demo-controlled-radio-buttons-group"
+                    name="vendorStatus"
+                    value={responseOptionValue}
+                    onChange={handleResponseOptionChange}
+                  >
+                    <FormControlLabel
+                      value="connect"
+                      control={<Radio />}
+                      label="Connect to Service Request"
                     />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControl>
-                      <FormLabel id="demo-controlled-radio-buttons-group">
-                        Response Type
-                      </FormLabel>
-                      <RadioGroup
-                        aria-labelledby="demo-controlled-radio-buttons-group"
-                        name="vendorStatus"
-                        value={responseOptionValue}
-                        onChange={handleResponseOptionChange}
-                      >
-                        <FormControlLabel
-                          value="connect"
-                          control={<Radio />}
-                          label="Connect to Service Request"
-                        />
-                        <FormControlLabel
-                          value="ignore"
-                          control={<Radio />}
-                          label="Ignore Service Request"
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ButtonLoading
-                      type="submit"
-                      icon={<IconSend />}
-                    ></ButtonLoading>
-                  </Grid>
-                </Grid>
-              </form>
-            </Box>
-          </Box>
-        </Paper>
-      </MaxWidthContainer>
+                    <FormControlLabel
+                      value="ignore"
+                      control={<Radio />}
+                      label="Ignore Service Request"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <ButtonLoading
+                  type="submit"
+                  icon={<IconSend />}
+                ></ButtonLoading>
+              </Grid>
+            </Grid>
+          </form>
+        </Box>
+      </Paper>
     </>
   );
 }

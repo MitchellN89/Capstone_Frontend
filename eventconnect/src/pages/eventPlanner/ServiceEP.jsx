@@ -8,7 +8,6 @@ import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { useEffect, useState } from "react";
 import ServiceConnectionsEP from "./ServiceConnectionsEP";
 import ServiceConnectionEp from "./ServiceConnectionEP";
-import useLiveChat from "../../hooks/useLiveChat";
 import EditServiceEP from "./EditServiceEP";
 import HeaderStrip from "../../components/HeaderStrip";
 import ModalContainer from "../../components/ModalContainer";
@@ -42,13 +41,13 @@ export default function ServiceEP() {
   const vendorId = eventService.vendorId || null;
   const [selectedVendorId, setSelectedVendorId] = useState(vendorId);
   const [openEditModal, setOpenEditModal] = useState(false);
-  const connectedWithUser = serviceConnection ? serviceConnection.user : null;
-  const roomId = serviceConnection ? serviceConnection.id : null;
+  // const connectedWithUser = serviceConnection ? serviceConnection.user : null;
+  // const roomId = serviceConnection ? serviceConnection.id : null;
 
-  const [liveChatProps, dispatchLiveChat] = useLiveChat(
-    connectedWithUser,
-    roomId
-  );
+  // const [liveChatProps, dispatchLiveChat] = useLiveChat(
+  //   connectedWithUser,
+  //   roomId
+  // );
 
   const navigate = useNavigate();
 
@@ -82,14 +81,14 @@ export default function ServiceEP() {
         `/events/${eventId}/services/${eventServiceId}/connections/vendor/${selectedVendorId}`
       )
         .then((result) => {
-          const { chatEntries } = result.data;
+          // const { chatEntries } = result.data;
 
-          dispatchLiveChat({ type: "SET_ENTRIES", payload: chatEntries });
+          // dispatchLiveChat({ type: "SET_ENTRIES", payload: chatEntries });
 
-          const serviceConnectionWithoutChatEntries = { ...result.data };
-          delete serviceConnectionWithoutChatEntries.chatEntries;
-
-          setServiceConnection(serviceConnectionWithoutChatEntries);
+          // const serviceConnectionWithoutChatEntries = { ...result.data };
+          // delete serviceConnectionWithoutChatEntries.chatEntries;
+          console.log("useEffect > result", result.data);
+          setServiceConnection(result.data);
         })
         .catch((err) => {
           console.error(err);
@@ -253,13 +252,11 @@ export default function ServiceEP() {
                   {eventService.specialRequirements}
                 </Text>
               </TextContainer>
-              <div style={{ textAlign: "right" }}>
-                <ButtonLoading
-                  label="Broadcast Service "
-                  icon={<IconBroadcast />}
-                  onClick={enableBroadcast}
-                />
-              </div>
+
+              <ButtonLoading
+                label="Broadcast Service"
+                onClick={enableBroadcast}
+              />
             </Box>
           </Paper>
         </Grid>
@@ -274,7 +271,7 @@ export default function ServiceEP() {
           {selectedVendorId && (
             <ServiceConnectionEp
               resetSelectedVendorId={resetSelectedVendorId}
-              liveChatProps={liveChatProps}
+              // liveChatProps={liveChatProps}
               serviceConnection={serviceConnection}
               handleTrigger={handleTrigger}
             />

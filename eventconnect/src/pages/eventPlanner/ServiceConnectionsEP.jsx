@@ -5,7 +5,6 @@ import CreateCard from "../../components/CreateCard";
 import LoadingCard from "../../components/LoadingCard";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate, useParams } from "react-router-dom";
-import { apiCall } from "../../utilities/apiCall";
 import { useState, useEffect } from "react";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";

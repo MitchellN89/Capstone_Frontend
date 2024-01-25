@@ -1,11 +1,20 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { Grid, Typography } from "@mui/material";
-import { Header1, Header2 } from "../../components/Texts/TextHeaders";
+import { Button, Grid, Typography } from "@mui/material";
+import { Header1, Header2, Header3 } from "../../components/Texts/TextHeaders";
 import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
 import { useState, useEffect } from "react";
 import CreateServiceConnection from "./CreateServiceConnection";
 import ServiceConnectionV from "./ServiceConnectionV";
+import HeaderStrip from "../../components/HeaderStrip";
+import ButtonLogoBack from "../../components/Buttons/ButtonLogoBack";
+import TextContainer from "../../components/TextContainer";
+import { Text } from "../../components/Texts/Texts";
+import { FeatureStylize } from "../../components/Texts/TextStyles";
+import Map from "../../components/Map";
+import ModalContainer from "../../components/ModalContainer";
+
+const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export default function ServiceRequestV() {
   const [trigger, setTrigger] = useState(true);
@@ -13,6 +22,19 @@ export default function ServiceRequestV() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { serviceRequestId } = useParams();
+  const { event } = serviceRequest || {};
+  const { id: eventId } = event || {};
+  const { user: eventPlanner } = serviceRequest || {};
+  const [openRespondModal, setOpenRespondModal] = useState(false);
+  const { id: eventPlannerId } = eventPlanner || {};
+
+  const handleOpenRespondModal = (bool) => {
+    setOpenRespondModal(bool);
+  };
+
+  const handleGoBack = () => {
+    navigate("/vendor/servicerequests");
+  };
 
   const handleTrigger = () => {
     setTrigger((curState) => !curState);
@@ -42,41 +64,139 @@ export default function ServiceRequestV() {
     };
   }, [trigger]);
 
+  useEffect(() => {
+    console.log("SERVICE REQ: ", serviceRequest);
+  }, [serviceRequest]);
+
+  const imgStyle = {
+    backgroundImage: `url('${DOMAIN}/uploads/events/event${eventId}.jpg')`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    height: "500px",
+    maxHeight: "40vh",
+    backgroundColor: "#cccccc",
+  };
+
+  const textStyle = {
+    margin: "0",
+  };
+
   if (isLoading) return <h1>Loading...</h1>;
   if (!serviceRequest) return;
 
   return (
     <>
-      <Header1>{serviceRequest.event.eventName || ""}</Header1>
-      <button
-        onClick={() => {
-          navigate(-1);
-        }}
-      >
-        Go Back
-      </button>
-      <Paper>
-        <Box padding={2}>
-          <Grid container spacing={5} padding={2}>
-            <Grid item xs={12} lg={5}>
-              <Header2>{serviceRequest.event.eventName || ""}</Header2>
+      <Respond
+        open={openRespondModal}
+        handleOpenRespondModal={handleOpenRespondModal}
+        handleTrigger={handleTrigger}
+        trigger={trigger}
+        serviceRequestId={serviceRequestId}
+        eventPlannerId={eventPlannerId}
+      />
+      <HeaderStrip>
+        <Header1 style={{ margin: "0" }}>SERVICE REQUESTS</Header1>
+        <ButtonLogoBack handleClick={handleGoBack} />
+      </HeaderStrip>
 
-              <Typography>
-                {serviceRequest.event.startDateTime || ""}
-              </Typography>
-              <Typography>{serviceRequest.event.endDateTime || ""}</Typography>
-            </Grid>
+      <Paper>
+        <div style={imgStyle}></div>
+
+        <Grid container spacing={1} marginBottom={4}>
+          <Grid item xs={12} md={6}>
+            <Box padding="20px 20px 0">
+              <Header2 style={{ margin: "0" }}>{event.eventName}</Header2>
+              <FeatureStylize featureStrength={3} italic bold>
+                <Text style={{ margin: "0" }}>
+                  {serviceRequest.service.service}
+                </Text>
+              </FeatureStylize>
+
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Start:{" "}
+                  </FeatureStylize>
+                  {event.startDateTime}
+                </Text>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    End:{" "}
+                  </FeatureStylize>
+                  {event.endDateTime}
+                </Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Address:{" "}
+                  </FeatureStylize>
+                  {event.address}
+                </Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Request Details:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{serviceRequest.requestBody}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Tags:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{serviceRequest.tags}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Volumes:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{serviceRequest.volumes}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Logistics:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>{serviceRequest.logistics}</Text>
+              </TextContainer>
+              <TextContainer>
+                <Text style={textStyle}>
+                  <FeatureStylize featureStrength={3} bold>
+                    Special Requirements:{" "}
+                  </FeatureStylize>
+                </Text>
+                <Text style={textStyle}>
+                  {serviceRequest.specialRequirements}
+                </Text>
+              </TextContainer>
+              {serviceRequest.vendorEventConnections.length == 0 && (
+                <Button
+                  style={{ marginBottom: "20px" }}
+                  variant="contained"
+                  onClick={() => {
+                    handleOpenRespondModal(true);
+                  }}
+                >
+                  Respond
+                </Button>
+              )}
+            </Box>
           </Grid>
-        </Box>
+          <Grid item xs={12} md={6}>
+            <Box padding={3}>
+              <Map address={event.address} />
+            </Box>
+          </Grid>
+        </Grid>
       </Paper>
-      {serviceRequest.vendorEventConnections.length === 0 && (
-        <CreateServiceConnection
-          handleTrigger={handleTrigger}
-          trigger={trigger}
-          serviceRequestId={serviceRequestId}
-          eventPlannerId={serviceRequest.event.user.id}
-        />
-      )}
+
       {serviceRequest.vendorEventConnections.length > 0 && (
         <ServiceConnectionV
           handleTrigger={handleTrigger}
@@ -87,3 +207,28 @@ export default function ServiceRequestV() {
     </>
   );
 }
+
+const Respond = ({
+  open,
+  handleOpenRespondModal,
+  handleTrigger,
+  trigger,
+  serviceRequestId,
+  eventPlannerId,
+}) => {
+  return (
+    <ModalContainer
+      open={open}
+      handleOpen={handleOpenRespondModal}
+      maxWidth="md"
+    >
+      <CreateServiceConnection
+        handleOpen={handleOpenRespondModal}
+        handleTrigger={handleTrigger}
+        trigger={trigger}
+        serviceRequestId={serviceRequestId}
+        eventPlannerId={eventPlannerId}
+      />
+    </ModalContainer>
+  );
+};

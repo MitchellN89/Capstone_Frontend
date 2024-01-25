@@ -7,6 +7,11 @@ import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { useEffect, useState } from "react";
+import HeaderStrip from "../../components/HeaderStrip";
+import { Header1 } from "../../components/Texts/TextHeaders";
+import ButtonLogoRefresh from "../../components/Buttons/ButtonLogoRefresh";
+import CardEventV from "./Components/CardRequestV";
+import CardRequestV from "./Components/CardRequestV";
 
 export default function ServiceRequestsV() {
   const navigate = useNavigate();
@@ -36,6 +41,7 @@ export default function ServiceRequestsV() {
       .then((result) => {
         if (!ignore) {
           setRequests(result.data);
+          console.log("REQUESTS: ", result);
         }
       })
       .catch((err) => {
@@ -58,35 +64,35 @@ export default function ServiceRequestsV() {
     navigate(`/vendor/servicerequests/${serviceRequestId}`);
   };
 
+  const handleTrigger = () => {
+    setTrigger((trigger) => !trigger);
+  };
+
   return (
     // TODO Need title
     // TODO need serach criteria
     <>
-      {/* <button onClick={handleTrigger}>refresh</button> */}
-      <button
-        onClick={() => {
-          setTrigger((curState) => !curState);
-        }}
-      >
-        REFRESH
-      </button>
-      <h1>Service Requests</h1>
+      <HeaderStrip>
+        <Header1 style={{ margin: "0" }}>SERVICE REQUESTS</Header1>
+        <ButtonLogoRefresh handleClick={handleTrigger} />
+      </HeaderStrip>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} marginBottom={4}>
         <LoadingCard isLoading={isLoading} />
         {requests &&
           requests.map((request) => {
             return (
-              <GridCard
+              <CardRequestV
                 handleClick={handleClick}
+                eventName={request.event.eventName}
+                serviceName={request.service.service}
+                eventId={request.event.id}
+                eventServiceId={request.id}
                 id={request.id}
                 key={request.id}
-              >
-                {request.tags}
-              </GridCard>
+              ></CardRequestV>
             );
           })}
-        <CreateCard></CreateCard>
       </Grid>
     </>
   );

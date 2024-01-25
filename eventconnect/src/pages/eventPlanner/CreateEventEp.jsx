@@ -151,7 +151,6 @@ export default function CreateEventEP({ handleOpen }) {
   };
 
   return (
-    // <FullScreenContainer>
     <>
       <Paper>
         <Box padding={5}>
@@ -215,6 +214,5 @@ export default function CreateEventEP({ handleOpen }) {
         </Box>
       </Paper>
     </>
-    // </FullScreenContainer>
   );
 }

@@ -9,12 +9,11 @@ export function Text({ children, bold, italic, size, textAlign, style }) {
 
   const textStyle = {
     fontWeight: bold ? "bold" : "inherit",
-    textStyle: italic ? "italic" : "inherit",
+    fontStyle: italic ? "italic" : "inherit",
     fontSize: size ? sizes[size] : "inherit",
     textAlign: textAlign ? textAlign : "inherit",
     fontFamily: "inherit",
     overflow: "none",
-    // width: "200px",
   };
   return <p style={{ ...textStyle, ...style }}>{children}</p>;
 }

@@ -10,9 +10,14 @@ export function IconLoading({ style, ...others }) {
   );
 }
 
-export function IconSend({ style, ...others }) {
+export function IconSend({ height, style, ...others }) {
   return (
-    <Icon style={{ marginLeft: "10px", ...style }} {...others} icon="bi:send" />
+    <Icon
+      height={height || "25px"}
+      style={{ marginLeft: "10px", ...style }}
+      {...others}
+      icon="bi:send"
+    />
   );
 }
 

@@ -5,16 +5,10 @@ import { Paper } from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@mui/material";
 
-export default function ChatMessage({ message, createdAt, isMe }) {
-  const theme = useTheme();
+export default function ChatServerMessage({ message, createdAt }) {
   const containerStyle = {
-    borderLeft: !isMe ? `10px solid purple` : "",
-    borderRight: isMe ? `10px solid ${theme.palette.feature[2]}` : "",
-    padding: "5px 10px",
-    margin: "10px 5px",
-    maxWidth: "80%",
-    marginLeft: isMe ? "auto" : "",
-    textAlign: isMe ? "right" : "left",
+    margin: "auto",
+    textAlign: "center",
   };
 
   return (
@@ -29,7 +23,7 @@ export default function ChatMessage({ message, createdAt, isMe }) {
         {message}
       </Text>
       <Text size="xs" italic style={{ margin: "0" }}>
-        {dayjs(createdAt).format("DD MMM YYYY - HH:mm")}
+        {dayjs(createdAt).format("DD MMM YYYY - HH:MM")}
       </Text>
     </div>
   );
