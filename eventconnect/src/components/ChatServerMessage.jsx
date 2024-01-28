@@ -6,18 +6,22 @@ import dayjs from "dayjs";
 import { useTheme } from "@mui/material";
 
 export default function ChatServerMessage({ message, createdAt }) {
+  const theme = useTheme();
+
   const containerStyle = {
-    margin: "auto",
+    margin: "10px 5px",
     textAlign: "center",
   };
 
   return (
     <div style={containerStyle}>
       <Text
+        bold
         style={{
           margin: "0",
           overflowWrap: "break-word",
           wordWrap: "break-word",
+          color: theme.palette.feature[2],
         }}
       >
         {message}

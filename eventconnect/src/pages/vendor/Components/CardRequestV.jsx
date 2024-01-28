@@ -62,6 +62,7 @@ export default function CardRequestV({
           handleClick(eventServiceId);
         }}
       >
+        <ServiceTag serviceName={serviceName} />
         <div style={overlayStyle} />
 
         <Header2
@@ -79,16 +80,22 @@ export default function CardRequestV({
   );
 }
 
-const ButtonBox = ({ children }) => {
-  const buttonBoxStyle = {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    position: "absolute",
-    right: "10px",
-    bottom: "0px",
-    color: "white",
-    zIndex: "10",
-  };
-  return <div style={buttonBoxStyle}>{children}</div>;
+const serviceTagStlye = {
+  position: "absolute",
+  right: "10px",
+  bottom: "10px",
+  backgroundColor: "#dfdfdf",
+  padding: "5px 10px",
+  zIndex: "10",
+  borderRadius: "22px",
+};
+
+const ServiceTag = ({ serviceName }) => {
+  return (
+    <div style={serviceTagStlye}>
+      <Text size="sm" bold style={{ margin: "0" }}>
+        {serviceName || "Test"}
+      </Text>
+    </div>
+  );
 };

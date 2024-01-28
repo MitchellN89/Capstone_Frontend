@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
@@ -8,7 +8,7 @@ import EditEventEP from "./EditEventEp";
 import { useState } from "react";
 import ModalContainer from "../../components/ModalContainer";
 import HeaderStrip from "../../components/HeaderStrip";
-import ButtonLogoCreate from "../../components/Buttons/ButtonLogoCreate";
+
 import { Text } from "../../components/Texts/Texts";
 import TextContainer from "../../components/TextContainer";
 import Map from "../../components/Map";
@@ -16,7 +16,8 @@ import { FeatureStylize } from "../../components/Texts/TextStyles";
 import ButtonLogoBack from "../../components/Buttons/ButtonLogoBack";
 import ButtonLogoEdit from "../../components/Buttons/ButtonLogoEdit";
 import ButtonLogoDelete from "../../components/Buttons/ButtonLogoDelete";
-import styled from "@emotion/styled";
+
+import dayjs from "dayjs";
 
 export default function EventEP() {
   let { eventId } = useParams();
@@ -27,6 +28,13 @@ export default function EventEP() {
   const event = events.events.find((event) => {
     return event.id == eventId;
   });
+
+  const hasPromotedVendors =
+    event && event.eventServices
+      ? event.eventServices.some((eventService) => {
+          return eventService.vendorId ? true : false;
+        })
+      : false;
 
   const handleGoBack = () => {
     navigate("/eventplanner");
@@ -83,7 +91,7 @@ export default function EventEP() {
         <ButtonLogoBack handleClick={handleGoBack} />
       </HeaderStrip>
 
-      <Paper>
+      <Paper sx={{ marginBottom: "30px" }}>
         <div style={imgStyle}></div>
 
         <Grid container spacing={1}>
@@ -93,7 +101,10 @@ export default function EventEP() {
                 <Header2 style={{ margin: "0" }}>{event.eventName}</Header2>
                 <div style={{ display: "flex" }}>
                   <ButtonLogoEdit handleClick={handleEditClick} />
-                  <ButtonLogoDelete isVisible handleClick={handleDelete} />
+                  <ButtonLogoDelete
+                    isVisible={!hasPromotedVendors}
+                    handleClick={handleDelete}
+                  />
                 </div>
               </HeaderStrip>
 
@@ -102,13 +113,15 @@ export default function EventEP() {
                   <FeatureStylize featureStrength={3} bold>
                     Start:{" "}
                   </FeatureStylize>
-                  {event.startDateTime}
+                  {dayjs(event.startDateTime).isValid() &&
+                    dayjs(event.startDateTime).format("DD MMM YYYY, HH:mm a")}
                 </Text>
                 <Text style={textStyle}>
                   <FeatureStylize featureStrength={3} bold>
                     End:{" "}
                   </FeatureStylize>
-                  {event.endDateTime}
+                  {dayjs(event.endDateTime).isValid() &&
+                    dayjs(event.endDateTime).format("DD MMM YYYY, HH:mm a")}
                 </Text>
               </TextContainer>
               <TextContainer>

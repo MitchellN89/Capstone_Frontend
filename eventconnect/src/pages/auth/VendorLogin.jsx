@@ -46,12 +46,14 @@ export default function VendorLogin() {
       triggerNotification({ message: "Successfully logged in" });
       navigate("/vendor/");
     } catch (err) {
-      switch (err.response.status) {
-        case 404:
-          triggerNotification({
-            message: "Cannot find user with these credentials",
-            severity: "error",
-          });
+      if (err.response) {
+        switch (err.response.status) {
+          case 404:
+            triggerNotification({
+              message: "Cannot find user with these credentials",
+              severity: "error",
+            });
+        }
       }
       dispatchUser({ type: "REQUEST_FAILED" });
       console.error(err);

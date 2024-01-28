@@ -1,29 +1,56 @@
 import { Grid } from "@mui/material";
-import GridCard from "../../components/GridCard";
-import useData from "../../hooks/useData";
-import CreateCard from "../../components/CreateCard";
-import LoadingCard from "../../components/LoadingCard";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import CardEventEP from "./Components/CardEventEP";
 import { Header1 } from "../../components/Texts/TextHeaders";
 import HeaderStrip from "../../components/HeaderStrip";
-import { IconCreate } from "../../components/Icons";
 import ButtonLogoCreate from "../../components/Buttons/ButtonLogoCreate";
 import ModalContainer from "../../components/ModalContainer";
 import CreateEventEP from "./CreateEventEp";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useServicesEPContext } from "../../context/EventServiceEPProvider";
+import FilterBar from "../../components/FilterBar";
+import CustomComboInput from "../../components/Inputs/CustomComboInput";
+import CardCreate from "../../components/CardCreate";
+import CardLoading from "../../components/CardLoading";
+import {
+  filter,
+  matchAddressEP,
+  matchEventNameEP,
+} from "../../utilities/filterFunctions";
+import { useFilterPreferencesContext } from "../../context/FilterPreferencesProvider";
 
 export default function EventsEP() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const {
-    state: events,
+    state: eventContext,
     dispatch: eventsDispatch,
     actions: eventsActions,
   } = useEventsEPContext();
+  const { events } = eventContext || {};
+  const { state: servicesContext } = useServicesEPContext();
   const { isLoading } = events;
   const navigate = useNavigate();
+  const {
+    eventNameFilterProps,
+    eventNameFilterValue,
+    addressFilterProps,
+    addressFilterValue,
+    resetFilters,
+  } = useFilterPreferencesContext();
+
+  const filteredEvents = useMemo(() => {
+    return filter(
+      events,
+      matchEventNameEP(eventNameFilterValue),
+      matchAddressEP(addressFilterValue)
+    );
+  }, [addressFilterValue, eventNameFilterValue, events]);
+
+  useEffect(() => {
+    console.log("filteredEvents", filteredEvents);
+  }, [filteredEvents]);
 
   const handleDelete = async (id) => {
     if (isLoading) return;
@@ -44,15 +71,11 @@ export default function EventsEP() {
     navigate(`/eventPlanner/${id}`);
   };
 
-  const handleOpenCreateModal = (bool) => {
+  const handleOpenCreateModal = (bool = true) => {
     setOpenCreateModal(bool);
   };
 
-  console.log("OPEN STATUS", openCreateModal);
-
   return (
-    // TODO Need title
-    // TODO need serach criteria
     <>
       <CreateEvent
         open={openCreateModal}
@@ -62,22 +85,42 @@ export default function EventsEP() {
         <Header1 style={{ margin: "0" }}>EVENTS</Header1>
         <ButtonLogoCreate handleClick={handleOpenCreateModal} />
       </HeaderStrip>
-
+      <FilterBar resetFilters={resetFilters}>
+        <Grid item xs={12}>
+          <CustomComboInput {...eventNameFilterProps} />
+        </Grid>
+        <Grid item xs={12}>
+          <CustomComboInput {...addressFilterProps} />
+        </Grid>
+      </FilterBar>
       <Grid container spacing={3} marginBottom={4}>
-        <LoadingCard isLoading={isLoading} />
-        {events.events &&
-          events.events.map((event) => {
+        <CardLoading isLoading={isLoading} />
+        {filteredEvents &&
+          filteredEvents.map((event) => {
+            const hasPromotedVendors =
+              event && event.eventServices
+                ? event.eventServices.some((eventService) => {
+                    return eventService.vendorId ? true : false;
+                  })
+                : null;
+
             return (
               <CardEventEP
                 key={event.id}
                 eventId={event.id}
                 eventName={event.eventName}
-                hasPromotedVendors={event.vendorId ? true : false}
+                eventStartDateTime={event.startDateTime}
+                eventEndDateTime={event.endDateTime}
+                hasPromotedVendors={hasPromotedVendors}
                 handleDelete={handleDelete}
                 handleClick={handleClick}
               />
             );
           })}
+        <CardCreate
+          label="CREATE NEW EVENT"
+          handleClick={handleOpenCreateModal}
+        />
       </Grid>
     </>
   );

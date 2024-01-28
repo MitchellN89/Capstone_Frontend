@@ -119,27 +119,28 @@ export default function VendorSignUp() {
         state: { emailAddress: emailAddressValue },
       });
     } catch (err) {
-      switch (err.response.status) {
-        case 409:
-          triggerNotification({
-            message:
-              "You have already signed up for an account using this email address. Returning to the login screen",
-            severity: "warning",
-          });
+      if (err.response) {
+        switch (err.response.status) {
+          case 409:
+            triggerNotification({
+              message:
+                "You have already signed up for an account using this email address. Returning to the login screen",
+              severity: "warning",
+            });
 
-          navigate("/auth/vendor/login", {
-            state: { emailAddress: emailAddressValue },
-          });
-          break;
-        default:
-          triggerNotification({
-            message: "Server error. For more details, see log",
-            severity: "error",
-          });
-          resetForm();
+            navigate("/auth/vendor/login", {
+              state: { emailAddress: emailAddressValue },
+            });
+            break;
+          default:
+            triggerNotification({
+              message: "Server error. For more details, see log",
+              severity: "error",
+            });
+            resetForm();
+        }
       }
 
-      console.error(err.response.status);
       console.error(err);
     } finally {
       setIsLoading(false);

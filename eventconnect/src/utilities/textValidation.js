@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export function validationMatch(valueToMatch, faultMessage) {
   return function (value) {
     const result = {
@@ -85,4 +87,36 @@ export function validationAtLeastOneNumber(value) {
   };
 
   return result;
+}
+
+export function validationDateIsValid(value) {
+  const result = {
+    isValid: dayjs(value).isValid(),
+    key: `valid_date`,
+    faultMessage: "Must be a valid date",
+  };
+
+  return result;
+}
+
+export function validationDateAfterNow(value) {
+  const result = {
+    isValid: dayjs(value).isAfter(dayjs()),
+    key: `valid_afterNow`,
+    faultMessage: "Must be a date that occurs after the current time",
+  };
+
+  return result;
+}
+
+export function validationDateAfterValue(valueToExceed) {
+  return function (value) {
+    const result = {
+      isValid: dayjs(value).isAfter(valueToExceed),
+      key: `valid_afterValue`,
+      faultMessage: "Must be a date that occurs after the current time",
+    };
+
+    return result;
+  };
 }

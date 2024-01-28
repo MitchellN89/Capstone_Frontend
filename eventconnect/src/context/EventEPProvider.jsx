@@ -51,7 +51,6 @@ const reducer = (state, action) => {
         isLoading: false,
       };
     case "DELETE_EVENT_SERVICE":
-      console.log("DELETE_EVENT_SERVICE", id, eventId);
       return {
         ...state,
         events: deleteEventService(state, id, eventId),
@@ -69,10 +68,9 @@ const reducer = (state, action) => {
 
 const appendNewEventService = (state, id, eventId) => {
   const events = [...state.events];
-  console.log("_____ appendNewEventService function run");
+
   return events.map((event) => {
     if (event.id == eventId) {
-      console.log("Append new event service: ", eventId, event.id);
       if (!event.eventServices) {
         event.eventServices = [];
       }
@@ -86,24 +84,8 @@ const appendNewEventService = (state, id, eventId) => {
 const deleteEventService = (state, eventServiceId, eventId) => {
   const events = [...state.events];
   const filteredEvents = events.map((event) => {
-    console.log(
-      "DEBUG: ",
-      "eventId",
-      eventId,
-      "event.id",
-      event.id,
-      "event.eventServices.length",
-      event.eventServices.length
-    );
     if (event.id == eventId && event.eventServices.length > 0) {
       event.eventServices = event.eventServices.filter((eventService) => {
-        console.log(
-          "DEBUG: ",
-          "eventService.id:",
-          eventService.id,
-          "eventServiceId",
-          eventServiceId
-        );
         return eventService.id != eventServiceId;
       });
     }

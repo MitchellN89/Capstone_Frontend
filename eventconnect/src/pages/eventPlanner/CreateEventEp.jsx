@@ -21,6 +21,14 @@ import { useNotification } from "../../context/NotificationProvider";
 import AddressInput from "../../components/Inputs/AddressInput";
 import FileInput from "../../components/Inputs/FileInput";
 import { formatImageForJSON } from "../../utilities/imageFormatter";
+import {
+  validationDateAfterNow,
+  validationDateIsValid,
+  validationOnlyEmailAddress,
+  validationOnlyName,
+  validationOnlyPhoneNumber,
+  validationDateAfterValue,
+} from "../../utilities/textValidation";
 
 const allValid = (...inputs) => {
   return new Promise((res) => {
@@ -41,11 +49,9 @@ export default function CreateEventEP({ handleOpen }) {
     "eventName",
     "text"
   );
-  const [startDateTimeProps, isValidStartDateTime] = useDateTimeInput(
-    undefined,
-    "Start Date/Time",
-    "startDateTime"
-  );
+
+  const [startDateTimeProps, isValidStartDateTime, , startDateTimeValue] =
+    useDateTimeInput(undefined, "Start Date/Time", "startDateTime");
 
   const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
     undefined,
@@ -59,15 +65,19 @@ export default function CreateEventEP({ handleOpen }) {
     "endClientFirstName",
     "text"
   );
+
   const [venueProps, isValidVenue] = useTextInput("", "Venue", "venue", "text");
+
   const [endClientLastNameProps, isValidEndClientLastName] = useTextInput(
     "",
     "Client Last Name",
     "endClientLastName",
     "text"
   );
+
   const [endClientEmailAddressProps, isValidEndClientEmailAddress] =
     useTextInput("", "Client Email Address", "endClientEmailAddress", "email");
+
   const [endClientPhoneNumberProps, isValidEndClientPhoneNumber] = useTextInput(
     "",
     "Client Phone Number",
@@ -167,22 +177,43 @@ export default function CreateEventEP({ handleOpen }) {
                 <AddressInput />
               </Grid>
               <Grid item xs={12}>
-                <DateTimeInput {...startDateTimeProps} />
+                <DateTimeInput
+                  {...startDateTimeProps}
+                  patterns={[validationDateIsValid, validationDateAfterNow]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <DateTimeInput {...endDateTimeProps} />
+                <DateTimeInput
+                  {...endDateTimeProps}
+                  patterns={[
+                    validationDateIsValid,
+                    validationDateAfterValue(startDateTimeValue),
+                  ]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientFirstNameProps} />
+                <TextInput
+                  {...endClientFirstNameProps}
+                  patterns={[validationOnlyName]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientLastNameProps} />
+                <TextInput
+                  {...endClientLastNameProps}
+                  patterns={[validationOnlyName]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientEmailAddressProps} />
+                <TextInput
+                  {...endClientEmailAddressProps}
+                  patterns={[validationOnlyEmailAddress]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientPhoneNumberProps} />
+                <TextInput
+                  {...endClientPhoneNumberProps}
+                  patterns={[validationOnlyPhoneNumber]}
+                />
               </Grid>
 
               <Grid item xs={6} marginTop={3}>

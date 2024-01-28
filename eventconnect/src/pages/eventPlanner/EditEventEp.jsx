@@ -4,8 +4,7 @@ import TextInput from "../../components/Inputs/TextInput";
 import DateTimeInput from "../../components/Inputs/DateTimeInput";
 import { useState } from "react";
 import { Box } from "@mui/system";
-import MaxWidthContainer from "../../components/MaxWidthContainer";
-import { Header1, Header2 } from "../../components/Texts/TextHeaders";
+import { Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
@@ -16,6 +15,14 @@ import FileInput from "../../components/Inputs/FileInput";
 import { formatImageForJSON } from "../../utilities/imageFormatter";
 import { convertDatesToValid } from "../../utilities/formData";
 import { useNotification } from "../../context/NotificationProvider";
+import {
+  validationDateAfterNow,
+  validationDateAfterValue,
+  validationDateIsValid,
+  validationOnlyEmailAddress,
+  validationOnlyName,
+  validationOnlyPhoneNumber,
+} from "../../utilities/textValidation";
 
 export default function EditEventEP({ handleOpen }) {
   const { eventId } = useParams();
@@ -36,11 +43,12 @@ export default function EditEventEP({ handleOpen }) {
     "text"
   );
 
-  const [startDateTimeProps, isValidStartDateTime] = useDateTimeInput(
-    event.startDateTime || "",
-    "Start Date/Time",
-    "startDateTime"
-  );
+  const [startDateTimeProps, isValidStartDateTime, , startDateTimeValue] =
+    useDateTimeInput(
+      event.startDateTime || "",
+      "Start Date/Time",
+      "startDateTime"
+    );
 
   const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
     event.endDateTime || "",
@@ -87,24 +95,6 @@ export default function EditEventEP({ handleOpen }) {
       }, 250);
     });
   };
-
-  // const isValidForm = () => {
-  //   return new Promise((res) => {
-  //     setTimeout(() => {
-  //       res(
-  //         [
-  //           // isValidAddress,
-  //           isValidVenue,
-  //           isValidEndClientEmailAddress,
-  //           isValidEndClientFirstName,
-  //           isValidEndClientLastName,
-  //           isValidEndClientPhoneNumber,
-  //           isValidEventName,
-  //         ].every((i) => i)
-  //       );
-  //     }, 250);
-  //   });
-  // };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
@@ -191,7 +181,7 @@ export default function EditEventEP({ handleOpen }) {
                 <Header2>Edit Event</Header2>
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...eventNameProps} />
+                <TextInput {...eventNameProps} required />
               </Grid>
               <Grid item xs={12}>
                 <TextInput {...venueProps} />
@@ -200,22 +190,43 @@ export default function EditEventEP({ handleOpen }) {
                 <AddressInput init={event.address} />
               </Grid>
               <Grid item xs={12}>
-                <DateTimeInput {...startDateTimeProps} />
+                <DateTimeInput
+                  {...startDateTimeProps}
+                  patterns={[validationDateIsValid, validationDateAfterNow]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <DateTimeInput {...endDateTimeProps} />
+                <DateTimeInput
+                  {...endDateTimeProps}
+                  patterns={[
+                    validationDateIsValid,
+                    validationDateAfterValue(startDateTimeValue),
+                  ]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientFirstNameProps} />
+                <TextInput
+                  {...endClientFirstNameProps}
+                  patterns={[validationOnlyName]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientLastNameProps} />
+                <TextInput
+                  {...endClientLastNameProps}
+                  patterns={[validationOnlyName]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientEmailAddressProps} />
+                <TextInput
+                  {...endClientEmailAddressProps}
+                  patterns={[validationOnlyEmailAddress]}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...endClientPhoneNumberProps} />
+                <TextInput
+                  {...endClientPhoneNumberProps}
+                  patterns={[validationOnlyPhoneNumber]}
+                />
               </Grid>
               <Grid item xs={6} marginTop={3}>
                 <FileInput

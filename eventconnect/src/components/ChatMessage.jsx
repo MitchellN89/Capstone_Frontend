@@ -1,7 +1,4 @@
-import styled from "@emotion/styled";
-import { purple } from "@mui/material/colors";
 import { Text } from "./Texts/Texts";
-import { Paper } from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@mui/material";
 

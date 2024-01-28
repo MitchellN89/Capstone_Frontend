@@ -22,15 +22,10 @@ export default function FileInput({ fileData, handleFileData }) {
 
     if (file) {
       // Check file type
-      const allowedFileTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/gif",
-      ];
+      const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
 
       if (!allowedFileTypes.includes(file.type)) {
-        console.error("Invalid file type. Please select a valid image file.");
+        //COMEBACKTO - notification - wrong file type
         handleFileData(null);
         return;
       }
@@ -38,6 +33,7 @@ export default function FileInput({ fileData, handleFileData }) {
       // Check file size (in bytes)
       const maxSizeInBytes = 2 * 1024 * 1024; // 2 MB
       if (file.size > maxSizeInBytes) {
+        //COMEBACKTO - notification - file too big
         console.error(
           "File size exceeds the limit of 2mb. Please select a smaller file."
         );

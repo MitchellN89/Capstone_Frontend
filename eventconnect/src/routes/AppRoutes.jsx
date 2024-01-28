@@ -86,15 +86,15 @@ function EventPlannerRoutes() {
     <Routes>
       <Route path="/" element={<EventPlanner />}>
         <Route index element={<EventsEP />} />
-        <Route path="createEvent" element={<CreateEventEP />} />
-        <Route path=":eventId/editEvent" element={<EditEventEP />} />
+        {/* <Route path="createEvent" element={<CreateEventEP />} /> */}
+        {/* <Route path=":eventId/editEvent" element={<EditEventEP />} /> */}
         <Route path=":eventId" element={<EventEP />}>
           <Route index element={<ServicesEP />} />
-          <Route path="createService" element={<CreateServiceEP />} />
-          <Route
+          {/* <Route path="createService" element={<CreateServiceEP />} /> */}
+          {/* <Route
             path=":eventServiceId/editService"
             element={<EditServiceEP />}
-          />
+          /> */}
           <Route path=":eventServiceId" element={<ServiceEP />}>
             {/* <Route index element={<ServiceConnectionsEP />} />
             <Route
@@ -113,9 +113,9 @@ function VendorRoutes() {
     <Routes>
       <Route path="/" element={<Vendor />}>
         <Route index element={<Navigate to={"/vendor/servicerequests"} />} />
-        <Route path="servicerequests" element={<ServiceRequestsV />} />
+        <Route path="serviceRequests" element={<ServiceRequestsV />} />
         <Route
-          path="servicerequests/:serviceRequestId"
+          path="serviceRequests/:serviceRequestId"
           element={<ServiceRequestV />}
         />
         <Route path="events" element={<EventsV />} />

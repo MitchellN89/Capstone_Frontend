@@ -16,7 +16,6 @@ export default function AccountSelect() {
     margin: "20px",
   };
 
-  console.log("theme stuff: ", theme);
   return (
     <>
       <Header2 centered>Select your account type</Header2>

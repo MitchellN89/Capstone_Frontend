@@ -1,6 +1,4 @@
 import { Grid } from "@mui/material";
-import GridCard from "../../components/GridCard";
-import CreateCard from "../../components/CreateCard";
 import { useParams } from "react-router-dom";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { useEffect, useState } from "react";
@@ -13,6 +11,7 @@ import ButtonLogoCreate from "../../components/Buttons/ButtonLogoCreate";
 import { Header1 } from "../../components/Texts/TextHeaders";
 import ModalContainer from "../../components/ModalContainer";
 import CardServiceEP from "./Components/CardServiceEP";
+import CardCreate from "../../components/CardCreate";
 
 export default function ServicesEP() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -50,7 +49,7 @@ export default function ServicesEP() {
     });
   };
 
-  const handleOpenCreateModal = (bool) => {
+  const handleOpenCreateModal = (bool = true) => {
     setOpenCreateModal(bool);
   };
 
@@ -59,13 +58,10 @@ export default function ServicesEP() {
     navigate(`/eventPlanner/${eventId}/${id}`);
   };
 
-  console.log("ServicesEp.jsx > eventServices: ", eventServices);
-
   useEffect(() => {
     let ignore = false;
     if (eventServices.length === 0) {
       servicesDispatch({ type: "PROCESSING_REQUEST" });
-      console.log("DEBUG > useEffect in ServicesEP running");
       apiCall(`/events/${eventId}/services`)
         .then((result) => {
           if (!ignore) {
@@ -97,7 +93,7 @@ export default function ServicesEP() {
         open={openCreateModal}
         handleOpenCreateModal={handleOpenCreateModal}
       />
-      <HeaderStrip style={{ marginTop: "30px" }}>
+      <HeaderStrip>
         <Header1 style={{ margin: "0" }}>SERVICES</Header1>
         <ButtonLogoCreate handleClick={handleOpenCreateModal} />
       </HeaderStrip>
@@ -105,32 +101,23 @@ export default function ServicesEP() {
       <Grid container spacing={3} marginBottom={4}>
         {eventServices &&
           eventServices.map((eventService) => {
+            const hasPromotedVendor = eventService.vendorId ? true : false;
             return (
               <CardServiceEP
                 key={eventService.id}
+                hasPromotedVendor={hasPromotedVendor}
                 eventServiceId={eventService.id}
                 serviceName={getService(eventService.serviceId).service}
                 imgUrl={getService(eventService.serviceId).imgUrl}
                 handleClick={handleClick}
                 handleDelete={handleDelete}
               />
-
-              // <GridCard
-              //   hasDelete
-              //   id={eventService.id}
-              //   key={eventService.id}
-              //   service={eventService}
-              //   handleClick={handleClick}
-              //   handleDelete={handleDelete}
-              // >
-              //   {
-              //     services.services.find(
-              //       (service) => service.id == eventService.serviceId
-              //     ).service
-              //   }
-              // </GridCard>
             );
           })}
+        <CardCreate
+          label="CREATE NEW SERVICE"
+          handleClick={handleOpenCreateModal}
+        />
       </Grid>
     </>
   );

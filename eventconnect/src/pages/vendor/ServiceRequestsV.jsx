@@ -1,16 +1,12 @@
 import { Grid } from "@mui/material";
-import GridCard from "../../components/GridCard";
-import useData from "../../hooks/useData";
-import CreateCard from "../../components/CreateCard";
 import LoadingCard from "../../components/LoadingCard";
-import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { useEffect, useState } from "react";
 import HeaderStrip from "../../components/HeaderStrip";
 import { Header1 } from "../../components/Texts/TextHeaders";
 import ButtonLogoRefresh from "../../components/Buttons/ButtonLogoRefresh";
-import CardEventV from "./Components/CardRequestV";
+
 import CardRequestV from "./Components/CardRequestV";
 
 export default function ServiceRequestsV() {
@@ -41,7 +37,6 @@ export default function ServiceRequestsV() {
       .then((result) => {
         if (!ignore) {
           setRequests(result.data);
-          console.log("REQUESTS: ", result);
         }
       })
       .catch((err) => {
@@ -68,6 +63,7 @@ export default function ServiceRequestsV() {
     setTrigger((trigger) => !trigger);
   };
 
+  if (!requests) return;
   return (
     // TODO Need title
     // TODO need serach criteria
@@ -88,9 +84,8 @@ export default function ServiceRequestsV() {
                 serviceName={request.service.service}
                 eventId={request.event.id}
                 eventServiceId={request.id}
-                id={request.id}
                 key={request.id}
-              ></CardRequestV>
+              />
             );
           })}
       </Grid>

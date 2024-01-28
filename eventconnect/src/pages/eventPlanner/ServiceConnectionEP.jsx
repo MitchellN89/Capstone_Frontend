@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
-import ChatBoxEP from "./Components/ChatBoxEP";
+import ChatBox from "../../components/ChatBox";
 import io from "socket.io-client";
 import { useUser } from "../../context/UserProvider";
 import HeaderStrip from "../../components/HeaderStrip";
@@ -10,6 +10,10 @@ import ButtonLogoBack from "../../components/Buttons/ButtonLogoBack";
 import ChatInputBox from "../../components/ChatInputBox";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { useEventsEPContext } from "../../context/EventEPProvider";
+import { useChatEntryContext } from "../../context/ChatEntryProvider";
+import ButtonLoading from "../../components/Buttons/ButtonLoading";
+import { Button } from "@mui/material";
+import UserCard from "../../components/UserCard";
 
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
@@ -17,8 +21,8 @@ export default function ServiceConnectionEp({
   serviceConnection,
   handleTrigger,
   resetSelectedVendorId,
+  eventServiceVendorId,
 }) {
-  console.log("serviceConnection: ", serviceConnection);
   const [socket, setSocket] = useState(null);
   const [entries, setEntries] = useState(null);
   const [roomId, setRoomId] = useState(null);
@@ -32,6 +36,7 @@ export default function ServiceConnectionEp({
   const { user: connectedWith } = serviceConnection || {};
   const { dispatch: serviceDispatch } = useServicesEPContext();
   const { dispatch: eventDispatch } = useEventsEPContext();
+  const { dispatch: chatEntryDispatch } = useChatEntryContext();
   const { id: vendorId } = connectedWith || {};
 
   useEffect(() => {
@@ -39,7 +44,11 @@ export default function ServiceConnectionEp({
       if (serviceConnection.chatEntries) {
         setEntries(serviceConnection.chatEntries);
       }
-
+      console.log(
+        "ServiceConnectionEP.jsx > serviceConnectrion: ",
+        serviceConnection
+      );
+      chatEntryDispatch({ type: "DELETE_ENTRIES", serviceConnectionId });
       setRoomId(serviceConnection.id);
     }
   }, [serviceConnection]);
@@ -65,7 +74,6 @@ export default function ServiceConnectionEp({
   useEffect(() => {
     if (socket) {
       socket.on("payloadFromServer", (message) => {
-        console.log("RESPONSE FROM SERVER: ", message);
         setEntries((entries) => {
           const newEntries = [...entries];
           newEntries.push(message);
@@ -75,11 +83,8 @@ export default function ServiceConnectionEp({
     }
   }, [socket]);
 
-  useEffect(() => {
-    console.log("serviceConnection: ", serviceConnection);
-  }, [serviceConnection]);
-
   const sendMessage = (message) => {
+    if (!message) return;
     const handleError = (serverResponse) => {
       console.error(serverResponse);
     };
@@ -105,8 +110,7 @@ export default function ServiceConnectionEp({
       `/events/${eventId}/services/${eventServiceId}/connections/${serviceConnectionId}/promoteVendor/${vendorId}`,
       "patch"
     )
-      .then((result) => {
-        console.log("RESULT: ", result);
+      .then(() => {
         handleTrigger();
         serviceDispatch({
           type: "PROMOTE_VENDOR",
@@ -140,16 +144,34 @@ export default function ServiceConnectionEp({
   if (!serviceConnection) return <span>No data available yet</span>;
 
   return (
-    <>
-      <HeaderStrip style={{ marginTop: "30px" }}>
+    <div
+      style={{
+        maxHeight: "calc(100vh - 120px)",
+        display: "flex",
+        flexDirection: "column",
+        // marginBottom: "20px",
+      }}
+    >
+      <HeaderStrip>
         <Header1 style={{ margin: "0" }}>CONNECTIONS</Header1>
-        <ButtonLogoBack handleClick={resetSelectedVendorId} />
+        {!eventServiceVendorId && (
+          <ButtonLogoBack handleClick={resetSelectedVendorId} />
+        )}
       </HeaderStrip>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <ChatBoxEP handleTrigger={handleTrigger} entries={entries}></ChatBoxEP>
-        <ChatInputBox sendMessage={sendMessage} />
-        <button onClick={promoteVendor}>Promote Vendor</button>
-      </div>
-    </>
+
+      <UserCard
+        companyName={connectedWith.companyName}
+        firstName={connectedWith.firstName}
+        lastName={connectedWith.lastName}
+        emailAddress={connectedWith.emailAddress}
+        phoneNumber={connectedWith.phoneNumber}
+        websiteUrl={connectedWith.websiteUrl}
+      />
+      <ChatBox handleTrigger={handleTrigger} entries={entries} />
+      <ChatInputBox sendMessage={sendMessage} />
+      {!eventServiceVendorId && (
+        <Button onClick={promoteVendor}>Promote Vendor</Button>
+      )}
+    </div>
   );
 }

@@ -18,24 +18,22 @@ export default function ButtonLogoDelete({
     color: isHovered ? theme.palette.error.main : "unset",
   };
 
-  if (isVisible)
-    return (
-      <div
-        onMouseEnter={() => {
-          handleHovered(true);
-        }}
-        onMouseLeave={() => {
-          handleHovered(false);
-        }}
-        onClick={(evt) => {
-          evt.stopPropagation();
-          setIsHovered(false);
-          handleClick(id);
-        }}
-      >
-        <IconDelete height={logoSize || "30px"} style={iconStyle} />
-      </div>
-    );
-
-  return;
+  if (!isVisible) return;
+  return (
+    <div
+      onMouseEnter={() => {
+        handleHovered(true);
+      }}
+      onMouseLeave={() => {
+        handleHovered(false);
+      }}
+      onClick={(evt) => {
+        evt.stopPropagation();
+        setIsHovered(false);
+        handleClick(id);
+      }}
+    >
+      <IconDelete height={logoSize || "30px"} style={iconStyle} />
+    </div>
+  );
 }

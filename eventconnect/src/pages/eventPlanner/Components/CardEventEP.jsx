@@ -2,12 +2,15 @@ import { Grid, styled } from "@mui/material";
 import { Header3 } from "../../../components/Texts/TextHeaders";
 import { useState } from "react";
 import ButtonLogoDelete from "../../../components/Buttons/ButtonLogoDelete";
+import { Text } from "../../../components/Texts/Texts";
+import dayjs from "dayjs";
 
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export default function CardEventEP({
   eventName,
-  hasOutstanding,
+  eventStartDateTime,
+  eventEndDateTime,
   hasPromotedVendors,
   handleClick,
   handleDelete,
@@ -47,6 +50,16 @@ export default function CardEventEP({
     transition: "opacity 0.3s",
   };
 
+  const contentBoxStyle = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    zIndex: "10",
+    color: "white",
+  };
+
   return (
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <div
@@ -62,9 +75,20 @@ export default function CardEventEP({
         }}
       >
         <div style={overlayStyle} />
-        <Header3 style={{ color: "white", position: "relative", zIndex: "10" }}>
-          {eventName}
-        </Header3>
+        <div style={contentBoxStyle}>
+          <Header3 style={{ margin: "0" }}>{eventName}</Header3>
+          {eventStartDateTime && (
+            <Text italic size="sm" style={{ margin: "0" }}>
+              Start: {dayjs(eventStartDateTime).format("DD MMM YYYY, HH:mm a")}
+            </Text>
+          )}
+          {eventEndDateTime && (
+            <Text italic size="sm" style={{ margin: "0" }}>
+              End: {dayjs(eventEndDateTime).format("DD MMM YYYY, HH:mm a")}
+            </Text>
+          )}
+        </div>
+
         <ButtonBox isHovered={isHovered}>
           <ButtonLogoDelete
             isVisible={isHovered && !hasPromotedVendors}

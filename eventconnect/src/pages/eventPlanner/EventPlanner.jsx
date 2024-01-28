@@ -7,6 +7,7 @@ import Modal from "../../components/ModalContainer";
 import ModalContainer from "../../components/ModalContainer";
 import { EventEPProvider } from "../../context/EventEPProvider";
 import { ServicesEPProvider } from "../../context/EventServiceEPProvider";
+import { ChatEntryProvider } from "../../context/ChatEntryProvider";
 
 export default function EventPlanner() {
   return (
@@ -18,9 +19,11 @@ export default function EventPlanner() {
       </ModalContainer> */}
       <EventEPProvider>
         <ServicesEPProvider>
-          <Container maxWidth="xl">
-            <Outlet />
-          </Container>
+          <ChatEntryProvider>
+            <Container maxWidth="xl">
+              <Outlet />
+            </Container>
+          </ChatEntryProvider>
         </ServicesEPProvider>
       </EventEPProvider>
     </>

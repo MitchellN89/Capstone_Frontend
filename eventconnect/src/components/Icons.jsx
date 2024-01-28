@@ -101,3 +101,17 @@ export function IconBroadcast({ height, style, ...others }) {
     </div>
   );
 }
+
+export function IconUser({ height, style, ...others }) {
+  return (
+    <div>
+      <Icon
+        display="inline-block"
+        height={height || "25px"}
+        style={{ ...style }}
+        {...others}
+        icon="mingcute:user-4-fill"
+      />
+    </div>
+  );
+}

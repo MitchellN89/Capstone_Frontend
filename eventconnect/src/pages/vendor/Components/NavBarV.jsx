@@ -11,18 +11,17 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import { useUser } from "../../../context/UserProvider";
 import { useTheme } from "@emotion/react";
 import LogoSide from "../../../components/Logos/LogoSide";
-
-const pages = ["Events", "Service Requests"];
-const settings = ["Profile", "Logout"];
+import { useNavigate } from "react-router-dom";
 
 export default function NavBarEP() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { user } = useUser();
+  const { dispatch: userDispatch } = useUser();
+  const navigate = useNavigate();
+
   const theme = useTheme();
 
   const handleOpenNavMenu = (event) => {
@@ -40,6 +39,19 @@ export default function NavBarEP() {
     setAnchorElUser(null);
   };
 
+  const pages = [
+    { name: "Events", url: "/vendor/events" },
+    { name: "Service Requests", url: "/vendor/serviceRequests" },
+  ];
+  const settings = [
+    {
+      name: "Logout",
+      onClick: () => {
+        userDispatch({ type: "LOGOUT_USER" });
+      },
+    },
+  ];
+
   return (
     <AppBar
       position="sticky"
@@ -47,26 +59,10 @@ export default function NavBarEP() {
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <LogoSide />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            {user ? user.accountType : ""}
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ display: { xs: "none", sm: "flex" } }}>
+            <LogoSide />
+          </Box>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", sm: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -92,43 +88,35 @@ export default function NavBarEP() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: "block", md: "none" },
+                display: { xs: "block", sm: "none" },
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem
+                  key={page.name}
+                  onClick={() => {
+                    navigate(page.url);
+                  }}
+                >
+                  <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ display: { xs: "flex", sm: "none" } }}>
+            <LogoSide />
+          </Box>
+
+          <Box sx={{ flexGrow: 1, display: { xs: "none", sm: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                key={page.name}
+                onClick={() => {
+                  navigate(page.url);
+                }}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>
@@ -136,7 +124,7 @@ export default function NavBarEP() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt="Profile" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -156,8 +144,8 @@ export default function NavBarEP() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting.name} onClick={setting.onClick}>
+                  <Typography textAlign="center">{setting.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>

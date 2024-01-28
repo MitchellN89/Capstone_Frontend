@@ -128,7 +128,7 @@ export function ServicesEPProvider({ children }) {
   });
 
   useEffect(() => {
-    console.log("EventServiceEPProvider > State: ", state);
+    console.log("ServicesEPProvider.jsx > state: ", state);
   }, [state]);
 
   useEffect(() => {

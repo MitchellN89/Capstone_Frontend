@@ -98,7 +98,7 @@ export default function CreateServiceEP({ handleOpen }) {
     try {
       const result = await apiCall(`/events/${eventId}/services`, "post", body);
       const { id: eventServiceId } = result.data;
-      console.log("RETURNED FROM API CALL", result);
+
       const newEventService = { ...result.data, event: { id: eventId } };
 
       servicesDispatch({

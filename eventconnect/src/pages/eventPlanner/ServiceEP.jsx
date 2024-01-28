@@ -41,14 +41,7 @@ export default function ServiceEP() {
   const vendorId = eventService.vendorId || null;
   const [selectedVendorId, setSelectedVendorId] = useState(vendorId);
   const [openEditModal, setOpenEditModal] = useState(false);
-  // const connectedWithUser = serviceConnection ? serviceConnection.user : null;
-  // const roomId = serviceConnection ? serviceConnection.id : null;
-
-  // const [liveChatProps, dispatchLiveChat] = useLiveChat(
-  //   connectedWithUser,
-  //   roomId
-  // );
-
+  const hasPromotedVendor = vendorId ? true : false;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,13 +74,6 @@ export default function ServiceEP() {
         `/events/${eventId}/services/${eventServiceId}/connections/vendor/${selectedVendorId}`
       )
         .then((result) => {
-          // const { chatEntries } = result.data;
-
-          // dispatchLiveChat({ type: "SET_ENTRIES", payload: chatEntries });
-
-          // const serviceConnectionWithoutChatEntries = { ...result.data };
-          // delete serviceConnectionWithoutChatEntries.chatEntries;
-          console.log("useEffect > result", result.data);
           setServiceConnection(result.data);
         })
         .catch((err) => {
@@ -186,16 +172,17 @@ export default function ServiceEP() {
         handleOpenEditModal={handleOpenEditModal}
       />
 
-      <Grid container spacing={5}>
+      <Grid container spacing={5} marginBottom={4}>
         <Grid item xs={12} md={6}>
-          <HeaderStrip style={{ marginTop: "30px" }}>
+          <HeaderStrip>
             <Header1 style={{ margin: "0" }}>SERVICES</Header1>
             <ButtonLogoBack handleClick={handleGoBack} />
           </HeaderStrip>
+
           <Paper>
             <div style={imgStyle}></div>
 
-            <Box padding="20px 20px 20px" marginBottom={4}>
+            <Box padding="20px 20px 20px">
               <HeaderStrip>
                 <Header2 style={{ margin: "0" }}>
                   {getService(eventService.serviceId).service}
@@ -206,7 +193,10 @@ export default function ServiceEP() {
                       handleOpenEditModal(true);
                     }}
                   />
-                  <ButtonLogoDelete isVisible handleClick={handleDelete} />
+                  <ButtonLogoDelete
+                    isVisible={!hasPromotedVendor}
+                    handleClick={handleDelete}
+                  />
                 </div>
               </HeaderStrip>
 
@@ -252,11 +242,12 @@ export default function ServiceEP() {
                   {eventService.specialRequirements}
                 </Text>
               </TextContainer>
-
-              <ButtonLoading
-                label="Broadcast Service"
-                onClick={enableBroadcast}
-              />
+              {!eventService.broadcast && (
+                <ButtonLoading
+                  label="Broadcast Service"
+                  onClick={enableBroadcast}
+                />
+              )}
             </Box>
           </Paper>
         </Grid>
@@ -271,7 +262,7 @@ export default function ServiceEP() {
           {selectedVendorId && (
             <ServiceConnectionEp
               resetSelectedVendorId={resetSelectedVendorId}
-              // liveChatProps={liveChatProps}
+              eventServiceVendorId={vendorId}
               serviceConnection={serviceConnection}
               handleTrigger={handleTrigger}
             />

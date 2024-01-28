@@ -17,10 +17,8 @@ export default function Map({ address }) {
 
   useEffect(() => {
     if (address) {
-      console.log("MARKER ADDRESS: ", address);
       getGeocode({ address })
         .then((results) => {
-          console.log("getGeocode: ", results);
           const { lat, lng } = getLatLng(results[0]);
           setCoordinates({ lat, lng });
         })
@@ -31,10 +29,6 @@ export default function Map({ address }) {
       setCoordinates(null);
     }
   }, [address]);
-
-  useEffect(() => {
-    console.log("COORDINATES: ", coordinates);
-  }, [coordinates]);
 
   if (!isLoaded) return <div>Loading...</div>;
   return (

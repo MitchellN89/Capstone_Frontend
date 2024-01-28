@@ -2,37 +2,37 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 
-export function useInputData(init, patterns) {
-  const [value, setValue] = useState(init);
-  const [notValid, setNotValid] = useState(false);
+// export function useInputData(init, patterns) {
+//   const [value, setValue] = useState(init);
+//   const [notValid, setNotValid] = useState(false);
 
-  const handleChange = (evt) => {
-    const val = evt.target.value;
-    setValue(val);
-  };
+//   const handleChange = (evt) => {
+//     const val = evt.target.value;
+//     setValue(val);
+//   };
 
-  const handleManualChange = (val) => {
-    setValue(val);
-  };
+//   const handleManualChange = (val) => {
+//     setValue(val);
+//   };
 
-  const handleNotValid = (bool) => {
-    setNotValid(bool);
-  };
+//   const handleNotValid = (bool) => {
+//     setNotValid(bool);
+//   };
 
-  const reset = () => {
-    setValue("");
-  };
+//   const reset = () => {
+//     setValue("");
+//   };
 
-  const props = {
-    value,
-    onChange: handleChange,
-    notValid,
-    patterns,
-    handleNotValid,
-  };
+//   const props = {
+//     value,
+//     onChange: handleChange,
+//     notValid,
+//     patterns,
+//     handleNotValid,
+//   };
 
-  return [value, props, notValid, reset, handleManualChange];
-}
+//   return [value, props, notValid, reset, handleManualChange];
+// }
 
 export function useTextInput(
   init = "",
@@ -48,10 +48,6 @@ export function useTextInput(
     setValue(evt.target.value);
   };
 
-  const handleManualChange = (val) => {
-    setValue(val);
-  };
-
   const handleIsValid = (bool) => {
     setIsValid(bool);
   };
@@ -59,21 +55,6 @@ export function useTextInput(
   const reset = () => {
     setValue(init);
   };
-
-  // useEffect(() => {
-  //   console.log("useInputData > useTextInput > useEffect run");
-  //   setPatterns([...defaultPatterns[type]]);
-  //   if (
-  //     Array.isArray(addtionalPatterns) &&
-  //     typeof overWritePatterns === "boolean"
-  //   ) {
-  //     if (overWritePatterns) {
-  //       setPatterns(addtionalPatterns);
-  //     } else {
-  //       setPatterns((cur) => [...cur, ...addtionalPatterns]);
-  //     }
-  //   }
-  // }, [addtionalPatterns]);
 
   const props = {
     label,
@@ -86,7 +67,7 @@ export function useTextInput(
     placeholder,
   };
 
-  return [props, isValid, reset, value, handleManualChange];
+  return [props, isValid, reset, value];
 }
 
 export function useAddressInput(init = "", label = "Address", name) {
@@ -168,17 +149,11 @@ export function useSelectInput(
   return [props, isValid, reset, value, handleManualChange];
 }
 
-export function useDateTimeInput(
-  init,
-  label = "Date",
-  name,
-  addtionalPatterns,
-  overWritePatterns
-) {
+export function useDateTimeInput(init, label = "Date", name) {
   const [value, setValue] = useState(init ? dayjs(init) : null);
   const [isValid, setIsValid] = useState(true);
 
-  const handleValue = (newValue) => {
+  const handleChange = (newValue) => {
     setValue(newValue);
   };
 
@@ -192,13 +167,23 @@ export function useDateTimeInput(
 
   const props = {
     value,
-    onChange: handleValue,
+    onChange: handleChange,
     handleIsValid,
+    isValid,
     label,
     name,
-    addtionalPatterns,
-    overWritePatterns,
   };
 
   return [props, isValid, reset, value];
+}
+
+export function useCustomComboInput(label) {
+  const [value, setValue] = useState([]);
+
+  const handleValue = (value) => {
+    setValue(value);
+  };
+
+  const props = { value, handleValue, label };
+  return [props, value];
 }

@@ -5,14 +5,14 @@ import ButtonLogoDelete from "../../../components/Buttons/ButtonLogoDelete";
 
 export default function CardServiceEP({
   serviceName,
-  hasPromotedVendors,
+  hasPromotedVendor,
   handleClick,
   handleDelete,
   eventServiceId,
   imgUrl,
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  console.log("IMGURL", imgUrl);
+
   const handleHover = (bool) => {
     setIsHovered(bool);
   };
@@ -65,7 +65,7 @@ export default function CardServiceEP({
         </Header3>
         <ButtonBox isHovered={isHovered}>
           <ButtonLogoDelete
-            isVisible={isHovered && !hasPromotedVendors}
+            isVisible={isHovered && !hasPromotedVendor}
             handleClick={handleDelete}
             id={eventServiceId}
           />

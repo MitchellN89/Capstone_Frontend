@@ -20,6 +20,7 @@ export default function CreateServiceConnection({
   handleTrigger,
   serviceRequestId,
   eventPlannerId,
+  handleOpen,
 }) {
   const [responseOptionValue, setResponseOptionValue] = useState("connect");
   const [messageProps, isValidMessage] = useTextInput(
@@ -62,6 +63,7 @@ export default function CreateServiceConnection({
       });
 
       handleTrigger();
+      handleOpen(false);
     } catch (err) {
       console.error(err);
     }

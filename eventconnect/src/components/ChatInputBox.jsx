@@ -7,6 +7,8 @@ export default function ChatInputBox({ sendMessage }) {
   const [value, setValue] = useState("");
   const containerStyle = {
     display: "flex",
+    marginTop: "20px",
+    marginBottom: "10px",
   };
   const theme = useTheme();
 
@@ -49,7 +51,7 @@ export default function ChatInputBox({ sendMessage }) {
         type="text"
       />{" "}
       <button type="submit" style={buttonStyle}>
-        <IconSend style={{ margin: "0" }} />
+        <IconSend style={{ margin: "0" }} height="15px" />
       </button>
     </form>
   );
