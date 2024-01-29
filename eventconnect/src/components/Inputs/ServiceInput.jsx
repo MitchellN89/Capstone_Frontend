@@ -8,14 +8,14 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export default function ServiceInput({ options, value, handleValue }) {
+export default function ServiceInput({ options, value, setValue }) {
   return (
     <Autocomplete
       style={{ flex: "1", minWidth: "250px" }}
       multiple
       value={value}
       onChange={(event, newValue) => {
-        handleValue(newValue);
+        setValue(newValue);
       }}
       options={options}
       size="small"

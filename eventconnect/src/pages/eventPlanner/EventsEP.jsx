@@ -20,6 +20,7 @@ import {
   matchEventNameEP,
 } from "../../utilities/filterFunctions";
 import { useFilterPreferencesContext } from "../../context/FilterPreferencesProvider";
+import { useChatEntryContext } from "../../context/ChatEntryProvider";
 
 export default function EventsEP() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -39,7 +40,8 @@ export default function EventsEP() {
     addressFilterValue,
     resetFilters,
   } = useFilterPreferencesContext();
-
+  const { state: chatEntryContext } = useChatEntryContext();
+  const { chatEntries } = chatEntryContext || {};
   const filteredEvents = useMemo(() => {
     return filter(
       events,
@@ -47,6 +49,10 @@ export default function EventsEP() {
       matchAddressEP(addressFilterValue)
     );
   }, [addressFilterValue, eventNameFilterValue, events]);
+
+  useEffect(() => {
+    console.log("EventsEP.jsx > chatEntryContext: ", chatEntryContext);
+  }, [chatEntryContext]);
 
   useEffect(() => {
     console.log("filteredEvents", filteredEvents);
@@ -104,6 +110,11 @@ export default function EventsEP() {
                   })
                 : null;
 
+            const chatQuantity = chatEntries.filter((entry) => {
+              return (
+                entry.vendorEventConnection.eventService.event.id == event.id
+              );
+            }).length;
             return (
               <CardEventEP
                 key={event.id}
@@ -114,6 +125,7 @@ export default function EventsEP() {
                 hasPromotedVendors={hasPromotedVendors}
                 handleDelete={handleDelete}
                 handleClick={handleClick}
+                chatQuantity={chatQuantity}
               />
             );
           })}

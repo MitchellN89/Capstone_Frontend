@@ -4,6 +4,7 @@ import { useState } from "react";
 import ButtonLogoDelete from "../../../components/Buttons/ButtonLogoDelete";
 import { Text } from "../../../components/Texts/Texts";
 import dayjs from "dayjs";
+import ChatBadge from "../../../components/ChatBadge";
 
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
@@ -15,6 +16,7 @@ export default function CardEventEP({
   handleClick,
   handleDelete,
   eventId,
+  chatQuantity,
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -74,6 +76,7 @@ export default function CardEventEP({
           handleClick(eventId);
         }}
       >
+        <ChatBadge quantity={chatQuantity} />
         <div style={overlayStyle} />
         <div style={contentBoxStyle}>
           <Header3 style={{ margin: "0" }}>{eventName}</Header3>

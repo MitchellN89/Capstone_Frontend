@@ -3,7 +3,7 @@ import { apiCall } from "../utilities/apiCall";
 const ServicesVContext = createContext();
 
 export function ServiceVProvider({ children }) {
-  const [services, setService] = useState(null);
+  const [services, setService] = useState([]);
 
   useEffect(() => {
     let ignore = false;
@@ -24,10 +24,6 @@ export function ServiceVProvider({ children }) {
       ignore = true;
     };
   }, []);
-
-  useEffect(() => {
-    console.log("ServiceVProvider > services: ", services);
-  }, [services]);
 
   return (
     <ServicesVContext.Provider value={services}>

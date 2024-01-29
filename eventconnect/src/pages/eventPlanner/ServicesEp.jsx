@@ -12,6 +12,7 @@ import { Header1 } from "../../components/Texts/TextHeaders";
 import ModalContainer from "../../components/ModalContainer";
 import CardServiceEP from "./Components/CardServiceEP";
 import CardCreate from "../../components/CardCreate";
+import { useChatEntryContext } from "../../context/ChatEntryProvider";
 
 export default function ServicesEP() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -19,10 +20,16 @@ export default function ServicesEP() {
   const { state: serviceContext, dispatch: servicesDispatch } =
     useServicesEPContext();
   const { dispatch: eventDispatch } = useEventsEPContext();
-
+  const { state: chatEntryContext } = useChatEntryContext();
+  const { chatEntries } = chatEntryContext || {};
   const eventServices = serviceContext.eventServices.filter(
     (service) => service.eventId == eventId
   );
+
+  useEffect(() => {
+    console.log("ServicesEP.jsx > eventServices: ", eventServices);
+  }, [eventServices]);
+
   const { services } = serviceContext;
 
   const { isLoading } = serviceContext;
@@ -102,6 +109,12 @@ export default function ServicesEP() {
         {eventServices &&
           eventServices.map((eventService) => {
             const hasPromotedVendor = eventService.vendorId ? true : false;
+
+            const chatQuantity = chatEntries.filter((entry) => {
+              return (
+                entry.vendorEventConnection.eventService.id == eventService.id
+              );
+            }).length;
             return (
               <CardServiceEP
                 key={eventService.id}
@@ -111,6 +124,7 @@ export default function ServicesEP() {
                 imgUrl={getService(eventService.serviceId).imgUrl}
                 handleClick={handleClick}
                 handleDelete={handleDelete}
+                chatQuantity={chatQuantity}
               />
             );
           })}

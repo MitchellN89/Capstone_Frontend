@@ -148,7 +148,6 @@ export default function ServiceConnectionEp({
       </HeaderStrip>
 
       <UserCard
-        companyName={connectedWith.companyName}
         firstName={connectedWith.firstName}
         lastName={connectedWith.lastName}
         emailAddress={connectedWith.emailAddress}

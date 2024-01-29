@@ -9,8 +9,6 @@ export async function apiCall(url, method = "get", body, useToken = true) {
     Authorization: useToken ? `Bearer ${token}` : "",
   };
 
-  console.log("API CALL: ", { url, method, body, useToken, token });
-
   const result = await axios({
     method: method,
     url: `${domain}${url}`,

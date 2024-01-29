@@ -128,10 +128,6 @@ export function ServicesEPProvider({ children }) {
   });
 
   useEffect(() => {
-    console.log("ServicesEPProvider.jsx > state: ", state);
-  }, [state]);
-
-  useEffect(() => {
     let ignore = false;
 
     dispatch({ type: "PROCESSING_REQUEST" });

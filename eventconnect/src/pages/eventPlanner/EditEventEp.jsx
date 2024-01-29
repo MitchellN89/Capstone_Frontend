@@ -2,7 +2,7 @@ import { Grid, Paper } from "@mui/material";
 import { useTextInput, useDateTimeInput } from "../../hooks/useInputData";
 import TextInput from "../../components/Inputs/TextInput";
 import DateTimeInput from "../../components/Inputs/DateTimeInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import { Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
@@ -35,6 +35,10 @@ export default function EditEventEP({ handleOpen }) {
 
   if (!event) navigate(`/eventplanner/${eventId}`);
   // TODO - notification here
+
+  useEffect(() => {
+    console.log("EditEventEp.jsx > event: ", event);
+  }, [event]);
 
   const [eventNameProps, isValidEventName] = useTextInput(
     event.eventName || "",

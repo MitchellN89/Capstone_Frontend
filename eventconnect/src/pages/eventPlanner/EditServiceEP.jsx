@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelectInput, useTextInput } from "../../hooks/useInputData";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import SelectInput from "../../components/Inputs/SelectInput";
+import { useEffect } from "react";
 
 export default function EditServiceEP({ handleOpen }) {
   const { state: services, dispatch: servicesDispatch } =
@@ -24,6 +25,10 @@ export default function EditServiceEP({ handleOpen }) {
   const eventService = eventServices.find(
     (eventService) => eventService.id == eventServiceId
   );
+
+  useEffect(() => {
+    console.log("EditServiceEP.jsx > eventService: ", eventService);
+  }, [eventService]);
 
   const [serviceIdProps, isValidServiceId] = useSelectInput(
     eventService.serviceId || "",

@@ -41,6 +41,10 @@ export default function ServiceRequestV() {
     setTrigger((curState) => !curState);
   };
 
+  useEffect(() => {
+    console.log("ServiceRequest.jsx > serviceRequest: ", serviceRequest);
+  }, [serviceRequest]);
+
   // TODO - useData here instead
   useEffect(() => {
     let ignore = false;
@@ -124,15 +128,17 @@ export default function ServiceRequestV() {
                       <FeatureStylize featureStrength={3} bold>
                         Start:{" "}
                       </FeatureStylize>
-                      {dayjs(event.startDateTime).format(
-                        "DD MMM YYYY, HH:mm a"
-                      )}
+                      {dayjs(event.startDateTime).isValid() &&
+                        dayjs(event.startDateTime).format(
+                          "DD MMM YYYY, HH:mm a"
+                        )}
                     </Text>
                     <Text style={textStyle}>
                       <FeatureStylize featureStrength={3} bold>
                         End:{" "}
                       </FeatureStylize>
-                      {dayjs(event.endDateTime).format("DD MMM YYYY, HH:mm a")}
+                      {dayjs(event.endDateTime).isValid() &&
+                        dayjs(event.endDateTime).format("DD MMM YYYY, HH:mm a")}
                     </Text>
                   </TextContainer>
                   <TextContainer>

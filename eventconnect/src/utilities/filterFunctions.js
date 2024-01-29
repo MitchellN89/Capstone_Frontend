@@ -9,7 +9,12 @@ export function filter(objects, ...funcs) {
 
 export function matchServiceV(servicesArr) {
   return function (object) {
-    return servicesArr.includes(object.service.service);
+    if (servicesArr.length === 0) return true;
+    for (let service of servicesArr) {
+      if (service.service == object.service.service) return true;
+    }
+
+    return false;
   };
 }
 
@@ -50,5 +55,31 @@ export function matchAddressV(addressesArr) {
       if (!object.event.address) return false;
       return object.event.address.toUpperCase().includes(address.toUpperCase());
     });
+  };
+}
+
+export function matchTagV(tagsArr) {
+  return function (object) {
+    if (tagsArr.length === 0) return true;
+    return tagsArr.every((tag) => {
+      if (!object.tags) return false;
+
+      return object.tags.toUpperCase().includes(tag.toUpperCase());
+    });
+  };
+}
+
+export function matchIgnoredV(ignoredValue) {
+  return function (object) {
+    if (
+      !object.vendorEventConnections ||
+      object.vendorEventConnections.length == 0
+    )
+      return true;
+
+    const objectIsIgnored =
+      object.vendorEventConnections[0].vendorStatus == "ignore";
+    if (!objectIsIgnored) return true;
+    return objectIsIgnored == ignoredValue;
   };
 }

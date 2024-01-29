@@ -3,19 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Header3 } from "../../../components/Texts/TextHeaders";
 import { useState } from "react";
 import { styled } from "@mui/material";
+import ChatBadge from "../../../components/ChatBadge";
 
 export default function CardConnectionEP({
-  id,
-  handleDelete,
   handleClick,
   isLoading,
   children,
   vendorId,
   companyName,
+  chatQuantity,
 }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-
   const handleIsHovered = (bool) => {
     setIsHovered(bool);
   };
@@ -25,6 +24,7 @@ export default function CardConnectionEP({
     color: "white",
     padding: "10px 30px",
     borderRadius: "10px",
+    position: "relative",
     transition: "background-color 0.3s",
     "&:hover": {
       backgroundColor: "rgb(0, 0, 0, 0.8)",
@@ -44,6 +44,7 @@ export default function CardConnectionEP({
           handleClick(vendorId);
         }}
       >
+        <ChatBadge quantity={chatQuantity} />
         <Header3 centered style={{ margin: "0" }}>
           {companyName}
         </Header3>

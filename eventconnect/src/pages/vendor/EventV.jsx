@@ -42,7 +42,7 @@ export default function EventV() {
   };
 
   useEffect(() => {
-    console.log("EventV.jsx > Event: ", eventService);
+    console.log("EventV.jsx > event: ", eventService);
   }, [eventService]);
 
   useEffect(() => {
@@ -95,15 +95,17 @@ export default function EventV() {
                       <FeatureStylize featureStrength={3} bold>
                         Start:{" "}
                       </FeatureStylize>
-                      {dayjs(event.startDateTime).format(
-                        "DD MMM YYYY, HH:mm a"
-                      )}
+                      {dayjs(event.startDateTime).isValid() &&
+                        dayjs(event.startDateTime).format(
+                          "DD MMM YYYY, HH:mm a"
+                        )}
                     </Text>
                     <Text style={textStyle}>
                       <FeatureStylize featureStrength={3} bold>
                         End:{" "}
                       </FeatureStylize>
-                      {dayjs(event.endDateTime).format("DD MMM YYYY, HH:mm a")}
+                      {dayjs(event.endDateTime).isValid() &&
+                        dayjs(event.endDateTime).format("DD MMM YYYY, HH:mm a")}
                     </Text>
                   </TextContainer>
                   <TextContainer>

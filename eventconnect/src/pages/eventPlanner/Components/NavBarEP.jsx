@@ -100,7 +100,7 @@ export default function NavBarEP() {
               ))}
             </Menu>
           </Box>
-          <Box sx={{ display: { xs: "flex", sm: "none" } }}>
+          <Box sx={{ display: { xs: "flex", sm: "none" }, flexGrow: "1" }}>
             <LogoSide />
           </Box>
 

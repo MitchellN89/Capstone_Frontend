@@ -2,6 +2,7 @@ import { Grid } from "@mui/material";
 import { Header3 } from "../../../components/Texts/TextHeaders";
 import { useState } from "react";
 import ButtonLogoDelete from "../../../components/Buttons/ButtonLogoDelete";
+import ChatBadge from "../../../components/ChatBadge";
 
 export default function CardServiceEP({
   serviceName,
@@ -10,6 +11,7 @@ export default function CardServiceEP({
   handleDelete,
   eventServiceId,
   imgUrl,
+  chatQuantity,
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -59,6 +61,7 @@ export default function CardServiceEP({
           handleClick(eventServiceId);
         }}
       >
+        <ChatBadge quantity={chatQuantity} />
         <div style={overlayStyle} />
         <Header3 style={{ color: "white", position: "relative", zIndex: "10" }}>
           {serviceName}

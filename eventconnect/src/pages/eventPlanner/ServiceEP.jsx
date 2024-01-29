@@ -1,9 +1,8 @@
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { Grid, Typography } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
+import { Grid } from "@mui/material";
 import { Header1, Header2 } from "../../components/Texts/TextHeaders";
 import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
-import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { useEffect, useState } from "react";
 import ServiceConnectionsEP from "./ServiceConnectionsEP";
@@ -18,7 +17,6 @@ import TextContainer from "../../components/TextContainer";
 import { FeatureStylize } from "../../components/Texts/TextStyles";
 import { Text } from "../../components/Texts/Texts";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
-import { IconBroadcast } from "../../components/Icons";
 
 export default function ServiceEP() {
   let { eventId, eventServiceId } = useParams();
@@ -28,6 +26,10 @@ export default function ServiceEP() {
   const eventService = serviceContext.eventServices.find((eventService) => {
     return eventService.id == eventServiceId;
   });
+
+  useEffect(() => {
+    console.log("ServiceEP.jsx > eventService: ", eventService);
+  }, [eventService]);
 
   const { services } = serviceContext;
 

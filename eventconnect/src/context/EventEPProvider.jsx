@@ -153,10 +153,6 @@ export function EventEPProvider({ children }) {
   };
 
   useEffect(() => {
-    console.log("EventEPProvider > State: ", state);
-  }, [state]);
-
-  useEffect(() => {
     let ignore = false;
     let queryString = "";
     if (Object.keys(queryParams).length) {

@@ -43,10 +43,6 @@ export function ChatEntryProvider({ children }) {
   const [trigger, setTrigger] = useState(false);
 
   useEffect(() => {
-    console.log("ChatEntryProvider.jsx > state: ", state);
-  }, [state]);
-
-  useEffect(() => {
     dispatch({ type: "PROCESSING_REQUEST" });
 
     apiCall("/chatEntries")
@@ -60,7 +56,7 @@ export function ChatEntryProvider({ children }) {
 
     const timer = setTimeout(() => {
       setTrigger((trigger) => !trigger);
-    }, 20000);
+    }, 5000);
 
     return () => {
       clearTimeout(timer);

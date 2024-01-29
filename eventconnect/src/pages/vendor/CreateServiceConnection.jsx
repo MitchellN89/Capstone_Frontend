@@ -14,7 +14,7 @@ import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { IconSend } from "../../components/Icons";
 import { convertFormDataToObject } from "../../utilities/formData";
 import { apiCall } from "../../utilities/apiCall";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function CreateServiceConnection({
   handleTrigger,
@@ -30,7 +30,7 @@ export default function CreateServiceConnection({
     "text",
     "Introduce yourself and your services. Express your interest and ask for some more information in order for you to get the ball rolling!"
   );
-
+  const navigate = useNavigate();
   const isValidForm = () => {
     return new Promise((res) => {
       setTimeout(() => {
@@ -69,7 +69,15 @@ export default function CreateServiceConnection({
     }
   };
 
-  const handleIgnore = () => {};
+  const handleIgnore = () => {
+    apiCall(`/serviceRequests/${serviceRequestId}/ignore`, "post")
+      .then(() => {
+        navigate("/vendor/serviceRequests");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   const handleResponseOptionChange = (evt) => {
     setResponseOptionValue(evt.target.value);

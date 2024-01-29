@@ -42,7 +42,7 @@ export default function ControlledAccordions({ children, resetFilters }) {
         <AccordionDetails style={{ padding: "0" }}>
           <Paper>
             <div style={style}>
-              <Grid container spacing={1}>
+              <Grid container spacing={3}>
                 {children}
               </Grid>
               <Button style={{ marginTop: "20px" }} onClick={resetFilters}>

@@ -15,7 +15,6 @@ export default function UserCard({
     <div
       style={{
         display: "flex",
-        // justifyContent: "center",
         alignItems: "center",
       }}
     >
@@ -31,7 +30,7 @@ export default function UserCard({
             {companyName}
           </Text>
         )}
-        {firstName && lastName && (
+        {(firstName || lastName) && (
           <Text size="sm" style={{ margin: "0" }}>
             <FeatureStylize bold featureStrength={2}>
               Contact Name:{" "}

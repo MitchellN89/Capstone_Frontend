@@ -11,11 +11,17 @@ import FilterBar from "../../components/FilterBar";
 import CustomComboInput from "../../components/Inputs/CustomComboInput";
 import { useFilterPreferencesContext } from "../../context/FilterPreferencesProvider";
 import { useMemo } from "react";
-import { filter } from "../../utilities/filterFunctions";
 import {
+  filter,
+  matchServiceV,
+  matchTagV,
   matchAddressV,
   matchEventNameV,
 } from "../../utilities/filterFunctions";
+import ServiceInput from "../../components/Inputs/ServiceInput";
+import { useServicesVContext } from "../../context/ServiceVProvider";
+import { useChatEntryContext } from "../../context/ChatEntryProvider";
+import CheckboxInput from "../../components/Inputs/CheckboxInput";
 
 export default function EventsV() {
   const navigate = useNavigate();
@@ -25,18 +31,33 @@ export default function EventsV() {
   const {
     eventNameFilterProps,
     eventNameFilterValue,
+    serviceFilterProps,
+    serviceFilterValue,
+    tagFilterValue,
+    tagFilterProps,
     addressFilterProps,
     addressFilterValue,
+
     resetFilters,
   } = useFilterPreferencesContext();
-
+  const services = useServicesVContext();
+  const { state: chatEntryContext } = useChatEntryContext();
+  const { chatEntries } = chatEntryContext || {};
   const filteredEventSerivces = useMemo(() => {
     return filter(
       eventServices,
       matchEventNameV(eventNameFilterValue),
-      matchAddressV(addressFilterValue)
+      matchServiceV(serviceFilterValue),
+      matchAddressV(addressFilterValue),
+      matchTagV(tagFilterValue)
     );
-  }, [addressFilterValue, eventNameFilterValue, eventServices]);
+  }, [
+    addressFilterValue,
+    serviceFilterValue,
+    eventNameFilterValue,
+    eventServices,
+    tagFilterValue,
+  ]);
 
   useEffect(() => {
     console.log("EventsV.jsx > eventServices: ", eventServices);
@@ -78,25 +99,39 @@ export default function EventsV() {
         <ButtonLogoRefresh handleClick={handleRefresh} />
       </HeaderStrip>
       <FilterBar resetFilters={resetFilters}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6} md={4}>
+          <ServiceInput {...serviceFilterProps} options={services} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
           <CustomComboInput {...eventNameFilterProps} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6} md={4}>
           <CustomComboInput {...addressFilterProps} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <CustomComboInput {...tagFilterProps} />
         </Grid>
       </FilterBar>
       <Grid container spacing={3} marginBottom={4}>
         <CardLoading isLoading={isLoading} />
         {filteredEventSerivces &&
           filteredEventSerivces.map((eventService) => {
+            const chatQuantity = chatEntries.filter((entry) => {
+              return (
+                entry.vendorEventConnection.eventService.id == eventService.id
+              );
+            }).length;
             return (
               <CardRequestV
                 handleClick={handleClick}
                 eventName={eventService.event.eventName}
+                eventStartDateTime={eventService.event.startDateTime}
+                eventEndDateTime={eventService.event.endDateTime}
                 serviceName={eventService.service.service}
                 eventId={eventService.event.id}
                 eventServiceId={eventService.id}
                 key={eventService.id}
+                chatQuantity={chatQuantity}
               ></CardRequestV>
             );
           })}

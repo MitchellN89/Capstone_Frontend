@@ -60,7 +60,7 @@ export default function NavBarEP() {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-            <LogoSide />
+            <LogoSide style={{ marginRight: "20px" }} />
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", sm: "none" } }}>
             <IconButton
@@ -103,7 +103,7 @@ export default function NavBarEP() {
               ))}
             </Menu>
           </Box>
-          <Box sx={{ display: { xs: "flex", sm: "none" } }}>
+          <Box sx={{ display: { xs: "flex", sm: "none" }, flexGrow: "1" }}>
             <LogoSide />
           </Box>
 

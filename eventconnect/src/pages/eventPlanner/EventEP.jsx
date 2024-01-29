@@ -5,7 +5,7 @@ import { apiCall } from "../../utilities/apiCall";
 import { Box, Paper } from "@mui/material";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import EditEventEP from "./EditEventEp";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalContainer from "../../components/ModalContainer";
 import HeaderStrip from "../../components/HeaderStrip";
 
@@ -35,6 +35,10 @@ export default function EventEP() {
           return eventService.vendorId ? true : false;
         })
       : false;
+
+  useEffect(() => {
+    console.log("EventEP.jsx > event: ", event);
+  }, [event]);
 
   const handleGoBack = () => {
     navigate("/eventplanner");

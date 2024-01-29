@@ -1,6 +1,7 @@
 import ChatMessage from "./ChatMessage";
 import { useUser } from "../context/UserProvider";
 import ChatServerMessage from "./ChatServerMessage";
+import { useEffect, useRef } from "react";
 
 export default function ChatBox({ entries }) {
   const {
@@ -9,9 +10,16 @@ export default function ChatBox({ entries }) {
     },
   } = useUser();
 
+  const chatBox = useRef(null);
+
+  useEffect(() => {
+    const { scrollHeight } = chatBox.current;
+    chatBox.current.scrollTop = scrollHeight;
+  }, [entries]);
+
   return (
     <>
-      <div style={{ flexGrow: "1", overflow: "auto" }}>
+      <div ref={chatBox} style={{ flexGrow: "1", overflow: "auto" }}>
         {entries &&
           entries.map((entry, index) => {
             if (entry.isServerMessage && entry.recipientId == myId) {

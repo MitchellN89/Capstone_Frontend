@@ -23,10 +23,6 @@ export function UserProvider({ children }) {
     isLoading: false,
   });
 
-  useEffect(() => {
-    console.log("UserProvider.jsx > state: ", state);
-  }, [state]);
-
   return (
     <UserContext.Provider value={{ state, dispatch }}>
       {children}
