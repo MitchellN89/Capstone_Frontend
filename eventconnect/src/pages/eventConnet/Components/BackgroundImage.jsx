@@ -1,4 +1,3 @@
-import React, { useEffect, memo } from "react";
 import styled from "@emotion/styled";
 import "../../../styles/animations.css";
 
@@ -10,12 +9,8 @@ const Image = styled("div")({
   scale: "1.2",
 });
 
-const BackgroundImage = ({
-  src,
-  cycleTime,
-  animatingImage,
-  onAnimationEnd,
-}) => {
+const BackgroundImage = ({ src, cycleTime, onAnimationEnd }) => {
+  // onAnimationEnd, the function from BackgroundImageCarousel is fired and src changes, causing the Image to re-render and the animation to restart with a new image
   return (
     <Image
       onAnimationEnd={onAnimationEnd}

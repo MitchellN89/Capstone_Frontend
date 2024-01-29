@@ -1,6 +1,5 @@
 import AppRoutes from "./routes/AppRoutes";
 import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider } from "@mui/material/styles";
 import { UserProvider } from "./context/UserProvider";
 import VariableTheme from "./components/VariableTheme";
 import EventConnect from "./pages/eventConnet/EventConnect";
@@ -11,7 +10,7 @@ import { FilterPreferencesProvider } from "./context/FilterPreferencesProvider";
 function App() {
   return (
     <>
-      <CssBaseline /> {/* resets the css */}
+      <CssBaseline /> {/* component from MUI - resets the css */}
       <UserProvider>
         <FilterPreferencesProvider>
           <VariableTheme>

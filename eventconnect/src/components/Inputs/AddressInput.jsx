@@ -3,7 +3,7 @@ import usePlacesAutocomplete from "use-places-autocomplete";
 import { useGoogleMaps } from "../../context/GoogleMapsProvider";
 import { TextField } from "@mui/material";
 
-export default function AddressInput({ init }) {
+export default function AddressInput({ init, disabled }) {
   const {
     ready,
     value,
@@ -65,7 +65,7 @@ export default function AddressInput({ init }) {
         onChange={(evt) => {
           setValue(evt.target.value);
         }}
-        disabled={!ready}
+        disabled={!ready || disabled}
         fullWidth
         label="Address"
         variant="standard"

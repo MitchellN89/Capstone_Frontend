@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 import "../styles/maps.css";
 import { useGoogleMaps } from "../context/GoogleMapsProvider";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
@@ -11,7 +11,6 @@ const style = {
 
 export default function Map({ address }) {
   const initPosition = useMemo(() => ({ lat: -36.85, lng: 174.76 }), []);
-  const [selected, setSelected] = useState(null);
   const { isLoaded } = useGoogleMaps();
   const [coordinates, setCoordinates] = useState(null);
 
@@ -42,12 +41,3 @@ export default function Map({ address }) {
     </GoogleMap>
   );
 }
-
-//   const handleSelect = async (address) => {
-//     setValue(address, false);
-//     clearSuggestions();
-
-//     const results = await getGeocode({ address });
-//     const { lat, lng } = getLatLng(results[0]);
-//     setSelected({ lat, lng });
-//   };

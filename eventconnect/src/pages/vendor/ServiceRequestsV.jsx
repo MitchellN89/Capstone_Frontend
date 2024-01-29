@@ -46,7 +46,7 @@ export default function ServiceRequestsV() {
   const { chatEntries } = chatEntryContext || {};
 
   const filteredEventSerivces = useMemo(() => {
-    return filter(
+    const filtered = filter(
       requests,
       matchEventNameV(eventNameFilterValue),
       matchServiceV(serviceFilterValue),
@@ -54,6 +54,13 @@ export default function ServiceRequestsV() {
       matchTagV(tagFilterValue),
       matchIgnoredV(ignoredFilterValue)
     );
+
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.event.startDateTime);
+      const dateB = new Date(b.event.startDateTime);
+
+      return dateA - dateB;
+    });
   }, [
     addressFilterValue,
     serviceFilterValue,
@@ -150,12 +157,13 @@ export default function ServiceRequestsV() {
               return entry.vendorEventConnection.eventService.id == request.id;
             }).length;
 
+            console.log("DEBUG___ ", request);
             return (
               <CardRequestV
                 handleClick={handleClick}
                 eventName={request.event.eventName}
-                eventStartDateTime={request.event.startDataTime}
-                eventEndDateTime={request.event.eventEndDateTime}
+                eventStartDateTime={request.event.startDateTime}
+                eventEndDateTime={request.event.endDateTime}
                 serviceName={request.service.service}
                 eventId={request.event.id}
                 eventServiceId={request.id}

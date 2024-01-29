@@ -1,38 +1,5 @@
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
-import { getGeocode, getLatLng } from "use-places-autocomplete";
-
-// export function useInputData(init, patterns) {
-//   const [value, setValue] = useState(init);
-//   const [notValid, setNotValid] = useState(false);
-
-//   const handleChange = (evt) => {
-//     const val = evt.target.value;
-//     setValue(val);
-//   };
-
-//   const handleManualChange = (val) => {
-//     setValue(val);
-//   };
-
-//   const handleNotValid = (bool) => {
-//     setNotValid(bool);
-//   };
-
-//   const reset = () => {
-//     setValue("");
-//   };
-
-//   const props = {
-//     value,
-//     onChange: handleChange,
-//     notValid,
-//     patterns,
-//     handleNotValid,
-//   };
-
-//   return [value, props, notValid, reset, handleManualChange];
-// }
+import { useState } from "react";
 
 export function useTextInput(
   init = "",
@@ -68,47 +35,6 @@ export function useTextInput(
   };
 
   return [props, isValid, reset, value];
-}
-
-export function useAddressInput(init = "", label = "Address", name) {
-  const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState(init);
-  const [coordinates, setCoordinates] = useState(null);
-  const [selectionValue, setSelectionValue] = useState(null);
-  const isValid = true;
-
-  const handleCoordinates = async (address) => {
-    const results = await getGeocode({ address });
-    const { lat, lng } = await getLatLng(results[0]);
-    setCoordinates({ lat, lng });
-    setSelectionValue(address);
-  };
-
-  const reset = () => {
-    setInputValue(init);
-  };
-
-  useEffect(() => {
-    setInputValue(init);
-  }, [init]);
-
-  useEffect(() => {
-    if (value) {
-      handleCoordinates(value.description);
-    }
-  }, [value]);
-
-  const props = {
-    value,
-    setValue,
-    inputValue,
-    setInputValue,
-    name,
-    label,
-    coordinates,
-  };
-
-  return [props, isValid, reset, selectionValue, coordinates];
 }
 
 export function useSelectInput(

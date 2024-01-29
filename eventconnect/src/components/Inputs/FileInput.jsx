@@ -16,7 +16,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function FileInput({ fileData, handleFileData }) {
+export default function FileInput({ fileData, handleFileData, disabled }) {
   const handleFileChange = async (evt) => {
     const file = evt.target.files[0];
 
@@ -51,6 +51,7 @@ export default function FileInput({ fileData, handleFileData }) {
         component="label"
         variant="contained"
         startIcon={<CloudUploadIcon />}
+        disabled={disabled}
       >
         Upload Image
         <VisuallyHiddenInput type="file" onChange={handleFileChange} />

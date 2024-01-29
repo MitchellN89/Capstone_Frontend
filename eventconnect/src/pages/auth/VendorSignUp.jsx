@@ -20,6 +20,9 @@ import {
   validationOnlyPhoneNumber,
 } from "../../utilities/textValidation";
 
+// For comments; see EventPlannerSignUp.jsx - the two components are near identical.
+// They have been separated due to minor differences in accountType
+
 const allValid = (...inputs) => {
   return new Promise((res) => {
     setTimeout(() => {
@@ -149,7 +152,7 @@ export default function VendorSignUp() {
 
   return (
     <>
-      <AuthHeader accountTypeLabel="Vendor" />
+      <AuthHeader accountTypeLabel="Vendor" message="Sign Up" />
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
@@ -214,7 +217,7 @@ export default function VendorSignUp() {
           </Grid>
           <Grid item xs={12} textAlign="right">
             <Button
-              variant="outlined"
+              variant="textr"
               color="error"
               disabled={isLoading}
               onClick={() => {

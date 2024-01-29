@@ -15,6 +15,8 @@ import FileInput from "../../components/Inputs/FileInput";
 import { formatImageForJSON } from "../../utilities/imageFormatter";
 import { convertDatesToValid } from "../../utilities/formData";
 import { useNotification } from "../../context/NotificationProvider";
+
+// as in CreateEventEP.jsx, the below functions are passed into the inputs through the patterns prop. This allows for validation for data.
 import {
   validationDateAfterNow,
   validationDateAfterValue,
@@ -24,42 +26,51 @@ import {
   validationOnlyPhoneNumber,
 } from "../../utilities/textValidation";
 
+// for comments, see EditServiceEP.jsx. Code is very similiar. Few differences due to data being updated
+// some basic notes below
+
 export default function EditEventEP({ handleOpen }) {
-  const { eventId } = useParams();
-  const { state: events, dispatch: eventsDispatch } = useEventsEPContext();
-  const { isLoading } = events;
+  const { eventId } = useParams(); //get the eventId from the url params
+  const { state: events, dispatch: eventsDispatch } = useEventsEPContext(); //destructure EventsEPContext
+  const { isLoading } = events; // get isLoading from events
+
+  // get THIS event from events context by using eventId from the params
   const event = events.events.find((event) => eventId == event.id);
   const navigate = useNavigate();
+
+  // fileData for image upload. See CreateEventEP.jsx for more info
   const [fileData, setFileData] = useState(null);
   const { triggerNotification } = useNotification();
 
-  if (!event) navigate(`/eventplanner/${eventId}`);
-  // TODO - notification here
+  if (!event) {
+    // send error message
+    triggerNotification({
+      message: "Event cannot be found, it may have been deleted",
+      severity: "error",
+    });
 
-  useEffect(() => {
-    console.log("EditEventEp.jsx > event: ", event);
-  }, [event]);
+    //close modal
+    handleOpen(false);
+  }
 
+  // hook to handle input props, values, reset etc
   const [eventNameProps, isValidEventName] = useTextInput(
     event.eventName || "",
     "Event Name",
     "eventName",
     "text"
   );
-
   const [startDateTimeProps, isValidStartDateTime, , startDateTimeValue] =
     useDateTimeInput(
       event.startDateTime || "",
       "Start Date/Time",
       "startDateTime"
     );
-
   const [endDateTimeProps, isValidEndDateTime] = useDateTimeInput(
     event.endDateTime || "",
     "End Date/Time",
     "endDateTime"
   );
-
   const [endClientFirstNameProps, isValidEndClientFirstName] = useTextInput(
     event.endClientFirstName || "",
     "Client First Name",
@@ -92,6 +103,9 @@ export default function EditEventEP({ handleOpen }) {
     "phoneNumber"
   );
 
+  // function accepts an array of values. If all values equate to true, true is returned.
+  // timeOut is used due to the nature of the debouncer function which validates input data.
+  // promise is used so that the function can be awaited synchronously
   const allValid = (...inputs) => {
     return new Promise((res) => {
       setTimeout(() => {
@@ -103,6 +117,7 @@ export default function EditEventEP({ handleOpen }) {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
+    //check inputs are valid
     const isValidForm = await allValid(
       isValidEndClientEmailAddress,
       isValidEndClientFirstName,
@@ -114,6 +129,7 @@ export default function EditEventEP({ handleOpen }) {
       isValidVenue
     );
 
+    //if not, send error message and escape out of the handleSubmit
     if (!isValidForm) {
       triggerNotification({
         message: "Please make sure all fields contain valid data",
@@ -122,7 +138,10 @@ export default function EditEventEP({ handleOpen }) {
       return;
     }
 
+    //convert formdata to object
     let body = convertFormDataToObject(new FormData(evt.target));
+
+    // convert dates within object to valid dates ready for MySQL
     body = convertDatesToValid(
       body,
       "Date",
@@ -130,9 +149,11 @@ export default function EditEventEP({ handleOpen }) {
       "YYYY/MM/DD HH:mm"
     );
 
+    // tell eventsDispatch to set isLoading to true
     eventsDispatch({ type: "PROCESSING_REQUEST" });
 
     try {
+      // handling image upload. for more info, see CreateEvent.jsx
       let imageUpload;
       if (fileData) {
         imageUpload = await formatImageForJSON(fileData);
@@ -140,8 +161,10 @@ export default function EditEventEP({ handleOpen }) {
 
       if (imageUpload) body.imageUpload = imageUpload;
 
+      // api call to edit event
       const result = await apiCall(`/events/${eventId}`, "put", body);
 
+      // update dispatch state to reflect new changes and set isLoading to false
       eventsDispatch({
         type: "UPDATE_EVENT",
         payload: body,
@@ -149,28 +172,28 @@ export default function EditEventEP({ handleOpen }) {
         response: result.response,
       });
 
+      // send success message
       triggerNotification({
         message: "Successfully edited Event",
       });
 
-      // window.location.reload(true);
-
+      // close modal
       handleOpen(false);
     } catch (err) {
+      // get dispatch to change isLoading back to false.
       eventsDispatch({ type: "REQUEST_FAILED", error: err });
-      if (err.response && err.response.status)
-        switch (err.response.status) {
-          default:
-            triggerNotification({
-              message: "Server error. For more details, see log",
-              severity: "error",
-            });
-        }
+
+      //send error message
+      triggerNotification({
+        message: "Server error. For more details, see log",
+        severity: "error",
+      });
 
       console.error(err);
     }
   };
 
+  //handles fileData change (when the user chooses a file from the upload button)
   const handleFileData = (value) => {
     setFileData(value);
   };
@@ -185,23 +208,25 @@ export default function EditEventEP({ handleOpen }) {
                 <Header2>Edit Event</Header2>
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...eventNameProps} required />
+                <TextInput {...eventNameProps} disabled={isLoading} required />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...venueProps} />
+                <TextInput disabled={isLoading} {...venueProps} />
               </Grid>
               <Grid item xs={12}>
-                <AddressInput init={event.address} />
+                <AddressInput disabled={isLoading} init={event.address} />
               </Grid>
               <Grid item xs={12}>
                 <DateTimeInput
                   {...startDateTimeProps}
+                  disabled={isLoading}
                   patterns={[validationDateIsValid, validationDateAfterNow]}
                 />
               </Grid>
               <Grid item xs={12}>
                 <DateTimeInput
                   {...endDateTimeProps}
+                  disabled={isLoading}
                   patterns={[
                     validationDateIsValid,
                     validationDateAfterValue(startDateTimeValue),
@@ -211,30 +236,35 @@ export default function EditEventEP({ handleOpen }) {
               <Grid item xs={12}>
                 <TextInput
                   {...endClientFirstNameProps}
+                  disabled={isLoading}
                   patterns={[validationOnlyName]}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextInput
                   {...endClientLastNameProps}
+                  disabled={isLoading}
                   patterns={[validationOnlyName]}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextInput
                   {...endClientEmailAddressProps}
+                  disabled={isLoading}
                   patterns={[validationOnlyEmailAddress]}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextInput
                   {...endClientPhoneNumberProps}
+                  disabled={isLoading}
                   patterns={[validationOnlyPhoneNumber]}
                 />
               </Grid>
               <Grid item xs={6} marginTop={3}>
                 <FileInput
                   handleFileData={handleFileData}
+                  disabled={isLoading}
                   fileData={fileData}
                 />
               </Grid>

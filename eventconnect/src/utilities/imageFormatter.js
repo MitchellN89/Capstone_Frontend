@@ -2,16 +2,17 @@ export async function formatImageForJSON(fileData) {
   let image;
   let imageUpload;
 
+  // create a new FileReader
   const reader = new FileReader();
 
   const readFileAsDataURL = (fileData) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((res, rej) => {
       reader.onloadend = () => {
-        resolve(reader.result);
+        res(reader.result);
       };
 
       reader.onerror = (error) => {
-        reject(error);
+        rej(error);
       };
 
       reader.readAsDataURL(fileData);

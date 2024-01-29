@@ -24,11 +24,8 @@ import { useChatEntryContext } from "../../context/ChatEntryProvider";
 
 export default function EventsEP() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const {
-    state: eventContext,
-    dispatch: eventsDispatch,
-    actions: eventsActions,
-  } = useEventsEPContext();
+  const { state: eventContext, dispatch: eventsDispatch } =
+    useEventsEPContext();
   const { events } = eventContext || {};
   const { state: servicesContext } = useServicesEPContext();
   const { isLoading } = events;
@@ -42,12 +39,20 @@ export default function EventsEP() {
   } = useFilterPreferencesContext();
   const { state: chatEntryContext } = useChatEntryContext();
   const { chatEntries } = chatEntryContext || {};
+
   const filteredEvents = useMemo(() => {
-    return filter(
+    const filtered = filter(
       events,
       matchEventNameEP(eventNameFilterValue),
       matchAddressEP(addressFilterValue)
     );
+
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.startDateTime);
+      const dateB = new Date(b.startDateTime);
+
+      return dateA - dateB;
+    });
   }, [addressFilterValue, eventNameFilterValue, events]);
 
   useEffect(() => {

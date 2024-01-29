@@ -130,7 +130,9 @@ export default function ServicesEP() {
           })}
         <CardCreate
           label="CREATE NEW SERVICE"
-          handleClick={handleOpenCreateModal}
+          handleClick={() => {
+            handleOpenCreateModal(true);
+          }}
         />
       </Grid>
     </>

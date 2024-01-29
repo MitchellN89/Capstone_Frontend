@@ -10,7 +10,7 @@ export default function AccountSelect() {
 
   const buttonStyle = {
     backgroundColor: theme.palette.feature[2],
-    width: "170px",
+    width: "30%",
     height: "150px",
     padding: "20px",
     margin: "20px",
@@ -27,7 +27,7 @@ export default function AccountSelect() {
             navigate("/auth/eventPlanner/login");
           }}
         >
-          Event Connect
+          Event Planner
         </Button>
         <Button
           variant="contained"

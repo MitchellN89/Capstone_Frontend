@@ -114,7 +114,9 @@ export function validationDateAfterValue(valueToExceed) {
     const result = {
       isValid: dayjs(value).isAfter(valueToExceed),
       key: `valid_afterValue`,
-      faultMessage: "Must be a date that occurs after the current time",
+      faultMessage: `Must be a date that occurs after ${dayjs(
+        valueToExceed
+      ).format("DD MMM YYYY, HH:mm")}`,
     };
 
     return result;

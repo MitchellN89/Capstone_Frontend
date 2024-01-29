@@ -43,14 +43,23 @@ export default function EventsV() {
   const services = useServicesVContext();
   const { state: chatEntryContext } = useChatEntryContext();
   const { chatEntries } = chatEntryContext || {};
+
   const filteredEventSerivces = useMemo(() => {
-    return filter(
+    const filtered = filter(
       eventServices,
       matchEventNameV(eventNameFilterValue),
       matchServiceV(serviceFilterValue),
       matchAddressV(addressFilterValue),
       matchTagV(tagFilterValue)
     );
+    if (!filtered) return null;
+
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.event.startDateTime);
+      const dateB = new Date(b.event.startDateTime);
+
+      return dateA - dateB;
+    });
   }, [
     addressFilterValue,
     serviceFilterValue,

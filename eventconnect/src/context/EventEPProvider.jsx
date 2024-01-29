@@ -137,40 +137,12 @@ export function EventEPProvider({ children }) {
     isLoading: false,
   });
 
-  const [queryParams, setQueryParams] = useState({});
-
-  const handleQueryParams = (key, value) => {
-    setQueryParams((curState) => {
-      const existingStateClone = { ...curState };
-      if (existingStateClone[key] && !value) {
-        delete existingStateClone[key];
-        return existingStateClone;
-      } else {
-        existingStateClone[key] = value;
-        return existingStateClone;
-      }
-    });
-  };
-
   useEffect(() => {
     let ignore = false;
-    let queryString = "";
-    if (Object.keys(queryParams).length) {
-      queryString += "?";
-
-      Object.keys(queryParams).forEach((key, index, array) => {
-        queryString += `${key}=${queryParams[key]}`;
-        if (index < array.length - 1) queryString += "&";
-      });
-
-      for (let param in queryParams) {
-        queryString += `${param}=`;
-      }
-    }
 
     dispatch({ type: "PROCESSING_REQUEST" });
 
-    apiCall(`/events?${queryString}`)
+    apiCall(`/events`)
       .then((result) => {
         if (!ignore) {
           dispatch({
@@ -189,13 +161,9 @@ export function EventEPProvider({ children }) {
     return () => {
       ignore = true;
     };
-  }, [queryParams]);
+  }, []);
 
-  const actions = {
-    handleQueryParams,
-  };
-
-  const context = { state, dispatch, actions };
+  const context = { state, dispatch };
 
   return (
     <EventEPContext.Provider value={context}>

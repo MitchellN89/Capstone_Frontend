@@ -9,13 +9,19 @@ export default function SelectInput({
   handleIsValid,
   label,
   isValid,
+  disabled,
   ...others
 }) {
   return (
     <div>
-      <FormControl fullWidth>
+      <FormControl disabled={disabled} fullWidth>
         <InputLabel id="selectLabel">{label}</InputLabel>
-        <Select {...others} labelId="selectLabel" label={label}>
+        <Select
+          {...others}
+          labelId="selectLabel"
+          label={label}
+          disabled={disabled}
+        >
           {options &&
             options.map((option) => (
               <MenuItem key={option.id} value={option.id}>

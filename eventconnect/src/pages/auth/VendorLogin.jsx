@@ -11,6 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../context/NotificationProvider";
 import { useLocation } from "react-router-dom";
 
+// For comments; see EventPlannerLogin.jsx - the two components are near identical.
+// They have been separated due to minor differences in accountType
+
 export default function VendorLogin() {
   const { state: initValues } = useLocation();
   const { dispatch: dispatchUser } = useUser();
@@ -62,7 +65,7 @@ export default function VendorLogin() {
 
   return (
     <>
-      <AuthHeader accountTypeLabel="Vendor" />
+      <AuthHeader accountTypeLabel="Vendor" message="Sign In" />
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>

@@ -1,16 +1,27 @@
 import { Grid, Paper } from "@mui/material";
 import TextInput from "../../components/Inputs/TextInput";
 import { Box } from "@mui/system";
-import MaxWidthContainer from "../../components/MaxWidthContainer";
-import { Header1, Header2 } from "../../components/Texts/TextHeaders";
+import { Header2 } from "../../components/Texts/TextHeaders";
 import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { apiCall } from "../../utilities/apiCall";
 import { convertFormDataToObject } from "../../utilities/formData";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelectInput, useTextInput } from "../../hooks/useInputData";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import SelectInput from "../../components/Inputs/SelectInput";
 import { useEventsEPContext } from "../../context/EventEPProvider";
+import { useNotification } from "../../context/NotificationProvider";
+
+// For comments, see CreateEventEp.jsx - very similar code. slightly different process due to creating eventService instead of creating event.
+// Limited comments below. Duplicates can be found in CreateEventEp.jsx
+
+const allValid = (...inputs) => {
+  return new Promise((res) => {
+    setTimeout(() => {
+      res(inputs.every((input) => input));
+    }, 250);
+  });
+};
 
 export default function CreateServiceEP({ handleOpen }) {
   const { state: services, dispatch: servicesDispatch } =
@@ -18,6 +29,10 @@ export default function CreateServiceEP({ handleOpen }) {
   const { dispatch: eventDispatch } = useEventsEPContext();
   const { isLoading } = services;
   const { eventId } = useParams();
+
+  const { triggerNotification } = useNotification();
+
+  // extracting exact eventService from eventServices context.
   const eventServices = services.eventServices.filter(
     (eventService) => eventService.eventId == eventId
   );
@@ -62,89 +77,120 @@ export default function CreateServiceEP({ handleOpen }) {
     "E.g. 'Vegan only foods'"
   );
 
-  const navigate = useNavigate();
-
+  // extracting options from the services context in order to populate the SelectInput component
   const options = services.services.filter((service) => {
+    // removes services that have already been used within the event
     return !eventServices.some(
       (eventService) => eventService.serviceId == service.id
     );
   });
 
-  const isValidForm = () => {
-    return new Promise((res) => {
-      setTimeout(() => {
-        res(
-          [
-            isValidLogistics,
-            isValidRequestBody,
-            isValidServiceId,
-            isValidSpecialRequirements,
-            isValidTags,
-            isValidVolumes,
-          ].every((i) => i)
-        );
-      }, 250);
-    });
-  };
-
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    const isValid = await isValidForm();
-    if (!isValid) return;
 
-    const body = convertFormDataToObject(new FormData(evt.target));
+    // check inputs are valid
+    const isValidForm = await allValid(
+      isValidLogistics,
+      isValidRequestBody,
+      isValidServiceId,
+      isValidSpecialRequirements,
+      isValidTags,
+      isValidVolumes
+    );
+
+    // if not, send error message and escape handleSubmit
+    if (!isValidForm) {
+      triggerNotification({
+        message: "Please make sure all fields contain valid data",
+        severity: "error",
+      });
+      return;
+    }
+
+    //convert formdata to object
+    let body = convertFormDataToObject(new FormData(evt.target));
+
+    // set dispatch to isLoading: true
     servicesDispatch({ type: "PROCESSING_REQUEST" });
 
     try {
+      // make api call to back end to create new eventService
       const result = await apiCall(`/events/${eventId}/services`, "post", body);
-      const { id: eventServiceId } = result.data;
+      const { id: eventServiceId } = result.data; //extract id as eventServiceId from result
 
-      const newEventService = { ...result.data, event: { id: eventId } };
+      const newEventService = { ...result.data, event: { id: eventId } }; //create a new object with the returned data for dispatch
 
+      // set isLoading back to false and append new event service
       servicesDispatch({
         type: "CREATE_EVENT_SERVICE",
         payload: newEventService,
         response: result.response,
       });
 
+      // also update event context with basic info on the eventService
       eventDispatch({
         type: "CREATE_EVENT_SERVICE",
         id: eventServiceId,
         eventId,
       });
 
+      //send success message
+      triggerNotification({
+        message: "Successfully created new event service",
+      });
+
+      // close the modal
       handleOpen(false);
     } catch (err) {
+      // set isLoading back to false and send error message
+
       servicesDispatch({ type: "REQUEST_FAILED", error: err });
+      triggerNotification({
+        message:
+          "Server error detected. For more details, please see console log",
+        severity: "error",
+      });
       console.error(err);
     }
   };
 
   return (
     <>
-      {/* <MaxWidthContainer maxWidth="lg" centered> */}
       <Paper>
         <Box padding={5}>
           <form onSubmit={handleSubmit}>
             <Header2>New Service</Header2>
             <Grid container spacing={1}>
               <Grid item xs={12}>
-                <SelectInput {...serviceIdProps} options={options} required />
+                <SelectInput
+                  {...serviceIdProps}
+                  options={options}
+                  disabled={isLoading}
+                  required
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput multiline {...requestBodyProps} />
+                <TextInput
+                  multiline
+                  disabled={isLoading}
+                  {...requestBodyProps}
+                />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...tagsProps} />
+                <TextInput disabled={isLoading} {...tagsProps} />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...volumesProps} />
+                <TextInput disabled={isLoading} {...volumesProps} />
               </Grid>
               <Grid item xs={12}>
-                <TextInput {...logisticsProps} />
+                <TextInput disabled={isLoading} {...logisticsProps} />
               </Grid>
               <Grid item xs={12}>
-                <TextInput multiline {...specialRequirementsProps} />
+                <TextInput
+                  disabled={isLoading}
+                  multiline
+                  {...specialRequirementsProps}
+                />
               </Grid>
 
               <Grid textAlign="right" item xs={12} marginTop={3}>
@@ -172,7 +218,6 @@ export default function CreateServiceEP({ handleOpen }) {
           </form>
         </Box>
       </Paper>
-      {/* </MaxWidthContainer> */}
     </>
   );
 }

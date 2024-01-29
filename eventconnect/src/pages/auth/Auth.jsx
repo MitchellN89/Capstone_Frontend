@@ -1,6 +1,4 @@
 import FullScreenContainer from "../../components/FullScreenContainer";
-// import BreakpointContainer from "../../components/BreakpointContainer";
-// import LoginUserSelectionTabs from "./Components/LoginUserSelection";
 import MaxWidthContainer from "../../components/MaxWidthContainer";
 import LogoHeader from "../../components/Logos/LogoHeader";
 import { Box, Paper } from "@mui/material";
@@ -11,14 +9,12 @@ import StyledLink from "../../components/StyledLink";
 
 export default function Login() {
   const theme = useTheme();
-
   const location = useLocation();
-  const { pathname } = location;
+  const { pathname } = location; // Get the url path name to allow me to change text in this parent container depending on which of its 'children' are being displayed in Outlet
 
   return (
     <>
       <FullScreenContainer justifyCenter alignCenter>
-        {/* <BreakpointContainer> */}
         <MaxWidthContainer maxWidth="md" centered>
           <Paper sx={{ backgroundColor: theme.palette.background }}>
             <LogoHeader></LogoHeader>
@@ -28,9 +24,8 @@ export default function Login() {
             >
               <Outlet />
             </Box>
-            {/*<LoginUserSelectionTabs></LoginUserSelectionTabs> */}
           </Paper>
-
+          {/* Changing the Text here depending on the Outlet component / path */}
           {pathname === "/auth/eventPlanner/login" && (
             <Text textAlign="right" size="sm" style={{ marginRight: "10px" }}>
               <StyledLink to="/auth/vendor/login">
@@ -46,7 +41,6 @@ export default function Login() {
             </Text>
           )}
         </MaxWidthContainer>
-        {/* </BreakpointContainer> */}
       </FullScreenContainer>
     </>
   );

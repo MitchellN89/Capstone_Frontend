@@ -15,7 +15,6 @@ const style = {
   bgcolor: "background.paper",
   maxHeight: "95vh",
   overflow: "auto",
-  // border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
@@ -26,9 +25,7 @@ export default function ModalContainer({
   children,
   maxWidth,
 }) {
-  // const [open, setOpen] = React.useState(false);
-  // const handleOpen = () => setOpen(true);
-  // const handleClose = () => setOpen(false);
+  console.log("DEBUG___ open", open);
 
   return (
     <Modal

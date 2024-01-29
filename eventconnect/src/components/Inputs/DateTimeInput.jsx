@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 export default function DateTimeInput({
   isValid,
   handleIsValid,
+  disabled,
   patterns,
   value,
   ...others
@@ -56,6 +57,7 @@ export default function DateTimeInput({
           size="small"
           format="DD MMMM YYYY hh:mm a"
           fullWidth
+          disabled={disabled}
           error={!isValid}
           {...others}
         />
