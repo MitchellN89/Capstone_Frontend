@@ -21,6 +21,7 @@ export function NotificationProvider({ children }) {
 
   const [options, setOptions] = useState(defaultOptions);
 
+  // this is the main function that the rest of the app will use. when calling it and passing in and object with options, it triggers the notification (in a parent component) to open and display the message
   const triggerNotification = (newOptions) => {
     setOpen(false);
     const allowedOptions = {

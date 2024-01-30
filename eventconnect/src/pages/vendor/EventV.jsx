@@ -13,20 +13,22 @@ import ServiceConnectionV from "./ServiceConnectionV";
 import Map from "../../components/Map";
 import { useChatEntryContext } from "../../context/ChatEntryProvider";
 import dayjs from "dayjs";
+import { useNotification } from "../../context/NotificationProvider";
 
+// get backend domain
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export default function EventV() {
+  // destructuring and variable / state setup below
   const [trigger, setTrigger] = useState(true);
   const [eventService, setEventService] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { serviceRequestId } = useParams();
   const { event } = eventService || {};
-
   const { dispatch: dispatchChatEntry } = useChatEntryContext();
-
   const { id: eventId } = event || {};
+  const { triggerNotification } = useNotification();
 
   const imgStyle = {
     backgroundImage: `url('${DOMAIN}/uploads/events/event${eventId}.jpg')`,
@@ -42,32 +44,54 @@ export default function EventV() {
   };
 
   useEffect(() => {
-    console.log("EventV.jsx > event: ", eventService);
-  }, [eventService]);
+    let ignore = false;
+    setIsLoading(true);
 
-  useEffect(() => {
+    // api call, get one event
     apiCall(`/events/${serviceRequestId}`)
       .then((result) => {
-        setEventService(result.data);
-        dispatchChatEntry({
-          type: "DELETE_ENTRIES",
-          serviceConnectionId: result.data.id,
-        });
+        //if cleanup hasn't run
+        if (!ignore) {
+          // set state with retrieved data
+          setEventService(result.data);
+
+          // mark chat entries for this connection as read
+          dispatchChatEntry({
+            type: "DELETE_ENTRIES",
+            serviceConnectionId: result.data.id,
+          });
+        }
       })
       .catch((err) => {
-        console.error(err);
+        if (!ignore) {
+          // if error, send message and return
+          console.error(err);
+          triggerNotification({
+            message: "Error getting event. For more info, see console log",
+            severity: "error",
+          });
+          navigate("/vendor/events");
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
+    // trigger is a dependency so that this useEffect can be manually run
   }, [trigger]);
 
   const handleGoBack = () => {
+    if (isLoading) return;
     navigate("/vendor/events");
   };
 
   const handleTrigger = () => {
+    if (isLoading) return;
     setTrigger((trigger) => !trigger);
   };
 
+  //handle initial load
   if (!eventService) return;
+
   return (
     <>
       <Grid container spacing={3}>
@@ -89,7 +113,7 @@ export default function EventV() {
                       {eventService.service.service}
                     </Text>
                   </FeatureStylize>
-
+                  {/* check dates are valid and format them if so */}
                   <TextContainer>
                     <Text style={textStyle}>
                       <FeatureStylize featureStrength={3} bold>

@@ -7,6 +7,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Header3 } from "./Texts/TextHeaders";
 import { Button, Paper } from "@mui/material";
 
+// Filter bar for the main pages that contain cards.
+// this is mostly just a wrapper accordian with a reset button (which runs resetFilters)
+
 export default function ControlledAccordions({ children, resetFilters }) {
   const [expanded, setExpanded] = React.useState(false);
 

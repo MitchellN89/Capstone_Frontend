@@ -1,11 +1,20 @@
+// filter function accepts an array of objects and then any amount of functions
 export function filter(objects, ...funcs) {
   if (!objects || !Array.isArray(objects)) return null;
+  // filter the given array of objects and test the passed in funcs. If all funcs return true, the item is added in the filter
   return objects.filter((object) => {
     return funcs.every((func) => {
       return func(object);
     });
   });
 }
+
+// below are all the funcs that are passed into the filter function
+// each function accepts a value, usually an array. this array contains search criteria such as an array of services.
+// the function returns a new function with the hardcoded parameter from it's parent function built in.
+// when filter iterates over the objects array, each object is passed into all param functions in order.
+// these functions test for matches using the hardcoded param from the parent filter. if matches occur, the function returns true and the next function in line runs.
+// if all funcs return true (utilizing array.every), that particular object is deemed correct to show as according to the filter
 
 export function matchServiceV(servicesArr) {
   return function (object) {

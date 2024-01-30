@@ -1,6 +1,9 @@
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
+// this custom combo box allows the user to add their own values and store them as an array.
+// custom hook is used to handle props here
+
 export default function CustomComboInput({ value, setValue, label }) {
   return (
     <Autocomplete

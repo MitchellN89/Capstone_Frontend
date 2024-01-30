@@ -14,10 +14,13 @@ import { FeatureStylize } from "../../components/Texts/TextStyles";
 import Map from "../../components/Map";
 import ModalContainer from "../../components/ModalContainer";
 import dayjs from "dayjs";
+import { useNotification } from "../../context/NotificationProvider";
 
+// get backend domain
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export default function ServiceRequestV() {
+  // destructure and setup state / variables below
   const [trigger, setTrigger] = useState(true);
   const [serviceRequest, setServiceRequest] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,45 +31,58 @@ export default function ServiceRequestV() {
   const { user: eventPlanner } = event || {};
   const [openRespondModal, setOpenRespondModal] = useState(false);
   const { id: eventPlannerId } = eventPlanner || {};
+  const { triggerNotification } = useNotification();
 
   const handleOpenRespondModal = (bool) => {
+    if (isLoading) return;
     setOpenRespondModal(bool);
   };
 
   const handleGoBack = () => {
+    if (isLoading) return;
     navigate("/vendor/servicerequests");
   };
 
   const handleTrigger = () => {
+    if (isLoading) return;
     setTrigger((curState) => !curState);
   };
 
   useEffect(() => {
-    console.log("ServiceRequest.jsx > serviceRequest: ", serviceRequest);
-  }, [serviceRequest]);
-
-  // TODO - useData here instead
-  useEffect(() => {
     let ignore = false;
 
+    // api call, get service request
     apiCall(`/serviceRequests/${serviceRequestId}`)
       .then((result) => {
+        //if no cleanup function occurred
         if (!ignore) {
+          // set state with retrieved data
           setServiceRequest(result.data);
         }
       })
       .catch((err) => {
         if (!ignore) {
+          // on error, send error message and return back
           console.error(err);
+
+          triggerNotification({
+            message:
+              "Error while getting service request. For more info, see console log",
+            severity: "error",
+          });
+
+          navigate("/vendor/serviceRequests");
         }
       })
       .finally(() => {
+        // set isLoading back to false
         setIsLoading(false);
       });
 
     return () => {
       ignore = true;
     };
+    // dependency allows manual triggering of this useEffect
   }, [trigger]);
 
   const imgStyle = {
@@ -82,7 +98,7 @@ export default function ServiceRequestV() {
     margin: "0",
   };
 
-  if (isLoading) return <h1>Loading...</h1>;
+  // handle initial load
   if (!serviceRequest) return;
 
   return (
@@ -197,6 +213,7 @@ export default function ServiceRequestV() {
                       {serviceRequest.specialRequirements}
                     </Text>
                   </TextContainer>
+                  {/* Respond button is not available once reponse has been made */}
                   {serviceRequest.vendorEventConnections.length == 0 && (
                     <Button
                       style={{ marginBottom: "20px" }}
@@ -227,6 +244,7 @@ export default function ServiceRequestV() {
           xs={12}
           md={serviceRequest.vendorEventConnections.length != 0 ? 6 : 12}
         >
+          {/* only show connection if response has been made */}
           {serviceRequest.vendorEventConnections.length != 0 && (
             <ServiceConnectionV
               handleTrigger={handleTrigger}

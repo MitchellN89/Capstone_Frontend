@@ -7,6 +7,8 @@ const API_KEY = import.meta.env.VITE_MAP_API_KEY;
 
 const MapContext = createContext();
 
+// This context runs google maps load script and provides isLoaded and loadError to components which use the google map APIs
+
 export const GoogleMapsProvider = ({ children }) => {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: API_KEY,

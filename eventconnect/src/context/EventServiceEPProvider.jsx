@@ -6,8 +6,11 @@ import {
   useEffect,
 } from "react";
 import { apiCall } from "../utilities/apiCall";
-import { useEventsEPContext } from "./EventEPProvider";
+import { useNotification } from "./NotificationProvider";
 const ServicesEPContext = createContext();
+
+// For comments on reducer and it's called functions, see EventEPProvider.jsx
+// very similar data
 
 const reducer = (state, action) => {
   const { type, payload, id, eventId, eventServiceId, vendorId } = action;
@@ -57,13 +60,6 @@ const reducer = (state, action) => {
         eventServices: broadCastEventService(state, id, payload),
         isLoading: false,
       };
-    // case "DISABLE_BROADCAST":
-    //   return {
-    //     ...state,
-    //     eventServices: broadCastEventService(state, id, payload),
-    //     isLoading: false,
-    //     response: response,
-    //   };
     case "PROMOTE_VENDOR":
       return {
         ...state,
@@ -127,14 +123,18 @@ export function ServicesEPProvider({ children }) {
     response: null,
   });
 
+  const { triggerNotification } = useNotification();
+
   useEffect(() => {
     let ignore = false;
 
     dispatch({ type: "PROCESSING_REQUEST" });
 
+    //get services, the only initial data set on this state
     apiCall("/services")
       .then((result) => {
         if (!ignore) {
+          // set state services with retrieved data
           dispatch({
             type: "GET_SERVICES",
             payload: result.data,
@@ -144,12 +144,19 @@ export function ServicesEPProvider({ children }) {
       })
       .catch((err) => {
         if (!ignore) {
+          // on error, send err msg
           console.error(err);
           dispatch({ type: "REQUEST_FAILED", error: err });
+          triggerNotification({
+            message:
+              "Error while getting services. For more info, see console log",
+            severity: "error",
+          });
         }
       });
 
     return () => {
+      //cleanup function
       ignore = true;
     };
   }, []);

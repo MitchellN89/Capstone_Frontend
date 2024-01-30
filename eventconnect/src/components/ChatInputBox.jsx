@@ -3,6 +3,9 @@ import { IconSend } from "./Icons";
 import { styled } from "@mui/material";
 import { useTheme } from "@emotion/react";
 
+// input for sending messages in socket io
+// send message function is passed in
+
 export default function ChatInputBox({ sendMessage }) {
   const [value, setValue] = useState("");
   const containerStyle = {
@@ -36,6 +39,7 @@ export default function ChatInputBox({ sendMessage }) {
     padding: "5px 15px",
   };
 
+  // if
   const handleSubmit = (evt) => {
     evt.preventDefault();
     sendMessage(value);

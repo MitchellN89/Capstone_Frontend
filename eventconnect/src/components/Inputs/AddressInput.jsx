@@ -18,8 +18,9 @@ export default function AddressInput({ init, disabled }) {
 
   const [selected, setSelected] = useState(null);
   const { isLoaded } = useGoogleMaps();
-  const [inFocus, setInFocus] = useState(false);
+  const [inFocus, setInFocus] = useState(false); //state which i use to see if the input is in focus or not
 
+  //upon component load, setSelected to init if init is truthy
   useEffect(() => {
     if (init) {
       setSelected(init);
@@ -40,8 +41,10 @@ export default function AddressInput({ init, disabled }) {
     padding: "5px",
   };
 
-  if (!isLoaded) return <div>Loading...</div>;
+  //handle initial load
+  if (!isLoaded) return;
 
+  //when selected changes, setValue as selected and clear autocomplete suggestions
   useEffect(() => {
     setValue(selected);
     clearSuggestions();
@@ -50,10 +53,13 @@ export default function AddressInput({ init, disabled }) {
   return (
     <div
       style={containerStyle}
+      // set focus true onFocus
       onFocus={() => {
         setInFocus(true);
       }}
       onBlur={() => {
+        // set focus false onBlur and conditionally set value to selected
+        // this means if the user has typed something in the text box but NOT clicked an address, the last selected address is used
         setInFocus(false);
         if (value != selected && value != "") {
           setValue(selected);
@@ -72,12 +78,13 @@ export default function AddressInput({ init, disabled }) {
         size="small"
         name="address"
       />
-
+      {/* list of autocomplete address sugestions below */}
       {inFocus && status === "OK" && (
         <div style={listStyle}>
           {data.map((object, id) => (
             <div
               key={id}
+              // using mouseDown to avoid onBlur triggering too soon on the TextField input
               onMouseDown={() => {
                 setSelected(object.description);
                 // clearSuggestions();

@@ -1,7 +1,19 @@
 import dayjs from "dayjs";
 
+// below are all the functions which test input values to determine if they are valid or not.
+// the majority are functions which are passed into patterns props (within an array)
+// some required initial dynamic values that may depend on the current state of other inputs.
+// these functions return functions which test the validation.
+
+// functions return an object that contain isValid bool, a key for future implementation (where error messages can be stacked and mapped) and a message for the error message to display
+
+// as an example
 export function validationMatch(valueToMatch, faultMessage) {
+  // validationMatch expects a value to match and a fault message.
+  // it returns a function
   return function (value) {
+    // object is created below and isValid is set to the result of valueToMatch == value (which is always passed in on these functions when being tested)
+    // if the values match, isValid is true, if not, false and an error message will be displayed underneath the input
     const result = {
       isValid: valueToMatch == value,
       key: `valid_match_${valueToMatch}`,

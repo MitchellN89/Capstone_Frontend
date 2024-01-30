@@ -1,5 +1,6 @@
 import { useRef } from "react";
 
+//standard debouncer
 export function debouncer(func, timeout) {
   const timer = useRef(null);
   return function () {

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { IconBack, IconCreate } from "../Icons";
-
+import { IconBack } from "../Icons";
 import { useTheme } from "@emotion/react";
+
+// custom icon button
 
 export default function ButtonLogoBack({ handleClick, logoSize }) {
   const [isHovered, setIsHovered] = useState(false);

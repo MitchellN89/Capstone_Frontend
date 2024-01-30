@@ -14,11 +14,15 @@ export default function Map({ address }) {
   const { isLoaded } = useGoogleMaps();
   const [coordinates, setCoordinates] = useState(null);
 
+  // on address change, input address string
   useEffect(() => {
     if (address) {
+      // get geocode from address string
       getGeocode({ address })
         .then((results) => {
+          // get lat and lng
           const { lat, lng } = getLatLng(results[0]);
+          // set coordinates state to obj {lat, lng}
           setCoordinates({ lat, lng });
         })
         .catch((err) => {
@@ -31,12 +35,15 @@ export default function Map({ address }) {
 
   if (!isLoaded) return <div>Loading...</div>;
   return (
+    // if there is no inserted address, the map zooms out and focuses on Auckland
+    // if there is an inserted address, the map zooms in on that location
     <GoogleMap
       zoom={coordinates ? 15 : 10}
       center={coordinates || initPosition}
       mapContainerClassName="map-container"
       mapContainerStyle={style}
     >
+      {/* marker for address location */}
       {coordinates && <Marker position={coordinates} />}
     </GoogleMap>
   );

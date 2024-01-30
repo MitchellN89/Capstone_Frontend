@@ -5,6 +5,8 @@ import { Paper } from "@mui/material";
 import dayjs from "dayjs";
 import { useTheme } from "@mui/material";
 
+// like ChatMessage.jsx, styled a little differently to indicate it's a server message
+
 export default function ChatServerMessage({ message, createdAt }) {
   const theme = useTheme();
 

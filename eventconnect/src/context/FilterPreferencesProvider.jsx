@@ -2,6 +2,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 const FilterPreferencesContext = createContext();
 
+// this context provides filter props.
+// im using context here instead of a hook as I want the filter preferences to maintain over the session
+
 export function FilterPreferencesProvider({ children }) {
   const [eventNameFilterValue, setEventNameFilterValue] = useState([]);
   const [tagFilterValue, setTagFilterValue] = useState([]);

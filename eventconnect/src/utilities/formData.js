@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 
+// converts formData to js object
 export function convertFormDataToObject(formData) {
   const obj = {};
   formData.forEach((val, key) => {
@@ -9,6 +10,7 @@ export function convertFormDataToObject(formData) {
   return obj;
 }
 
+// iterates over the keys of a given object, when an object key is found to match keyContains, the value is extracted and converted to a new format using dayjs
 export function convertDatesToValid(object, keyContains, fromFormat, toFormat) {
   const formattedDates = {};
   Object.keys(object).forEach((key) => {

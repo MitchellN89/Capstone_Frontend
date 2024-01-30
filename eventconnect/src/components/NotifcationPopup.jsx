@@ -1,12 +1,14 @@
 import * as React from "react";
 import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
+
+// MUI Notification component. This is used in the parent container to allow notifications to maintain over page changes.
+// props are passed in using context and are available everywhere in the app for these notifications can be called from any page/component
 
 export default function NotificationPopup({
   open,
@@ -22,10 +24,6 @@ export default function NotificationPopup({
           {message}
         </Alert>
       </Snackbar>
-      {/* <Alert severity="error">This is an error message!</Alert>
-      <Alert severity="warning">This is a warning message!</Alert>
-      <Alert severity="info">This is an information message!</Alert>
-      <Alert severity="success">This is a success message!</Alert> */}
     </Stack>
   );
 }

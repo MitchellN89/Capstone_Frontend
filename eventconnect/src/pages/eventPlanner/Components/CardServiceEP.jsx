@@ -51,9 +51,11 @@ export default function CardServiceEP({
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <div
         style={divStyle}
+        // hovering mouse over component sets hovered to true, therefore changing the style
         onMouseEnter={() => {
           handleHover(true);
         }}
+        // not hovering over the component sets hovered to false
         onMouseLeave={() => {
           handleHover(false);
         }}
@@ -61,12 +63,15 @@ export default function CardServiceEP({
           handleClick(eventServiceId);
         }}
       >
+        {/* ChatBadge diplays count of unread messages within this event service */}
         <ChatBadge quantity={chatQuantity} />
+        {/* overlay for visual purposes */}
         <div style={overlayStyle} />
         <Header3 style={{ color: "white", position: "relative", zIndex: "10" }}>
           {serviceName}
         </Header3>
         <ButtonBox isHovered={isHovered}>
+          {/* Delete button not visible if event service has promoted vendor */}
           <ButtonLogoDelete
             isVisible={isHovered && !hasPromotedVendor}
             handleClick={handleDelete}

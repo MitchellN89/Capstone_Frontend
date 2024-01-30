@@ -2,6 +2,9 @@ import { Text } from "./Texts/Texts";
 import dayjs from "dayjs";
 import { useTheme } from "@mui/material";
 
+// expects message, createdAt and isMe (bool) passed in
+// styles the message depending on isMe value
+
 export default function ChatMessage({ message, createdAt, isMe }) {
   const theme = useTheme();
   const containerStyle = {

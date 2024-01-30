@@ -8,6 +8,9 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
+// similiar to SelectInput but has checkboxes within for multi selection
+// this component is exclusively used for services
+
 export default function ServiceInput({ options, value, setValue }) {
   return (
     <Autocomplete

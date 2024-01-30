@@ -1,7 +1,6 @@
 import { IconUser } from "./Icons";
 import { Text } from "../components/Texts/Texts";
 import { FeatureStylize } from "./Texts/TextStyles";
-import { Grid } from "@mui/material";
 
 export default function UserCard({
   companyName,

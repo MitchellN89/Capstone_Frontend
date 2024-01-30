@@ -2,6 +2,9 @@ import { useState } from "react";
 import { IconDelete } from "../Icons";
 import { useTheme } from "@emotion/react";
 
+// custom icon button
+// can be hidden if required (set isVisible to false)
+
 export default function ButtonLogoDelete({
   isVisible,
   handleClick,

@@ -21,13 +21,17 @@ import {
 import ServiceInput from "../../components/Inputs/ServiceInput";
 import { useServicesVContext } from "../../context/ServiceVProvider";
 import { useChatEntryContext } from "../../context/ChatEntryProvider";
-import CheckboxInput from "../../components/Inputs/CheckboxInput";
+import { useNotification } from "../../context/NotificationProvider";
 
 export default function EventsV() {
+  // destructuring & variable / state setup below
   const navigate = useNavigate();
   const [eventServices, setEventServices] = useState(null);
   const [trigger, setTrigger] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const { triggerNotification } = useNotification();
+
+  // filter props and values below. these are to be passed into inputs and filter functions
   const {
     eventNameFilterProps,
     eventNameFilterValue,
@@ -37,13 +41,16 @@ export default function EventsV() {
     tagFilterProps,
     addressFilterProps,
     addressFilterValue,
-
     resetFilters,
   } = useFilterPreferencesContext();
+
   const services = useServicesVContext();
   const { state: chatEntryContext } = useChatEntryContext();
   const { chatEntries } = chatEntryContext || {};
 
+  // filter function uses useMemo to stop rerenders when not required.
+  // function expects array of objects and any amount of functions.
+  // the functions passed in return functions which will filter the events list down
   const filteredEventSerivces = useMemo(() => {
     const filtered = filter(
       eventServices,
@@ -54,6 +61,7 @@ export default function EventsV() {
     );
     if (!filtered) return null;
 
+    // filtered eventServices are now sorted by earliest date to latest date
     return filtered.sort((a, b) => {
       const dateA = new Date(a.event.startDateTime);
       const dateB = new Date(b.event.startDateTime);
@@ -68,40 +76,61 @@ export default function EventsV() {
     tagFilterValue,
   ]);
 
-  useEffect(() => {
-    console.log("EventsV.jsx > eventServices: ", eventServices);
-  }, [eventServices]);
-
+  // handles event card click
   const handleClick = (eventServiceId) => {
+    if (isLoading) return;
     navigate(`/vendor/events/${eventServiceId}`);
   };
 
+  //forces api call refresh
   const handleRefresh = () => {
+    if (isLoading) return;
     setTrigger((trigger) => !trigger);
   };
 
   useEffect(() => {
+    let ignore = false;
+    setIsLoading(true);
+    // get vendor events
     apiCall(`/events`)
       .then((result) => {
-        setEventServices(result.data);
+        if (!ignore) {
+          // set state with retrieved data
+          setEventServices(result.data);
+        }
       })
       .catch((err) => {
-        console.error(err);
+        if (!ignore) {
+          // send error message
+          triggerNotification({
+            message:
+              "Error while getting vendor events. For more info, see console log",
+            severity: "error",
+          });
+          console.error(err);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
+    // setup timer to call this function every minute.
     const timer = setTimeout(() => {
       setTrigger((curState) => !curState);
     }, 60000);
 
     return () => {
+      // cleanup function stops the timer and sets ignore to true
       clearTimeout(timer);
+      ignore = true;
     };
+    // trigger as a dependency means this can be triggered manually by changing trigger value
   }, [trigger]);
 
+  // handle inital load
   if (!eventServices) return;
+
   return (
-    // TODO Need title
-    // TODO need serach criteria
     <>
       <HeaderStrip>
         <Header1 style={{ margin: "0" }}>EVENTS</Header1>
@@ -122,14 +151,17 @@ export default function EventsV() {
         </Grid>
       </FilterBar>
       <Grid container spacing={3} marginBottom={4}>
+        {/* iterate over filtered Event Services and display as cards */}
         <CardLoading isLoading={isLoading} />
         {filteredEventSerivces &&
           filteredEventSerivces.map((eventService) => {
+            // get unread messages count relating to this event and display as badge
             const chatQuantity = chatEntries.filter((entry) => {
               return (
                 entry.vendorEventConnection.eventService.id == eventService.id
               );
             }).length;
+
             return (
               <CardRequestV
                 handleClick={handleClick}

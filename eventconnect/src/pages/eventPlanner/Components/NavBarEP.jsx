@@ -16,6 +16,8 @@ import { useTheme } from "@emotion/react";
 import LogoSide from "../../../components/Logos/LogoSide";
 import { useNavigate } from "react-router-dom";
 
+// Appbar default from MUI
+
 export default function NavBarEP() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -38,7 +40,10 @@ export default function NavBarEP() {
     setAnchorElUser(null);
   };
 
+  // setting urls on pages arr below. further down, these are used to navigate to
   const pages = [{ name: "Events", url: "/eventPlanner" }];
+
+  // settings contains the onClick method used below
   const settings = [
     {
       name: "Logout",
@@ -55,6 +60,7 @@ export default function NavBarEP() {
     >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          {/* My own logo with some styling */}
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
             <LogoSide style={{ marginRight: "20px" }} />
           </Box>

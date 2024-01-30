@@ -1,3 +1,5 @@
+//various props avialable to manipulate the style of the text without having the need for separate components
+
 export function Text({ children, bold, italic, size, textAlign, style }) {
   const sizes = {
     xs: "10px",

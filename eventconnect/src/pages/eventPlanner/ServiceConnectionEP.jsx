@@ -1,7 +1,7 @@
-import { useEffect, useReducer, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
-import { Header1, Header2 } from "../../components/Texts/TextHeaders";
+import { Header1 } from "../../components/Texts/TextHeaders";
 import ChatBox from "../../components/ChatBox";
 import io from "socket.io-client";
 import { useUser } from "../../context/UserProvider";
@@ -11,10 +11,11 @@ import ChatInputBox from "../../components/ChatInputBox";
 import { useServicesEPContext } from "../../context/EventServiceEPProvider";
 import { useEventsEPContext } from "../../context/EventEPProvider";
 import { useChatEntryContext } from "../../context/ChatEntryProvider";
-import ButtonLoading from "../../components/Buttons/ButtonLoading";
 import { Button } from "@mui/material";
 import UserCard from "../../components/UserCard";
+import { useNotification } from "../../context/NotificationProvider";
 
+// set DOMAIN as backend domain from .env file
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export default function ServiceConnectionEp({
@@ -23,9 +24,12 @@ export default function ServiceConnectionEp({
   resetSelectedVendorId,
   eventServiceVendorId,
 }) {
+  // destructuring and setting variables below
   const [socket, setSocket] = useState(null);
   const [entries, setEntries] = useState(null);
   const [roomId, setRoomId] = useState(null);
+  const { triggerNotification } = useNotification();
+  const navigate = useNavigate();
   const {
     state: {
       user: { id: myId },
@@ -39,20 +43,24 @@ export default function ServiceConnectionEp({
   const { dispatch: chatEntryDispatch } = useChatEntryContext();
   const { id: vendorId } = connectedWith || {};
 
+  // this useEffect runs when serviceConnection changes.
+  // it sets the entries state to chatEntries from service connection. (this is the chat log)
   useEffect(() => {
     if (serviceConnection) {
       if (serviceConnection.chatEntries) {
         setEntries(serviceConnection.chatEntries);
       }
-      console.log(
-        "ServiceConnectionEP.jsx > serviceConnectrion: ",
-        serviceConnection
-      );
+
+      // as the users has now seen latest messages, the chat entries relating to this service connection can now be removed from context.
       chatEntryDispatch({ type: "DELETE_ENTRIES", serviceConnectionId });
+
+      // set the roomId state as the serviceConnection ID. this is used for socket-io
       setRoomId(serviceConnection.id);
     }
   }, [serviceConnection]);
 
+  // when roomId changes, create a new socket, set socket state and emit a "joinRoom" message to the backend to instruct it which room this user is in
+  // sends users id as well as the backend monitors who is and isn't online
   useEffect(() => {
     let newSocket;
     if (roomId) {
@@ -64,6 +72,7 @@ export default function ServiceConnectionEp({
       });
     }
 
+    // cleanup function to disconnect from socket upon component unmounting
     return () => {
       if (roomId) {
         newSocket.disconnect();
@@ -71,8 +80,11 @@ export default function ServiceConnectionEp({
     };
   }, [roomId]);
 
+  // when the socket is set / changes
+  // setup listeners
   useEffect(() => {
     if (socket) {
+      // this listener takes the message from the backend and appends it to entries state.
       socket.on("payloadFromServer", (message) => {
         setEntries((entries) => {
           const newEntries = [...entries];
@@ -83,10 +95,18 @@ export default function ServiceConnectionEp({
     }
   }, [socket]);
 
+  // function which emits a message to the backend to send to the other user
   const sendMessage = (message) => {
     if (!message) return;
+
+    // handle error is callback function. if there is an error on the server side, the server calls the function.
     const handleError = (serverResponse) => {
       console.error(serverResponse);
+
+      triggerNotification({
+        message: "Error while sending message. For more info, see console log",
+        severity: "error",
+      });
     };
 
     socket.emit(
@@ -102,22 +122,33 @@ export default function ServiceConnectionEp({
   };
 
   const promoteVendor = () => {
+    // another callback function to handle error on backend
     const handleError = (serverResponse) => {
       console.error(serverResponse);
+
+      triggerNotification({
+        message: "Error while promoting vendor. For more info, see console log",
+        severity: "error",
+      });
     };
 
+    //api call to update event service and set vendorId to the vendors id
     apiCall(
       `/events/${eventId}/services/${eventServiceId}/connections/${serviceConnectionId}/promoteVendor/${vendorId}`,
       "patch"
     )
       .then(() => {
+        // force refresh
         handleTrigger();
+
+        //reflect changes in event services context
         serviceDispatch({
           type: "PROMOTE_VENDOR",
           eventServiceId,
           vendorId,
         });
 
+        //reflect change in events context
         eventDispatch({
           type: "PROMOTE_VENDOR",
           eventServiceId,
@@ -125,6 +156,10 @@ export default function ServiceConnectionEp({
           eventId,
         });
 
+        // send success message
+        triggerNotification({ message: "Successfully promoted vendor" });
+
+        //send message to socket to instruct server to notify vendor AND add a chat entry with the vendor promotion
         socket.emit(
           "promoteVendor",
           roomId,
@@ -137,11 +172,18 @@ export default function ServiceConnectionEp({
         );
       })
       .catch((err) => {
+        // if error, send err message
         console.error(err);
+        triggerNotification({
+          message:
+            "Error while promoting vendor. For more info, see console log",
+          severity: "error",
+        });
       });
   };
 
-  if (!serviceConnection) return <span>No data available yet</span>;
+  // handle initial loading
+  if (!serviceConnection) return;
 
   return (
     <div
@@ -149,7 +191,6 @@ export default function ServiceConnectionEp({
         maxHeight: "calc(100vh - 120px)",
         display: "flex",
         flexDirection: "column",
-        // marginBottom: "20px",
       }}
     >
       <HeaderStrip>
@@ -159,6 +200,7 @@ export default function ServiceConnectionEp({
         )}
       </HeaderStrip>
 
+      {/* Card to diplay details of connectedWith user */}
       <UserCard
         companyName={connectedWith.companyName}
         firstName={connectedWith.firstName}

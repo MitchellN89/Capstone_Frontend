@@ -4,6 +4,9 @@ import { Container } from "@mui/material";
 import { ChatEntryProvider } from "../../context/ChatEntryProvider";
 import { ServiceVProvider } from "../../context/ServiceVProvider";
 
+// this component is the parent component for all vendor pages.
+// it provides the navbar, services and chat entries
+
 export default function Vendor() {
   return (
     <>

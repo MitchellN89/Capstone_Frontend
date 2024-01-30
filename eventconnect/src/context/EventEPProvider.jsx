@@ -6,8 +6,10 @@ import {
   useEffect,
 } from "react";
 import { apiCall } from "../utilities/apiCall";
+import { useNotification } from "./NotificationProvider";
 const EventEPContext = createContext();
 
+// reducer function to set state
 const reducer = (state, action) => {
   const { type, payload, id, eventId, eventServiceId, vendorId } = action;
 
@@ -66,6 +68,7 @@ const reducer = (state, action) => {
   }
 };
 
+// function which copies eventServices array, appends a new service and returns
 const appendNewEventService = (state, id, eventId) => {
   const events = [...state.events];
 
@@ -81,6 +84,7 @@ const appendNewEventService = (state, id, eventId) => {
   });
 };
 
+// function which copies eventServices array, deletes an event service and returns
 const deleteEventService = (state, eventServiceId, eventId) => {
   const events = [...state.events];
   const filteredEvents = events.map((event) => {
@@ -95,12 +99,14 @@ const deleteEventService = (state, eventServiceId, eventId) => {
   return filteredEvents;
 };
 
+// function which copies events array, appends a new event and returns
 const appendNewEvent = (state, newEvent) => {
   const events = [...state.events];
   events.push(newEvent);
   return events;
 };
 
+// function which copies events array, updates an event and returns
 const updateEvent = (state, id, updatedEvent) => {
   const events = [...state.events];
   const log = events.map((event) =>
@@ -110,11 +116,13 @@ const updateEvent = (state, id, updatedEvent) => {
   return log;
 };
 
+// function which copies events array, deletes an event and returns
 const deleteEvent = (state, id) => {
   const events = [...state.events];
   return events.filter((event) => event.id != id);
 };
 
+// function which copies the eventServices array, finds the correct eventService and updates vendorId
 const promoteVendor = (state, eventServiceId, vendorId, eventId) => {
   const events = [...state.events];
   const newEvents = events.map((event) => {
@@ -136,15 +144,18 @@ export function EventEPProvider({ children }) {
     events: [],
     isLoading: false,
   });
+  const { triggerNotification } = useNotification();
 
   useEffect(() => {
     let ignore = false;
 
     dispatch({ type: "PROCESSING_REQUEST" });
 
+    //get events
     apiCall(`/events`)
       .then((result) => {
         if (!ignore) {
+          // set state to retrieved data
           dispatch({
             type: "GET_EVENTS",
             payload: result.data,
@@ -153,12 +164,17 @@ export function EventEPProvider({ children }) {
       })
       .catch((err) => {
         if (!ignore) {
+          // on error, send error message
+          triggerNotification({
+            message: "Error getting events. For more info, see console log",
+          });
           console.error(err);
           dispatch({ type: "REQUEST_FAILED", error: err });
         }
       });
 
     return () => {
+      // cleanup function
       ignore = true;
     };
   }, []);

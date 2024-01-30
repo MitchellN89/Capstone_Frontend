@@ -1,9 +1,6 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import { Container } from "@mui/system";
-import FullScreenContainer from "./FullScreenContainer";
 
 const style = {
   position: "absolute",
@@ -19,14 +16,15 @@ const style = {
   p: 4,
 };
 
+// Modal container
+// wrapper for other components
+
 export default function ModalContainer({
   open,
   handleOpen,
   children,
   maxWidth,
 }) {
-  console.log("DEBUG___ open", open);
-
   return (
     <Modal
       open={open}

@@ -6,6 +6,9 @@ import { Text } from "../../../components/Texts/Texts";
 import dayjs from "dayjs";
 import ChatBadge from "../../../components/ChatBadge";
 
+//for comments, see CardEvent.jsx
+// most funcionality is very similar
+
 const DOMAIN = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export default function CardRequestV({

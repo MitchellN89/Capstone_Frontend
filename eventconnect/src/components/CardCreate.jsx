@@ -6,6 +6,7 @@ import { IconCreate } from "./Icons";
 export default function CardCreate({ label, handleClick }) {
   const [isHovered, setIsHovered] = useState(false);
 
+  // styling for hover is handled within component using isHovered state
   const handleHover = (bool) => {
     setIsHovered(bool);
   };
@@ -56,7 +57,6 @@ export default function CardCreate({ label, handleClick }) {
           handleHover(false);
         }}
         onClick={handleClick}
-        isHovered={isHovered}
       >
         <div style={overlayStyle} />
         <div style={contentBoxStyle}>

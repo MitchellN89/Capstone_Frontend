@@ -16,9 +16,10 @@ export default function DateTimeInput({
 }) {
   const [invalidList, setInvalidList] = useState(null);
 
+  // for comments on pattern validation, see TextInput.jsx
+
   useEffect(() => {
     handleInvalidList(value, patterns);
-    console.log("DEBUG__ DateTimeInput.jsx > value: ", value);
   }, [value, patterns]);
 
   const handleInvalidList = debouncer((value, patternFuncs) => {

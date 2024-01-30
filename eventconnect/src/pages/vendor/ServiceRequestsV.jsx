@@ -1,5 +1,5 @@
 import { Grid } from "@mui/material";
-import LoadingCard from "../../components/LoadingCard";
+import CardLoading from "../../components/CardLoading";
 import { useNavigate } from "react-router-dom";
 import { apiCall } from "../../utilities/apiCall";
 import { useEffect, useState, useMemo } from "react";
@@ -21,14 +21,18 @@ import {
 import { useServicesVContext } from "../../context/ServiceVProvider";
 import { useChatEntryContext } from "../../context/ChatEntryProvider";
 import CheckboxInput from "../../components/Inputs/CheckboxInput";
+import { useNotification } from "../../context/NotificationProvider";
+
+// for comments, see EventsV.jsx, it is near identical.
+// there are serveral extra filtering functions in this component however
 
 export default function ServiceRequestsV() {
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
-  const [queryParams, setQueryParams] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [trigger, setTrigger] = useState(true);
   const services = useServicesVContext();
+  const { triggerNotification } = useNotification();
   const {
     eventNameFilterProps,
     eventNameFilterValue,
@@ -72,22 +76,8 @@ export default function ServiceRequestsV() {
 
   useEffect(() => {
     let ignore = false;
-
-    let queryString = "";
-    if (Object.keys(queryParams).length) {
-      queryString += "?";
-
-      Object.keys(queryParams).forEach((key, index, array) => {
-        queryString += `${key}=${queryParams[key]}`;
-        if (index < array.length - 1) queryString += "&";
-      });
-
-      for (let param in queryParams) {
-        queryString += `${param}=`;
-      }
-    }
-
-    apiCall(`/serviceRequests${queryString}`)
+    setIsLoading(true);
+    apiCall(`/serviceRequests`)
       .then((result) => {
         if (!ignore) {
           setRequests(result.data);
@@ -95,8 +85,15 @@ export default function ServiceRequestsV() {
       })
       .catch((err) => {
         if (!ignore) {
+          triggerNotification({
+            message:
+              "Error while getting vendor service requests. For more info, see console log",
+          });
           console.error(err);
         }
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     let timer = setTimeout(() => {
@@ -107,24 +104,20 @@ export default function ServiceRequestsV() {
       ignore = true;
       clearTimeout(timer);
     };
-  }, [queryParams, trigger]);
+  }, [trigger]);
 
   const handleClick = (serviceRequestId) => {
+    if (isLoading) return;
     navigate(`/vendor/servicerequests/${serviceRequestId}`);
   };
 
   const handleTrigger = () => {
+    if (isLoading) return;
     setTrigger((trigger) => !trigger);
   };
 
-  useEffect(() => {
-    console.log("ServiceRequests.jsx > requests: ", requests);
-  }, [requests]);
-
   if (!requests) return;
   return (
-    // TODO Need title
-    // TODO need serach criteria
     <>
       <HeaderStrip>
         <Header1 style={{ margin: "0" }}>SERVICE REQUESTS</Header1>
@@ -150,14 +143,13 @@ export default function ServiceRequestsV() {
       </FilterBar>
 
       <Grid container spacing={3} marginBottom={4}>
-        <LoadingCard isLoading={isLoading} />
+        <CardLoading isLoading={isLoading} />
         {filteredEventSerivces &&
           filteredEventSerivces.map((request) => {
             const chatQuantity = chatEntries.filter((entry) => {
               return entry.vendorEventConnection.eventService.id == request.id;
             }).length;
 
-            console.log("DEBUG___ ", request);
             return (
               <CardRequestV
                 handleClick={handleClick}

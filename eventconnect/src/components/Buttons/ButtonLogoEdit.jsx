@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { IconEdit } from "../Icons";
-
 import { useTheme } from "@emotion/react";
+
+// custom icon button
 
 export default function ButtonLogoEdit({ handleClick, logoSize }) {
   const [isHovered, setIsHovered] = useState(false);

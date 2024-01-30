@@ -16,6 +16,9 @@ import { useTheme } from "@emotion/react";
 import LogoSide from "../../../components/Logos/LogoSide";
 import { useNavigate } from "react-router-dom";
 
+// for comments, see NavBarEP.jsx
+// very similar
+
 export default function NavBarEP() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);

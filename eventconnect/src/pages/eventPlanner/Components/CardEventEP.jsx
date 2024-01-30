@@ -66,9 +66,11 @@ export default function CardEventEP({
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <div
         style={divStyle}
+        // hovering mouse over component sets hovered to true, therefore changing the style
         onMouseEnter={() => {
           handleHover(true);
         }}
+        // not hovering over the component sets hovered to false
         onMouseLeave={() => {
           handleHover(false);
         }}
@@ -76,15 +78,19 @@ export default function CardEventEP({
           handleClick(eventId);
         }}
       >
+        {/* ChatBadge diplays count of unread messages within this event */}
         <ChatBadge quantity={chatQuantity} />
+        {/* overlay for visual purposes */}
         <div style={overlayStyle} />
         <div style={contentBoxStyle}>
           <Header3 style={{ margin: "0" }}>{eventName}</Header3>
+          {/* If a valid date exists, display it as formatted */}
           {eventStartDateTime && (
             <Text italic size="sm" style={{ margin: "0" }}>
               Start: {dayjs(eventStartDateTime).format("DD MMM YYYY, HH:mm a")}
             </Text>
           )}
+          {/* If a valid date exists, display it as formatted */}
           {eventEndDateTime && (
             <Text italic size="sm" style={{ margin: "0" }}>
               End: {dayjs(eventEndDateTime).format("DD MMM YYYY, HH:mm a")}
@@ -93,6 +99,7 @@ export default function CardEventEP({
         </div>
 
         <ButtonBox isHovered={isHovered}>
+          {/* Delete button not visible is event service within event has promoted vendor */}
           <ButtonLogoDelete
             isVisible={isHovered && !hasPromotedVendors}
             handleClick={handleDelete}
