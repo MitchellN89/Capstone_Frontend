@@ -49,6 +49,8 @@ export default function ServiceRequestsV() {
   const { state: chatEntryContext } = useChatEntryContext();
   const { chatEntries } = chatEntryContext || {};
 
+  console.log("DEBUG: ", requests);
+
   const filteredEventSerivces = useMemo(() => {
     const filtered = filter(
       requests,

@@ -56,7 +56,9 @@ export default function CardCreate({ label, handleClick }) {
         onMouseLeave={() => {
           handleHover(false);
         }}
-        onClick={handleClick}
+        onClick={() => {
+          handleClick(true);
+        }}
       >
         <div style={overlayStyle} />
         <div style={contentBoxStyle}>

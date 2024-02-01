@@ -42,6 +42,9 @@ export default function CreateServiceConnection({
     // convert form data to object
     let body = convertFormDataToObject(new FormData(evt.target));
 
+    // destructure vendorStatus from body
+    const { vendorStatus } = body;
+
     // route to the correct function depending on the radio button status
     if (vendorStatus == "connect") {
       handleConnect(body);
